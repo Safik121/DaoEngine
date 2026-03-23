@@ -2,6 +2,7 @@ package org.example.state;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.example.entity.Player;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
 
@@ -12,6 +13,8 @@ import org.example.level.LevelLoader;
 public class PlayState implements GameState {
 
     private Level currentLevel;
+    /** The player entity in the current session. */
+    private Player player;
 
     /**
      * Initializes the play state and loads the initial level.
@@ -19,6 +22,8 @@ public class PlayState implements GameState {
     public PlayState() {
         // Load the level immediately when the game starts
         currentLevel = LevelLoader.loadLevel("/levels/level1.json");
+        // Initialize the player at the starting position
+        player = new Player(32, 32);
     }
 
     /**
@@ -65,6 +70,10 @@ public class PlayState implements GameState {
                     gc.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 }
             }
+        }
+        // Render the player on top of the level
+        if (player != null) {
+            player.render(gc);
         }
     }
 }
