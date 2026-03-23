@@ -23,16 +23,16 @@ public class PlayState implements GameState {
         // Load the level immediately when the game starts
         currentLevel = LevelLoader.loadLevel("/levels/level1.json");
         // Initialize the player at the starting position
-        player = new Player(32, 32);
+        player = new Player(36, 36);
     }
 
     /**
-     * Updates the gameplay logic.
+     * Updates the gameplay logic, including player movement and collisions.
      */
     @Override
     public void update() {
-        if (player != null) {
-            player.update();
+        if (player != null && currentLevel != null) {
+            player.update(currentLevel);
         }
     }
 

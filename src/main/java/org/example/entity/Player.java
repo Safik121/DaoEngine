@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.example.Input;
+import org.example.level.Level;
 
 /**
  * Represents the player entity in the game.
@@ -31,23 +32,63 @@ public class Player {
     }
 
     /**
-     * Updates the player's internal logic, such as movement and collisions.
+     * Updates the player's position and handles collisions based on the current level.
+     * 
+     * @param level The current game level used for collision checks.
      */
-    public void update() {
-        double speed = 3.0; // Movement speed (pixels per frame)
+    public void update(Level level) {
+        double speed = 3.0;
+        double dx = 0; // Planned movement on the X axis
+        double dy = 0; // Planned movement on the Y axis
 
-        if (Input.isKeyPressed(KeyCode.W)) {
-            y -= speed; // Move Up (Y decreases)
+        // Determine intended movement direction
+        if (Input.isKeyPressed(KeyCode.W)) dy -= speed;
+        if (Input.isKeyPressed(KeyCode.S)) dy += speed;
+        if (Input.isKeyPressed(KeyCode.A)) dx -= speed;
+        if (Input.isKeyPressed(KeyCode.D)) dx += speed;
+
+        // Apply movement on the X axis if no wall is present
+        if (!isSolid(x + dx, y, level)) {
+            x += dx;
         }
-        if (Input.isKeyPressed(KeyCode.S)) {
-            y += speed; // Move Down (Y increases)
+
+        // Apply movement on the Y axis if no wall is present
+        if (!isSolid(x, y + dy, level)) {
+            y += dy;
         }
-        if (Input.isKeyPressed(KeyCode.A)) {
-            x -= speed; // Move Left (X decreases)
+    }
+
+    /**
+     * Checks if a specific position is occupied by a solid tile or is out of bounds.
+     * Tests all four corners of the player's bounding box against the level grid.
+     * 
+     * @param targetX The target X coordinate to check.
+     * @param targetY The target Y coordinate to check.
+     * @param level The current level data.
+     * @return true if the position is solid/blocked, false if the path is clear.
+     */
+    private boolean isSolid(double targetX, double targetY, Level level) {
+        // Calculate the columns and rows the player would occupy
+        // Subtract a tiny amount to avoid getting stuck on walls we're just touching
+        int leftCol = (int) (targetX / level.tileSize);
+        int rightCol = (int) ((targetX + size - 0.1) / level.tileSize);
+        int topRow = (int) (targetY / level.tileSize);
+        int bottomRow = (int) ((targetY + size - 0.1) / level.tileSize);
+
+        // 1. Boundary check: ensure the player stays within the map limits
+        if (leftCol < 0 || rightCol >= level.width || topRow < 0 || bottomRow >= level.height) {
+            return true;
         }
-        if (Input.isKeyPressed(KeyCode.D)) {
-            x += speed; // Move Right (X increases)
+
+        // 2. Grid check: collision if any of the corners hit a solid tile (value 1)
+        if (level.data.get(topRow).get(leftCol) == 1 ||
+                level.data.get(topRow).get(rightCol) == 1 ||
+                level.data.get(bottomRow).get(leftCol) == 1 ||
+                level.data.get(bottomRow).get(rightCol) == 1) {
+            return true;
         }
+
+        return false; // The path is clear!
     }
 
     /**
@@ -61,6 +102,6 @@ public class Player {
 
         // Draw the player at their current position with a small offset (+4)
         // to center them within a 32x32 tile.
-        gc.fillRect(x + 4, y + 4, size, size);
+        gc.fillRect(x, y, size, size);
     }
 }
