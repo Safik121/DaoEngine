@@ -46,16 +46,18 @@ public class DaoEngineApp extends Application {
         // 1. Initial game state is the Main Menu
         currentState = new MenuState();
 
-        // 2. Keyboard Event Handling for state transitions
+        // 2. Keyboard Event Handling (Input tracking added)
         scene.setOnKeyPressed(event -> {
-            // If the player presses ENTER while in the Menu state...
-            if (event.getCode() == KeyCode.ENTER) {
-                if (currentState instanceof MenuState) {
-                    // ...switch the state to PlayState (the actual game)
-                    currentState = new PlayState();
-                    System.out.println("Switching to game!");
-                }
+            Input.addKey(event.getCode()); // Register the key as active
+
+            // Maintain state transition to game on ENTER
+            if (event.getCode() == KeyCode.ENTER && currentState instanceof MenuState) {
+                currentState = new PlayState();
             }
+        });
+
+        scene.setOnKeyReleased(event -> {
+            Input.removeKey(event.getCode()); // Remove the key when released
         });
 
         // 3. Main Game Loop using AnimationTimer

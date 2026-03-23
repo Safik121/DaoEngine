@@ -31,7 +31,9 @@ public class PlayState implements GameState {
      */
     @Override
     public void update() {
-        // Future home for the Tribulation timer logic
+        if (player != null) {
+            player.update();
+        }
     }
 
     /**

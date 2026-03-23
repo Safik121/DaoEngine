@@ -1,7 +1,9 @@
 package org.example.entity;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import org.example.Input;
 
 /**
  * Represents the player entity in the game.
@@ -32,7 +34,20 @@ public class Player {
      * Updates the player's internal logic, such as movement and collisions.
      */
     public void update() {
-        // Keyboard-based movement logic will be implemented here
+        double speed = 3.0; // Movement speed (pixels per frame)
+
+        if (Input.isKeyPressed(KeyCode.W)) {
+            y -= speed; // Move Up (Y decreases)
+        }
+        if (Input.isKeyPressed(KeyCode.S)) {
+            y += speed; // Move Down (Y increases)
+        }
+        if (Input.isKeyPressed(KeyCode.A)) {
+            x -= speed; // Move Left (X decreases)
+        }
+        if (Input.isKeyPressed(KeyCode.D)) {
+            x += speed; // Move Right (X increases)
+        }
     }
 
     /**
@@ -44,6 +59,7 @@ public class Player {
         // The player is currently rendered as a blue square
         gc.setFill(Color.BLUE);
 
+        // Draw the player at their current position with a small offset (+4)
         // to center them within a 32x32 tile.
         gc.fillRect(x + 4, y + 4, size, size);
     }
