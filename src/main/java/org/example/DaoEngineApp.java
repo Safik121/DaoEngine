@@ -20,8 +20,8 @@ import org.example.state.PlayState;
  */
 public class DaoEngineApp extends Application {
 
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 600;
+    private static final int WIDTH = 1024;
+    private static final int HEIGHT = 768;
 
     /** Current active game state. */
     private GameState currentState;
@@ -59,7 +59,24 @@ public class DaoEngineApp extends Application {
             Input.removeKey(event.getCode()); // Remove the key when released
         });
 
-        // 3. Main Game Loop using AnimationTimer
+        // 3. Mouse Event Handling
+        scene.setOnMouseMoved(event -> {
+            Input.setMousePosition(event.getX(), event.getY());
+        });
+
+        scene.setOnMouseDragged(event -> {
+            Input.setMousePosition(event.getX(), event.getY());
+        });
+
+        scene.setOnMousePressed(event -> {
+            Input.setMouseButton(event.getButton(), true);
+        });
+
+        scene.setOnMouseReleased(event -> {
+            Input.setMouseButton(event.getButton(), false);
+        });
+
+        // 4. Main Game Loop using AnimationTimer
         AnimationTimer gameLoop = new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {

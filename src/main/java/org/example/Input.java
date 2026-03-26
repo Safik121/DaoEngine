@@ -1,42 +1,52 @@
 package org.example;
 
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A static utility class for tracking keyboard input.
- * Maintains a set of currently pressed keys to be queried by game entities.
+ * A static utility class for tracking keyboard and mouse input.
+ * Maintains a set of currently pressed keys and mouse state to be queried by game entities.
  */
 public class Input {
+    // --- KEYBOARD ---
     /** A set containing all currently active (pressed) key codes. */
     private static Set<KeyCode> activeKeys = new HashSet<>();
 
-    /**
-     * Adds a key to the set of active keys.
-     * 
-     * @param code The KeyCode of the pressed key.
-     */
     public static void addKey(KeyCode code) {
         activeKeys.add(code);
     }
 
-    /**
-     * Removes a key from the set of active keys.
-     * 
-     * @param code The KeyCode of the released key.
-     */
     public static void removeKey(KeyCode code) {
         activeKeys.remove(code);
     }
 
-    /**
-     * Checks if a specific key is currently being pressed.
-     * 
-     * @param code The KeyCode to check.
-     * @return true if the key is pressed, false otherwise.
-     */
     public static boolean isKeyPressed(KeyCode code) {
         return activeKeys.contains(code);
     }
+
+    // --- MOUSE ---
+    private static double mouseX = 0;
+    private static double mouseY = 0;
+    private static boolean lmbPressed = false;
+    private static boolean rmbPressed = false;
+
+    public static void setMousePosition(double x, double y) {
+        mouseX = x;
+        mouseY = y;
+    }
+
+    public static void setMouseButton(MouseButton button, boolean pressed) {
+        if (button == MouseButton.PRIMARY) {
+            lmbPressed = pressed;
+        } else if (button == MouseButton.SECONDARY) {
+            rmbPressed = pressed;
+        }
+    }
+
+    public static double getMouseX() { return mouseX; }
+    public static double getMouseY() { return mouseY; }
+    public static boolean isLmbPressed() { return lmbPressed; }
+    public static boolean isRmbPressed() { return rmbPressed; }
 }

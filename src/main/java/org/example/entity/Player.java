@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.example.Input;
+import org.example.item.Inventory;
 import org.example.level.Level;
 
 /**
@@ -29,6 +30,11 @@ public class Player {
     /** Whether the player is currently meditating. */
     private boolean isMeditating = false;
 
+    /** Player's inventory system. */
+    private Inventory inventory;
+    /** Current active slot in the hotbar (0-4). */
+    private int activeHotbarSlot = 0;
+
     /**
      * Constructs a new Player at the specified starting position.
      * 
@@ -41,6 +47,7 @@ public class Player {
         this.size = 12;
         this.hp = maxHp;
         this.qi = maxQi;
+        this.inventory = new Inventory();
     }
 
     /**
@@ -138,6 +145,9 @@ public class Player {
     public double getQi() { return qi; }
     public double getMaxQi() { return maxQi; }
     public boolean isMeditating() { return isMeditating; }
+    public Inventory getInventory() { return inventory; }
+    public int getActiveHotbarSlot() { return activeHotbarSlot; }
+    public void setActiveHotbarSlot(int slot) { this.activeHotbarSlot = slot; }
 
     /**
      * Applies damage to the player. HP will not drop below 0.
