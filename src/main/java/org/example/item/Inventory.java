@@ -60,10 +60,21 @@ public class Inventory {
         return MAIN_SLOTS;
     }
 
+    /**
+     * @return The total number of slots in the hotbar.
+     */
     public int getHotbarSlotsCount() {
         return HOTBAR_SLOTS;
     }
 
+    /**
+     * Swaps items between two slot arrays (including main inventory, hotbar, or crafting).
+     * 
+     * @param sourceArr Array containing the source item.
+     * @param sourceIdx Index in the source array.
+     * @param targetArr Array to move the item to.
+     * @param targetIdx Index in the target array.
+     */
     public void swapSlots(Item[] sourceArr, int sourceIdx, Item[] targetArr, int targetIdx) {
         Item temp = targetArr[targetIdx];
         targetArr[targetIdx] = sourceArr[sourceIdx];
@@ -109,22 +120,27 @@ public class Inventory {
         craftingResult = null;
     }
 
+    /** @return The main inventory slot array. */
     public Item[] getMainInventory() {
         return mainInventory;
     }
 
+    /** @return The hotbar slot array. */
     public Item[] getHotbar() {
         return hotbar;
     }
 
+    /** @return The two crafting input slots. */
     public Item[] getCraftingInputs() {
         return craftingInputs;
     }
 
+    /** @return The currently crafted item result, if any. */
     public Item getCraftingResult() {
         return craftingResult;
     }
 
+    /** @param item Programmatically set the crafting result (for testing). */
     public void setCraftingResult(Item item) {
         this.craftingResult = item;
     }

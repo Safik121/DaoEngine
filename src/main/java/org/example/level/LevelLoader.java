@@ -31,4 +31,25 @@ public class LevelLoader {
             return null;
         }
     }
+
+    /**
+     * Loads a procedural generation configuration from the specified JSON file path.
+     * 
+     * @param filePath The path to the config JSON file in the resources folder.
+     * @return The loaded LevelConfig object or a new default one if an error occurred.
+     */
+    public static LevelConfig loadConfig(String filePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            InputStream is = LevelLoader.class.getResourceAsStream(filePath);
+            if (is == null) {
+                throw new RuntimeException("Config file not found: " + filePath);
+            }
+            return mapper.readValue(is, LevelConfig.class);
+        } catch (Exception e) {
+            System.err.println("Error while loading level config: " + filePath);
+            e.printStackTrace();
+            return new LevelConfig(); // Fallback to defaults
+        }
+    }
 }

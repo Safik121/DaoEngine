@@ -1,0 +1,15 @@
+{
+  "name": "Cloud Mist Valley",
+  "width": 400,
+  "height": 400,
+  "tileSize": 32,
+  "veinCount": 10,
+  "veinMinSize": 5,
+  "veinMaxSize": 15,
+  "hasLakes": true,
+  "lakeCount": 8,
+  "lakeSize": 20,
+  "hasRivers": true,
+  "riverCount": 3,
+  "tribulationTime": 120.0
+}

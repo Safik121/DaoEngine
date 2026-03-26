@@ -10,9 +10,17 @@ import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
 import org.example.item.Item;
+import org.example.item.WorldItem;
+import javafx.scene.input.MouseButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.paint.Color;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
+import org.example.level.LevelConfig;
+import org.example.level.MapGenerator;
+import org.example.level.LevelLoader;
 
 /**
  * Game state where the actual gameplay takes place.
@@ -36,28 +44,78 @@ public class PlayState implements GameState {
     private boolean inventoryOpen = false;
     private boolean inventoryWasPressed = false;
 
+    // --- CAMERA SYSTEM ---
+    /** Current X offset of the camera (world space to screen space). */
+    private double cameraX = 0;
+    /** Current Y offset of the camera (world space to screen space). */
+    private double cameraY = 0;
+    /** Game window width in pixels. */
+    private final int screenWidth = 1024;
+    /** Game window height in pixels. */
+    private final int screenHeight = 768;
+
     // --- DRAG & DROP STATE ---
     private Item draggedItem = null;
     private Item[] sourceArr = null;
     private int sourceIdx = -1;
     private boolean lmbWasPressed = false;
+    private boolean rmbWasPressed = false;
+
+    private List<WorldItem> itemsOnGround;
 
     public PlayState() {
-        currentLevel = LevelLoader.loadLevel("/levels/level1.json");
+        // Load configuration from JSON
+        LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
+        currentLevel = MapGenerator.generate(config);
+        
         gameMap = new GameMap(currentLevel);
 
-        double[] playerPos = gameMap.getRandomFreePosition(12);
-        player = new Player(playerPos != null ? playerPos[0] : 36, playerPos != null ? playerPos[1] : 36);
+        // Player starting position (middle of the large map for testing)
+        player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
+
+        maxTime = config.tribulationTime;
+        currentTime = maxTime;
 
         enemies = new ArrayList<>();
+        itemsOnGround = new ArrayList<>();
         spawnInitialEnemies();
+        spawnInitialItems();
         addTestItems();
     }
 
+    /**
+     * Updates the camera position to follow the player and stay within map boundaries.
+     */
+    private void updateCamera() {
+        // Center camera on player
+        cameraX = player.getX() + 6 - screenWidth / 2.0;
+        cameraY = player.getY() + 6 - screenHeight / 2.0;
+
+        // Clamp camera to map bounds
+        double mapWidthPx = currentLevel.width * currentLevel.tileSize;
+        double mapHeightPx = currentLevel.height * currentLevel.tileSize;
+
+        if (cameraX < 0) cameraX = 0;
+        if (cameraY < 0) cameraY = 0;
+        if (cameraX > mapWidthPx - screenWidth) cameraX = mapWidthPx - screenWidth;
+        if (cameraY > mapHeightPx - screenHeight) cameraY = mapHeightPx - screenHeight;
+    }
+
+    private void spawnInitialItems() {
+        // Spawn some items on the ground for testing
+        double[] pos1 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 100);
+        if (pos1 != null) itemsOnGround.add(new WorldItem(new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE), pos1[0], pos1[1]));
+        
+        double[] pos2 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 150);
+        if (pos2 != null) itemsOnGround.add(new WorldItem(new Item("mat_hammer_01", "Rusty Hammer", "Crafting material.", Item.Type.CRAFTING), pos2[0], pos2[1]));
+    }
+
     private void spawnInitialEnemies() {
-        for (int i = 0; i < 3; i++) {
-            double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 200);
-            if (pos != null) enemies.add(new Enemy(pos[0], pos[1], false));
+        for (int i = 0; i < 50; i++) {
+            double[] pos = gameMap.getRandomFreePositionAwayFrom(12, player.getX(), player.getY(), 200);
+            if (pos != null) {
+                enemies.add(new Enemy(pos[0], pos[1], false));
+            }
         }
     }
 
@@ -80,6 +138,43 @@ public class PlayState implements GameState {
 
         handleHotbarSelection();
         handleGameplayLogic();
+        handleWorldInteraction();
+        updateCamera();
+    }
+
+    private void handleWorldInteraction() {
+        boolean rmbPressed = Input.isRmbPressed();
+        if (rmbPressed && !rmbWasPressed) {
+            double mx = Input.getMouseX();
+            double my = Input.getMouseY();
+            
+            WorldItem toPick = null;
+            for (WorldItem wi : itemsOnGround) {
+                // Adjust mouse coordinates for camera offset when checking world items
+                double worldMx = mx + cameraX;
+                double worldMy = my + cameraY;
+
+                if (wi.isClicked(worldMx, worldMy)) {
+                    // Check distance (optional, but let's allow "infinite" reach for now or small limit)
+                    double dx = wi.getX() - player.getX();
+                    double dy = wi.getY() - player.getY();
+                    if (Math.sqrt(dx*dx + dy*dy) < 150) { // Reach limit
+                        toPick = wi;
+                        break;
+                    }
+                }
+            }
+            
+            if (toPick != null) {
+                if (player.getInventory().addItem(toPick.getItem())) {
+                    itemsOnGround.remove(toPick);
+                    System.out.println("Picked up: " + toPick.getItem().getName());
+                } else {
+                    System.out.println("Inventory full!");
+                }
+            }
+        }
+        rmbWasPressed = rmbPressed;
     }
 
     private void handleToggles() {
@@ -146,51 +241,97 @@ public class PlayState implements GameState {
         inTribulation = false;
         currentTime = maxTime;
         isPaused = false;
-        double[] playerPos = gameMap.getRandomFreePosition(12);
-        player = new Player(playerPos != null ? playerPos[0] : 36, playerPos != null ? playerPos[1] : 36);
+        // Load configuration from JSON
+        LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
+        currentLevel = MapGenerator.generate(config);
+        gameMap = new GameMap(currentLevel);
+        player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
+        
+        maxTime = config.tribulationTime;
+        currentTime = maxTime;
+        
         enemies.clear();
         spawnInitialEnemies();
         addTestItems();
     }
 
+    /**
+     * Main render loop for the game world.
+     */
     @Override
     public void render(GraphicsContext gc) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
-        
+
+        // Clear background
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, w, h);
 
         renderMap(gc);
-        for (Enemy enemy : enemies) enemy.render(gc);
+        
+        // Render world entities with camera offset
+        for (WorldItem wi : itemsOnGround) {
+            gc.save();
+            gc.translate(-cameraX, -cameraY);
+            wi.render(gc);
+            gc.restore();
+        }
+        
+        for (Enemy enemy : enemies) {
+            gc.save();
+            gc.translate(-cameraX, -cameraY);
+            enemy.render(gc);
+            gc.restore();
+        }
+
+        // Render player
+        gc.save();
+        gc.translate(-cameraX, -cameraY);
         player.render(gc);
+        gc.restore();
 
-        drawHUD(gc, w, h);
-        if (inventoryOpen) drawInventory(gc, w, h);
+        // UI is rendered on top (static positions)
+        renderHUD(gc);
         drawHotbar(gc, w, h);
-
-        if (draggedItem != null) drawDraggedItem(gc);
+        if (inventoryOpen) {
+            drawInventory(gc, w, h);
+        }
+        
+        if (draggedItem != null) {
+            drawDraggedItem(gc);
+        }
     }
 
     private void renderMap(GraphicsContext gc) {
         if (currentLevel == null || currentLevel.data == null) return;
         int tileSize = currentLevel.tileSize;
-        for (int y = 0; y < currentLevel.data.size(); y++) {
-            for (int x = 0; x < currentLevel.data.get(y).size(); x++) {
+        
+        // Frustum Culling: Only render visible tiles
+        int startX = Math.max(0, (int) (cameraX / tileSize));
+        int endX = Math.min(currentLevel.width, (int) ((cameraX + screenWidth) / tileSize) + 1);
+        int startY = Math.max(0, (int) (cameraY / tileSize));
+        int endY = Math.min(currentLevel.height, (int) ((cameraY + screenHeight) / tileSize) + 1);
+
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
                 int tileType = currentLevel.data.get(y).get(x);
                 if (tileType == 1) gc.setFill(Color.DARKGRAY);
                 else if (tileType == 2) gc.setFill(Color.BLUE);
                 else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
+                else if (tileType == 4) gc.setFill(Color.DARKGREEN.deriveColor(0, 1, 0.8, 1)); // Lighter green for variety
                 else gc.setFill(Color.DARKGREEN);
                 
-                gc.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-                gc.setStroke(Color.BLACK);
-                gc.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                // Optional: Grid lines for debugging (too heavy for 400x400?)
+                // gc.setStroke(Color.BLACK);
+                // gc.strokeRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
             }
         }
     }
 
-    private void drawHUD(GraphicsContext gc, double w, double h) {
+    private void renderHUD(GraphicsContext gc) {
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
         // HP
         gc.setFill(Color.rgb(50, 50, 50, 0.7));
         gc.fillRect(20, 20, 300, 20);
