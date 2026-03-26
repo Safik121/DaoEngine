@@ -28,7 +28,7 @@ public class Player {
         this.x = startX;
         this.y = startY;
         // Make the player slightly smaller than the tile size (32) to fit well
-        this.size = 24;
+        this.size = 12;
     }
 
     /**
@@ -100,7 +100,6 @@ public class Player {
         // The player is currently rendered as a blue square
         gc.setFill(Color.BLUE);
 
-        // Draw the player at their current position with a small offset (+4)
         // to center them within a 32x32 tile.
         gc.fillRect(x, y, size, size);
     }
