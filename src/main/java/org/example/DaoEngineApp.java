@@ -9,7 +9,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-// Importujeme naše nové stavy
 import org.example.state.GameState;
 import org.example.state.MenuState;
 import org.example.state.PlayState;
@@ -24,11 +23,11 @@ public class DaoEngineApp extends Application {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
-    /** The current active game state. */
+    /** Current active game state. */
     private GameState currentState;
 
     /**
-     * Initializes the JavaFX stage, scene, and canvases.
+     * Initializes the JavaFX stage, scene, and canvas.
      * Sets up the initial game state and the input event handlers.
      * 
      * @param primaryStage The primary stage for this application.
@@ -46,11 +45,11 @@ public class DaoEngineApp extends Application {
         // 1. Initial game state is the Main Menu
         currentState = new MenuState();
 
-        // 2. Keyboard Event Handling (Input tracking added)
+        // 2. Keyboard Event Handling
         scene.setOnKeyPressed(event -> {
             Input.addKey(event.getCode()); // Register the key as active
 
-            // Maintain state transition to game on ENTER
+            // State transition to game on ENTER
             if (event.getCode() == KeyCode.ENTER && currentState instanceof MenuState) {
                 currentState = new PlayState();
             }

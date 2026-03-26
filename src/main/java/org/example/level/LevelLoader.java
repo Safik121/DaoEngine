@@ -18,10 +18,10 @@ public class LevelLoader {
     public static Level loadLevel(String filePath) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            // Access the "resources" folder for the JSON file
+            // Access the resources folder for the JSON file
             InputStream is = LevelLoader.class.getResourceAsStream(filePath);
             if (is == null) {
-                throw new RuntimeException("Level nebyl nalezen: " + filePath);
+                throw new RuntimeException("Level file not found: " + filePath);
             }
             // Jackson magic: automatically maps JSON to the Level class
             return mapper.readValue(is, Level.class);

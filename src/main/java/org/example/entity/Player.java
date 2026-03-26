@@ -8,7 +8,7 @@ import org.example.level.Level;
 
 /**
  * Represents the player entity in the game.
- * Handles player position, size, movement logic, and rendering.
+ * Handles player position, size, movement logic, statistics, and rendering.
  */
 public class Player {
     /** The X coordinate of the player in pixels. */
@@ -17,6 +17,17 @@ public class Player {
     private double y;
     /** The size of the player entity. */
     private double size;
+
+    /** Current Health Points (HP). */
+    private double hp;
+    /** Maximum Health Points. */
+    private double maxHp = 100.0;
+    /** Current Spiritual Energy (Qi). */
+    private double qi;
+    /** Maximum Qi capacity. */
+    private double maxQi = 50.0;
+    /** Whether the player is currently meditating. */
+    private boolean isMeditating = false;
 
     /**
      * Constructs a new Player at the specified starting position.
@@ -27,16 +38,29 @@ public class Player {
     public Player(double startX, double startY) {
         this.x = startX;
         this.y = startY;
-        // Make the player slightly smaller than the tile size (32) to fit well
         this.size = 12;
+        this.hp = maxHp;
+        this.qi = maxQi;
     }
 
     /**
      * Updates the player's position and handles collisions based on the current level.
+     * Also processes meditation logic.
      * 
      * @param level The current game level used for collision checks.
      */
     public void update(Level level) {
+        // --- 1. Meditation Logic ---
+        isMeditating = Input.isKeyPressed(KeyCode.SPACE);
+        
+        if (isMeditating) {
+            // Regenerate stats during meditation (Section 3.2 of the vision doc)
+            if (hp < maxHp) hp += 0.1; // Slow heal
+            if (qi < maxQi) qi += 0.2; // Faster Qi regen
+            return; // Cannot move while meditating
+        }
+
+        // --- 2. Movement Logic ---
         double speed = 3.0;
         double dx = 0; // Planned movement on the X axis
         double dy = 0; // Planned movement on the Y axis
@@ -60,22 +84,20 @@ public class Player {
 
     /**
      * Checks if a specific position is occupied by a solid tile or is out of bounds.
-     * Tests all four corners of the player's bounding box against the level grid.
+     * Tests all four corners of the player's bounding box.
      * 
      * @param targetX The target X coordinate to check.
      * @param targetY The target Y coordinate to check.
      * @param level The current level data.
-     * @return true if the position is solid/blocked, false if the path is clear.
+     * @return true if the position is solid/blocked, false otherwise.
      */
     private boolean isSolid(double targetX, double targetY, Level level) {
-        // Calculate the columns and rows the player would occupy
-        // Subtract a tiny amount to avoid getting stuck on walls we're just touching
         int leftCol = (int) (targetX / level.tileSize);
         int rightCol = (int) ((targetX + size - 0.1) / level.tileSize);
         int topRow = (int) (targetY / level.tileSize);
         int bottomRow = (int) ((targetY + size - 0.1) / level.tileSize);
 
-        // 1. Boundary check: ensure the player stays within the map limits
+        // 1. Boundary check
         if (leftCol < 0 || rightCol >= level.width || topRow < 0 || bottomRow >= level.height) {
             return true;
         }
@@ -88,7 +110,7 @@ public class Player {
             return true;
         }
 
-        return false; // The path is clear!
+        return false;
     }
 
     /**
@@ -97,10 +119,33 @@ public class Player {
      * @param gc The GraphicsContext used for drawing.
      */
     public void render(GraphicsContext gc) {
-        // The player is currently rendered as a blue square
-        gc.setFill(Color.BLUE);
+        // Change color and add aura when meditating
+        if (isMeditating) {
+            gc.setGlobalAlpha(0.3);
+            gc.setFill(Color.LIGHTBLUE);
+            gc.fillOval(x - 5, y - 5, size + 10, size + 10);
+            gc.setGlobalAlpha(1.0);
+        }
 
-        // to center them within a 32x32 tile.
+        gc.setFill(Color.BLUE);
         gc.fillRect(x, y, size, size);
+    }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getHp() { return hp; }
+    public double getMaxHp() { return maxHp; }
+    public double getQi() { return qi; }
+    public double getMaxQi() { return maxQi; }
+    public boolean isMeditating() { return isMeditating; }
+
+    /**
+     * Applies damage to the player. HP will not drop below 0.
+     * 
+     * @param amount The amount of damage to take.
+     */
+    public void takeDamage(double amount) {
+        this.hp -= amount;
+        if (this.hp < 0) this.hp = 0;
     }
 }

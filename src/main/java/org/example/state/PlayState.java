@@ -4,163 +4,252 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.example.Input;
+import org.example.entity.Enemy;
 import org.example.entity.Player;
+import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * The game state where the actual gameplay takes place.
- * It handles level rendering and gameplay logic updates.
+ * Game state where the actual gameplay takes place.
+ * Handles level rendering, logic for players and enemies, and game time.
  */
 public class PlayState implements GameState {
 
+    /** Currently loaded level. */
     private Level currentLevel;
-    /** The player entity in the current session. */
+    /** Helper map for spatial queries (spawning, collisions). */
+    private GameMap gameMap;
+    /** Player instance. */
     private Player player;
 
-    /** The maximum time allowed to complete the level (in seconds). */
+    /** List of all enemies currently on the map. */
+    private List<Enemy> enemies;
+
+    /** Max time before the Tribulation begins. */
     private double maxTime = 60.0;
-    /** The current remaining time for the level. */
+    /** Current remaining time. */
     private double currentTime = maxTime;
 
-    /** Flag indicating if the Heavenly Tribulation survival phase has started. */
+    /** Whether the Tribulation (aggressive enemy waves) is active. */
     private boolean inTribulation = false;
+    /** Timer for spawning additional waves during Tribulation. */
+    private double tribulationSpawnTimer = 0;
 
-    /** Flags for the pause system. */
+    /** Pause state of the game. */
     private boolean isPaused = false;
+    /** Helper for Esc key edge detection. */
     private boolean escWasPressed = false;
 
     /**
-     * Initializes the play state and loads the initial level.
+     * Initializes the game state, loads the level, and spawns the player and initial enemies.
      */
     public PlayState() {
-        // Load the level immediately when the game starts
         currentLevel = LevelLoader.loadLevel("/levels/level1.json");
-        // Initialize the player at the starting position (offset by 4 if needed, or 36)
-        player = new Player(36, 36);
+        gameMap = new GameMap(currentLevel);
+
+        // Spawn player at a safe position
+        double[] playerPos = gameMap.getRandomFreePosition(12); // Player size is 12
+        if (playerPos != null) {
+            player = new Player(playerPos[0], playerPos[1]);
+        } else {
+            player = new Player(36, 36); // Fallback
+        }
+
+        enemies = new ArrayList<>();
+
+        // Spawn initial regular enemies at a safe distance from the player
+        for (int i = 0; i < 3; i++) {
+            double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 200);
+            if (pos != null) {
+                enemies.add(new Enemy(pos[0], pos[1], false));
+            }
+        }
     }
 
     /**
-     * Updates the gameplay logic, including player movement, collisions, and timer.
+     * Updates game logic: movement, collisions, time, and entity states.
      */
     @Override
     public void update() {
-        // --- 1. PAUSE LOGIC (Single-fire mechanism) ---
+        // --- 1. PAUSE LOGIC ---
         boolean escIsPressed = Input.isKeyPressed(KeyCode.ESCAPE);
-
-        // Toggle pause only on the exact frame the key is pressed down
         if (escIsPressed && !escWasPressed) {
             isPaused = !isPaused;
         }
-        escWasPressed = escIsPressed; // Save state for the next frame
+        escWasPressed = escIsPressed;
 
-        // If the game is paused, stop all entity and timer updates
         if (isPaused) {
             return;
         }
 
-        // --- 2. GAMEPLAY LOGIC (Runs only when not paused) ---
+        // --- 2. DEATH LOGIC ---
+        if (player != null && player.getHp() <= 0) {
+            System.out.println("GAME OVER! Restarting level...");
+            resetLevel();
+            return;
+        }
+
+        // --- 3. GAMEPLAY LOGIC ---
         if (player != null && currentLevel != null) {
             player.update(currentLevel);
         }
 
-        // Countdown logic runs only if we are not yet in the Tribulation phase
+        // Update all enemies
+        for (Enemy enemy : enemies) {
+            enemy.update(gameMap, player);
+        }
+
+        // Time management and Tribulation trigger
         if (!inTribulation) {
             if (currentTime > 0) {
                 currentTime -= 1.0 / 60.0;
             } else {
                 currentTime = 0;
-                triggerTribulation(); // Time's up, survival phase begins!
+                triggerTribulation();
             }
         } else {
-            // TODO: Here we will later update enemy spawners for the Tribulation phase
+            // Tribulation spawning: Every 3 seconds, add a new aggressive enemy
+            tribulationSpawnTimer -= 1.0 / 60.0;
+            if (tribulationSpawnTimer <= 0) {
+                double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
+                if (pos != null) {
+                    enemies.add(new Enemy(pos[0], pos[1], true));
+                }
+                tribulationSpawnTimer = 3.0; // Reset timer
+            }
         }
     }
 
     /**
-     * Triggers the Heavenly Tribulation event when the timer reaches zero.
-     * Transitions the game into the survival phase.
+     * Triggers the Tribulation (Heavenly Punishment) mode.
      */
     private void triggerTribulation() {
         inTribulation = true;
         System.out.println("THE HEAVENLY TRIBULATION HAS DESCENDED! SURVIVE!");
+
+        // Immediate wave: two elite enemies
+        for (int i = 0; i < 2; i++) {
+            double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 250);
+            if (pos != null) {
+                enemies.add(new Enemy(pos[0], pos[1], true));
+            }
+        }
+
+        tribulationSpawnTimer = 3.0;
     }
 
     /**
-     * Renders the game world and entities using the provided GraphicsContext.
-     * * @param gc The GraphicsContext used for drawing.
+     * Resets the level to its initial state (including player stats).
+     */
+    private void resetLevel() {
+        inTribulation = false;
+        currentTime = maxTime;
+        isPaused = false;
+        
+        double[] playerPos = gameMap.getRandomFreePosition(12);
+        if (playerPos != null) {
+            player = new Player(playerPos[0], playerPos[1]);
+        }
+        
+        enemies.clear();
+        for (int i = 0; i < 3; i++) {
+            double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 200);
+            if (pos != null) {
+                enemies.add(new Enemy(pos[0], pos[1], false));
+            }
+        }
+    }
+
+    /**
+     * Renders the current game state.
      */
     @Override
     public void render(GraphicsContext gc) {
-        // Clear the screen with a black background
+        // Background
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, 800, 600);
 
-        // Render the level if it was successfully loaded
+        // Map rendering
         if (currentLevel != null && currentLevel.data != null) {
             int tileSize = currentLevel.tileSize;
 
-            // Iterate through the grid (rows and columns) to draw tiles
             for (int y = 0; y < currentLevel.data.size(); y++) {
                 var row = currentLevel.data.get(y);
                 for (int x = 0; x < row.size(); x++) {
                     int tileType = row.get(x);
 
-                    // 1 = Wall (Gray), 0 = Path/Grass (Green)
                     if (tileType == 1) {
-                        gc.setFill(Color.DARKGRAY);
+                        gc.setFill(Color.DARKGRAY); // Wall
                     } else {
-                        gc.setFill(Color.DARKGREEN);
+                        gc.setFill(Color.DARKGREEN); // Grass
                     }
 
-                    // Draw the tile
                     gc.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-
-                    // Draw a thin black border around the tile for the grid effect
                     gc.setStroke(Color.BLACK);
                     gc.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 }
             }
         }
 
-        // Render the player on top of the level
+        // Entity rendering
+        for (Enemy enemy : enemies) {
+            enemy.render(gc);
+        }
+
         if (player != null) {
             player.render(gc);
         }
 
-        // Render the HUD (Heads-Up Display)
+        // UI bars
         drawHUD(gc);
     }
 
     /**
-     * Draws the HUD elements, including the tribulation timer bar, status messages, and pause screen.
-     * * @param gc The GraphicsContext used for drawing.
+     * Renders the HUD (Heads-Up Display) with HP, Qi, and Time bars.
      */
     private void drawHUD(GraphicsContext gc) {
-        // Only draw the timer bar if Tribulation hasn't started yet
-        if (!inTribulation) {
-            // Background for the timer bar (dark gray with alpha)
-            gc.setFill(Color.rgb(50, 50, 50, 0.7));
-            gc.fillRect(10, 10, 200, 20);
+        // 1. Health Bar (Red)
+        gc.setFill(Color.rgb(50, 50, 50, 0.7));
+        gc.fillRect(10, 10, 200, 15);
+        double hpWidth = (player.getHp() / player.getMaxHp()) * 200;
+        gc.setFill(Color.RED);
+        gc.fillRect(10, 10, hpWidth, 15);
+        gc.setStroke(Color.WHITE);
+        gc.strokeRect(10, 10, 200, 15);
 
-            // The actual time bar (indicates remaining time)
+        // 2. Qi Bar (Cyan/Blue)
+        gc.setFill(Color.rgb(50, 50, 50, 0.7));
+        gc.fillRect(10, 30, 100, 10);
+        double qiWidth = (player.getQi() / player.getMaxQi()) * 100;
+        gc.setFill(Color.CYAN);
+        gc.fillRect(10, 30, qiWidth, 10);
+        gc.setStroke(Color.WHITE);
+        gc.strokeRect(10, 30, 100, 10);
+
+        // 3. Time / Tribulation UI
+        if (!inTribulation) {
+            gc.setFill(Color.rgb(50, 50, 50, 0.7));
+            gc.fillRect(10, 50, 200, 10);
+
             double timeBarWidth = (currentTime / maxTime) * 200;
             gc.setFill(Color.ORANGERED);
-            gc.fillRect(10, 10, timeBarWidth, 20);
+            gc.fillRect(10, 50, timeBarWidth, 10);
 
-            // Border around the bar
             gc.setStroke(Color.WHITE);
-            gc.setLineWidth(2);
-            gc.strokeRect(10, 10, 200, 20);
+            gc.setLineWidth(1);
+            gc.strokeRect(10, 50, 200, 10);
 
-            // Text displaying the level name and current countdown status
             gc.setFill(Color.WHITE);
-            gc.setFont(new javafx.scene.text.Font("Arial Bold", 14));
-            gc.fillText(currentLevel.name + " | Time to Tribulation: " + (int)currentTime + "s", 10, 50);
+            gc.setFont(new javafx.scene.text.Font("Arial Bold", 12));
+            gc.fillText("Level: " + currentLevel.name + " | Path to Immortality", 10, 75);
+            gc.fillText("Time to Tribulation: " + (int)currentTime + "s", 10, 90);
         } else {
-            // Tribulation Active UI
-            // Light red tint over the whole screen to indicate danger
-            gc.setFill(Color.color(1, 0, 0, 0.2));
+            // Visual effect during Tribulation
+            gc.setFill(Color.color(1, 0, 0, 0.15));
             gc.fillRect(0, 0, 800, 600);
 
             gc.setFill(Color.RED);
@@ -168,9 +257,9 @@ public class PlayState implements GameState {
             gc.fillText("TRIBULATION ACTIVE: SURVIVE!", 10, 30);
         }
 
-        // Draw Pause Screen Overlay
+        // Pause screen
         if (isPaused) {
-            gc.setFill(Color.color(0, 0, 0, 0.6)); // Semi-transparent black
+            gc.setFill(Color.color(0, 0, 0, 0.6));
             gc.fillRect(0, 0, 800, 600);
 
             gc.setFill(Color.WHITE);

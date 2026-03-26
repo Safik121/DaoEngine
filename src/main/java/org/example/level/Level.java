@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Represents a game level in the DaoEngine.
- * Contains metadata and the grid data for the world.
+ * Contains metadata and the grid data for the world layout.
  */
 public class Level {
     /** The name of the level. */

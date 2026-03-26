@@ -4,8 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 /**
  * Interface representing a generic game state in the DaoEngine.
- * Each state must implement methods for updating logic and rendering to the
- * screen.
+ * Each state must implement methods for updating logic and rendering to the screen.
  */
 public interface GameState {
     /**
