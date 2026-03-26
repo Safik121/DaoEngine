@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import org.example.Input;
 import org.example.item.Inventory;
 import org.example.level.Level;
+import java.util.List;
 
 /**
  * Represents the player entity in the game.
@@ -67,8 +68,18 @@ public class Player {
             return; // Cannot move while meditating
         }
 
-        // --- 2. Movement Logic ---
+        // --- 2. Tile Effects ---
+        int tx = (int) ((x + size / 2) / level.tileSize);
+        int ty = (int) ((y + size / 2) / level.tileSize);
+        int tileType = 0;
+        if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+            tileType = level.data.get(ty).get(tx);
+        }
+
         double speed = 3.0;
+        if (tileType == 2) speed *= 0.5; // Water slow
+        if (tileType == 3 && qi < maxQi) qi += 0.05; // Spirit Vein regen
+
         double dx = 0; // Planned movement on the X axis
         double dy = 0; // Planned movement on the Y axis
 

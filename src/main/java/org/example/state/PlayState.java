@@ -177,7 +177,12 @@ public class PlayState implements GameState {
         int tileSize = currentLevel.tileSize;
         for (int y = 0; y < currentLevel.data.size(); y++) {
             for (int x = 0; x < currentLevel.data.get(y).size(); x++) {
-                gc.setFill(currentLevel.data.get(y).get(x) == 1 ? Color.DARKGRAY : Color.DARKGREEN);
+                int tileType = currentLevel.data.get(y).get(x);
+                if (tileType == 1) gc.setFill(Color.DARKGRAY);
+                else if (tileType == 2) gc.setFill(Color.BLUE);
+                else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
+                else gc.setFill(Color.DARKGREEN);
+                
                 gc.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 gc.setStroke(Color.BLACK);
                 gc.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
