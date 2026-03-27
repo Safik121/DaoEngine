@@ -27,6 +27,8 @@ public class Enemy {
     private double speed;
     /** Health points of the enemy. */
     private int hp;
+    /** The maximum health points the enemy can have. */
+    private int maxHp;
     /** Damage dealt to the player on contact. */
     private int damage;
 
@@ -55,10 +57,12 @@ public class Enemy {
 
         if (isTribulation) {
             this.hp = 100;
+            this.maxHp = 100;
             this.damage = 25;
             this.speed = 2.0;
         } else {
             this.hp = 40;
+            this.maxHp = 40;
             this.damage = 10;
             this.speed = 1.0;
         }
@@ -199,6 +203,26 @@ public class Enemy {
             gc.setFill(Color.PURPLE);
         }
         gc.fillRect(x - camX, y - camY, size, size);
+
+        // --- HP Bar ---
+        double barW = size;
+        double barH = 4;
+        double barX = x - camX;
+        double barY = y - camY - 8;
+
+        // Background (Red)
+        gc.setFill(Color.RED);
+        gc.fillRect(barX, barY, barW, barH);
+
+        // Foreground (Green)
+        double healthPercent = (double) hp / maxHp;
+        gc.setFill(Color.LIME);
+        gc.fillRect(barX, barY, barW * healthPercent, barH);
+
+        // Border
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(1);
+        gc.strokeRect(barX, barY, barW, barH);
     }
 
     /** @return Enemy's current X coordinate in pixels. */
@@ -209,6 +233,8 @@ public class Enemy {
     public double getSize() { return size; }
     /** @return Current HP of the enemy. */
     public int getHP() { return hp; }
+    /** @return Maximum HP of the enemy. */
+    public int getMaxHP() { return maxHp; }
     /** @return true if the enemy is dead (HP <= 0). */
     public boolean isDead() { return hp <= 0; }
 
