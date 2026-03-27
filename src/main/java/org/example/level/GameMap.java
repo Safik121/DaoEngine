@@ -117,4 +117,33 @@ public class GameMap {
 
         return new double[]{px, py};
     }
+
+    /**
+     * Checks if there is a clear line of sight between two pixel positions.
+     * Samples points along the line and checks if any of them fall into a solid tile.
+     * 
+     * @param x1 Start X pixel.
+     * @param y1 Start Y pixel.
+     * @param x2 Target X pixel.
+     * @param y2 Target Y pixel.
+     * @return true if no obstacles are in the way.
+     */
+    public boolean hasLineOfSight(double x1, double y1, double x2, double y2) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 1) return true;
+
+        int steps = (int) (distance / (level.tileSize / 2.0)); // Sample every half tile
+        for (int i = 1; i <= steps; i++) {
+            double tx = x1 + dx * (i / (double) steps);
+            double ty = y1 + dy * (i / (double) steps);
+            
+            if (isSolid((int) (tx / level.tileSize), (int) (ty / level.tileSize))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

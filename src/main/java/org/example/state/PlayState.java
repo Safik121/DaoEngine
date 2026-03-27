@@ -213,7 +213,7 @@ public class PlayState implements GameState {
         }
 
         player.update(currentLevel);
-        for (Enemy enemy : enemies) enemy.update(gameMap, player);
+        for (Enemy enemy : enemies) enemy.update(gameMap, player, enemies);
 
         if (!inTribulation) {
             currentTime -= 1.0 / 60.0;

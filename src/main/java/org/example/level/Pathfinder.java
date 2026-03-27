@@ -78,24 +78,35 @@ public class Pathfinder {
 
             closedSet.add(currentKey);
 
-            // Check 4 neighbors (up, down, left, right)
-            int[][] neighbors = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+            // Check 8 neighbors (cardinal + diagonal)
+            int[][] neighbors = {
+                {0, 1, 10}, {0, -1, 10}, {1, 0, 10}, {-1, 0, 10}, // Cardinal (cost 10)
+                {1, 1, 14}, {1, -1, 14}, {-1, 1, 14}, {-1, -1, 14} // Diagonal (cost 14 ~ sqrt(2)*10)
+            };
             for (int[] offset : neighbors) {
                 int nx = current.x + offset[0];
                 int ny = current.y + offset[1];
+                int moveCost = offset[2];
                 String neighborKey = nx + "," + ny;
 
                 if (map.isSolid(nx, ny) || closedSet.contains(neighborKey)) {
                     continue;
                 }
 
-                int tentativeGScore = current.gScore + 1;
+                // Prevent "corner cutting" - don't move diagonally if both adjacent cardinal walls are solid
+                if (Math.abs(offset[0]) == 1 && Math.abs(offset[1]) == 1) {
+                    if (map.isSolid(current.x + offset[0], current.y) && map.isSolid(current.x, current.y + offset[1])) {
+                        continue;
+                    }
+                }
+
+                int tentativeGScore = current.gScore + moveCost;
                 Node neighbor = allNodes.getOrDefault(neighborKey, new Node(nx, ny));
 
                 if (tentativeGScore < neighbor.gScore || !openSet.contains(neighbor)) {
                     neighbor.parent = current;
                     neighbor.gScore = tentativeGScore;
-                    neighbor.fScore = neighbor.gScore + heuristic(nx, ny, targetX, targetY);
+                    neighbor.fScore = neighbor.gScore + heuristic(nx, ny, targetX, targetY) * 10;
                     
                     if (!openSet.contains(neighbor)) {
                         openSet.add(neighbor);
@@ -109,10 +120,10 @@ public class Pathfinder {
     }
 
     /**
-     * Heuristic function for distance estimation (Manhattan distance).
+     * Heuristic function for distance estimation (Euclidean-ish distance * 10).
      */
     private static int heuristic(int x1, int y1, int x2, int y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+        return (int) (Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) * 10);
     }
 
     /**

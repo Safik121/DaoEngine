@@ -3,10 +3,10 @@ package org.example.entity;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.example.level.GameMap;
-import org.example.level.Level;
 import org.example.level.Pathfinder;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents an enemy entity (monster) in the game.
@@ -69,77 +69,103 @@ public class Enemy {
      * 
      * @param gameMap Game map for collision checks and pathfinding.
      * @param player Reference to the player for tracking and attacking.
+     * @param allEnemies List of all enemies for separation behavior.
      */
-    public void update(GameMap gameMap, Player player) {
-        double dx = 0;
-        double dy = 0;
-
+    public void update(GameMap gameMap, Player player, List<Enemy> allEnemies) {
         // 1. Calculate distance to player
-        double distX = player.getX() - this.x;
-        double distY = player.getY() - this.y;
+        double distX = player.getX() + 6 - (this.x + size / 2);
+        double distY = player.getY() + 6 - (this.y + size / 2);
         double distance = Math.sqrt(distX * distX + distY * distY);
 
-        // 2. Movement decision (AI)
+        double moveDirX = 0;
+        double moveDirY = 0;
+
+        // 2. Decision: Direct Line-of-Sight vs Pathfinding
         if (isTribulation || distance <= detectionRange) {
-            
-            // Pathfinding logic
-            pathRecalculateTimer--;
-            if (pathRecalculateTimer <= 0) {
-                int tileSize = gameMap.getTileSize();
-                int startX = (int) ((x + size / 2) / tileSize);
-                int startY = (int) ((y + size / 2) / tileSize);
-                int targetX = (int) ((player.getX() + 6) / tileSize);
-                int targetY = (int) ((player.getY() + 6) / tileSize);
+            boolean hasLoS = gameMap.hasLineOfSight(x + size / 2, y + size / 2, player.getX() + 6, player.getY() + 6);
 
-                currentPath = Pathfinder.findPath(gameMap, startX, startY, targetX, targetY);
-                pathRecalculateTimer = 30; // Recalculate twice a second (at 60fps)
-            }
-
-            if (currentPath != null && !currentPath.isEmpty()) {
-                // Move according to the calculated path
-                int[] nextTile = currentPath.get(0);
-                int tileSize = gameMap.getTileSize();
-                double targetPX = nextTile[0] * tileSize + (tileSize - size) / 2.0;
-                double targetPY = nextTile[1] * tileSize + (tileSize - size) / 2.0;
-
-                double diffX = targetPX - x;
-                double diffY = targetPY - y;
-
-                if (Math.abs(diffX) < speed) x = targetPX;
-                else if (diffX > 0) dx += speed;
-                else if (diffX < 0) dx -= speed;
-
-                if (Math.abs(diffY) < speed) y = targetPY;
-                else if (diffY > 0) dy += speed;
-                else if (diffY < 0) dy -= speed;
-
-                // Remove tile from path if reached
-                if (Math.abs(x - targetPX) < 1.0 && Math.abs(y - targetPY) < 1.0) {
-                    currentPath.remove(0);
-                }
+            if (hasLoS) {
+                // Move directly towards player
+                moveDirX = distX / distance;
+                moveDirY = distY / distance;
+                currentPath = null; // Clear path if we have direct view
             } else {
-                // Fallback: direct movement (if no path found or very close)
-                if (distX > 0) dx += speed;
-                if (distX < 0) dx -= speed;
-                if (distY > 0) dy += speed;
-                if (distY < 0) dy -= speed;
+                // Use Pathfinding
+                pathRecalculateTimer--;
+                if (pathRecalculateTimer <= 0) {
+                    int tileSize = gameMap.getTileSize();
+                    int startX = (int) ((x + size / 2) / tileSize);
+                    int startY = (int) ((y + size / 2) / tileSize);
+                    int targetX = (int) ((player.getX() + 6) / tileSize);
+                    int targetY = (int) ((player.getY() + 6) / tileSize);
+
+                    currentPath = Pathfinder.findPath(gameMap, startX, startY, targetX, targetY);
+                    pathRecalculateTimer = 20 + new Random().nextInt(20); // Jitter recalculation
+                }
+
+                if (currentPath != null && !currentPath.isEmpty()) {
+                    int[] nextTile = currentPath.get(0);
+                    int tileSize = gameMap.getTileSize();
+                    double targetPX = nextTile[0] * tileSize + tileSize / 2.0;
+                    double targetPY = nextTile[1] * tileSize + tileSize / 2.0;
+
+                    double diffX = targetPX - (x + size / 2);
+                    double diffY = targetPY - (y + size / 2);
+                    double diffDist = Math.sqrt(diffX * diffX + diffY * diffY);
+
+                    if (diffDist > 1.0) {
+                        moveDirX = diffX / diffDist;
+                        moveDirY = diffY / diffDist;
+                    }
+
+                    // Remove tile from path if reached or close enough
+                    if (diffDist < 5.0) {
+                        currentPath.remove(0);
+                    }
+                }
             }
 
-            // --- 3. Attack Logic ---
+            // 3. Separation behavior (don't clump together)
+            double sepX = 0;
+            double sepY = 0;
+            for (Enemy other : allEnemies) {
+                if (other == this) continue;
+                double dx = (this.x + size / 2) - (other.x + other.size / 2);
+                double dy = (this.y + size / 2) - (other.y + other.size / 2);
+                double d = Math.sqrt(dx * dx + dy * dy);
+                if (d < size && d > 0) {
+                    sepX += dx / d;
+                    sepY += dy / d;
+                }
+            }
+            moveDirX += sepX * 0.5;
+            moveDirY += sepY * 0.5;
+
+            // Normalize final movement vector if needed
+            double mag = Math.sqrt(moveDirX * moveDirX + moveDirY * moveDirY);
+            if (mag > 1.0) {
+                moveDirX /= mag;
+                moveDirY /= mag;
+            }
+
+            // --- 4. Attack Logic ---
             if (attackCooldown > 0) {
                 attackCooldown--;
-            } else if (distance < size + 5) { // Within attack range
+            } else if (distance < size + 5) {
                 player.takeDamage(damage);
-                attackCooldown = 60; // Attack once per second
+                attackCooldown = 60;
             }
         }
 
-        // --- 4. Apply movement with collision checks ---
-        if (dx != 0 && !isSolid(x + dx, y, gameMap)) {
-            x += dx;
+        // --- 5. Apply movement with collision checks ---
+        double nextX = x + moveDirX * speed;
+        double nextY = y + moveDirY * speed;
+
+        if (moveDirX != 0 && !isSolid(nextX, y, gameMap)) {
+            x = nextX;
         }
-        if (dy != 0 && !isSolid(x, y + dy, gameMap)) {
-            y += dy;
+        if (moveDirY != 0 && !isSolid(x, nextY, gameMap)) {
+            y = nextY;
         }
     }
 
