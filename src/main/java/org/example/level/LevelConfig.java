@@ -33,6 +33,14 @@ public class LevelConfig {
     public boolean hasRivers = true;
     /** The number of rivers to generate. */
     public int riverCount = 2;
+    /** Minimum bridges per river. */
+    public int bridgeMin = 1;
+    /** Maximum bridges per river. */
+    public int bridgeMax = 3;
+    /** Minimum width of a bridge (along the river). */
+    public int bridgeMinWidth = 2;
+    /** Maximum width of a bridge (along the river). */
+    public int bridgeMaxWidth = 4;
 
     /** The time in seconds until the Heavenly Punishment (Tribulation) begins. */
     public double tribulationTime = 60.0;

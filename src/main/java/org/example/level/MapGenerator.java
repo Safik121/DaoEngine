@@ -114,26 +114,175 @@ public class MapGenerator {
      * Generates curved rivers using a randomized A* pathfinding algorithm.
      */
     private static void generateRivers(Level level, LevelConfig config) {
+        List<List<int[]>> allPaths = new ArrayList<>();
+        List<Boolean> verticalFlags = new ArrayList<>();
+        List<boolean[]> inLakes = new ArrayList<>();
+        java.util.Set<String> bridgeCenters = new java.util.HashSet<>();
+
         for (int i = 0; i < config.riverCount; i++) {
             int startX, startY, endX, endY;
-            // Pick points on opposite edges
-            if (random.nextBoolean()) { // Top to Bottom
+            boolean isOverallVertical;
+            if (random.nextBoolean()) {
                 startX = random.nextInt(level.width - 40) + 20;
                 startY = 0;
                 endX = random.nextInt(level.width - 40) + 20;
                 endY = level.height - 1;
-            } else { // Left to Right
+                isOverallVertical = true;
+            } else {
                 startX = 0;
                 startY = random.nextInt(level.height - 40) + 20;
                 endX = level.width - 1;
                 endY = random.nextInt(level.height - 40) + 20;
+                isOverallVertical = false;
             }
 
             List<int[]> path = findRiverPath(level, startX, startY, endX, endY);
             if (path != null) {
-                for (int[] p : path) {
-                    // Draw a small blob along the path for variable width
-                    drawBlob(level, p[0], p[1], 1 + random.nextInt(2), 2);
+                allPaths.add(path);
+                verticalFlags.add(isOverallVertical);
+                
+                boolean[] inLake = new boolean[path.size()];
+                for (int j = 0; j < path.size(); j++) {
+                    int[] p = path.get(j);
+                    if (p[0] >= 0 && p[0] < level.width && p[1] >= 0 && p[1] < level.height) {
+                        inLake[j] = (level.data.get(p[1]).get(p[0]) == 2);
+                    }
+                }
+                inLakes.add(inLake);
+            }
+        }
+
+        // 1. Draw all rivers using a temporary tile type (6) to distinguish from lakes (2)
+        for (List<int[]> path : allPaths) {
+            for (int[] p : path) {
+                drawRiverBlob(level, p[0], p[1], 1 + random.nextInt(2), 6);
+            }
+        }
+
+        // 2. Draw all bridges
+        for (int i = 0; i < allPaths.size(); i++) {
+            List<int[]> path = allPaths.get(i);
+            boolean isOverallVertical = verticalFlags.get(i);
+            boolean[] inLake = inLakes.get(i);
+
+            int numBridges = config.bridgeMin + random.nextInt(config.bridgeMax - config.bridgeMin + 1);
+            int attempts = 0;
+            int bridgesPlaced = 0;
+            while (bridgesPlaced < numBridges && attempts < 50) {
+                attempts++;
+                if (path.size() < 40) break;
+                int idx = 20 + random.nextInt(path.size() - 40);
+                
+                if (idx < 0 || idx >= path.size() || inLake[idx]) continue;
+                
+                // Safe distance from lakes (check a window around idx along the path)
+                boolean nearLake = false;
+                for (int win = -10; win <= 10; win++) {
+                    int wIdx = idx + win;
+                    if (wIdx >= 0 && wIdx < inLake.length && inLake[wIdx]) {
+                        nearLake = true;
+                        break;
+                    }
+                }
+                if (nearLake) continue;
+                
+                int[] p = path.get(idx);
+                
+                // Prevent bridges from being too close together (on any river)
+                boolean tooClose = false;
+                for (String center : bridgeCenters) {
+                    String[] parts = center.split(",");
+                    int cx = Integer.parseInt(parts[0]);
+                    int cy = Integer.parseInt(parts[1]);
+                    if (Math.hypot(p[0] - cx, p[1] - cy) < 15) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if (tooClose) continue;
+
+                int bThickness = config.bridgeMinWidth + random.nextInt(config.bridgeMaxWidth - config.bridgeMinWidth + 1);
+                int estRiverWidth = 5; 
+                int span = (3 * estRiverWidth + 2) / 2;
+                
+                // If river is overall vertical, bridge is horizontal. If horizontal, bridge is vertical.
+                if (drawBridgeSafe(level, p[0], p[1], bThickness, span, !isOverallVertical)) {
+                    bridgeCenters.add(p[0] + "," + p[1]);
+                    bridgesPlaced++;
+                }
+            }
+        }
+
+        // 3. Convert all temporary river tiles (6) back to water (2)
+        for (int y = 0; y < level.height; y++) {
+            List<Integer> row = level.data.get(y);
+            for (int x = 0; x < level.width; x++) {
+                if (row.get(x) == 6) {
+                    row.set(x, 2);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws a solid bridge ONLY if it doesn't overlap with a lake (type 2).
+     */
+    private static boolean drawBridgeSafe(Level level, int x, int y, int thickness, int span, boolean orientationVertical) {
+        // First check for lakes with a 1-pixel safety margin to account for jagged boundaries
+        int margin = 1;
+        if (orientationVertical) {
+            for (int ty = y - span - margin; ty <= y + span + margin; ty++) {
+                for (int tx = x - (thickness - 1) / 2 - margin; tx <= x + thickness / 2 + margin; tx++) {
+                    if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                        if (level.data.get(ty).get(tx) == 2) return false;
+                    }
+                }
+            }
+        } else {
+            for (int tx = x - span - margin; tx <= x + span + margin; tx++) {
+                for (int ty = y - (thickness - 1) / 2 - margin; ty <= y + thickness / 2 + margin; ty++) {
+                    if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                        if (level.data.get(ty).get(tx) == 2) return false;
+                    }
+                }
+            }
+        }
+
+        // No lakes found, draw the bridge
+        if (orientationVertical) {
+            for (int ty = y - span; ty <= y + span; ty++) {
+                for (int tx = x - (thickness - 1) / 2; tx <= x + thickness / 2; tx++) {
+                    if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                        level.data.get(ty).set(tx, 5);
+                    }
+                }
+            }
+        } else {
+            for (int tx = x - span; tx <= x + span; tx++) {
+                for (int ty = y - (thickness - 1) / 2; ty <= y + thickness / 2; ty++) {
+                    if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                        level.data.get(ty).set(tx, 5);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Specialized blob drawer for rivers that does not overwrite lake tiles (2).
+     */
+    private static void drawRiverBlob(Level level, int cx, int cy, int size, int type) {
+        for (int ty = cy - size; ty <= cy + size; ty++) {
+            for (int tx = cx - size; tx <= cx + size; tx++) {
+                if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                    double distSq = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
+                    if (distSq <= size * size) {
+                        // Only set if not already a lake (2)
+                        if (level.data.get(ty).get(tx) != 2) {
+                            level.data.get(ty).set(tx, type);
+                        }
+                    }
                 }
             }
         }

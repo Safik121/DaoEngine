@@ -285,6 +285,7 @@ public class PlayState implements GameState {
                 else if (tile == 3) c = Color.CYAN; // Spirit Vein
                 else if (tile == 4) c = Color.FORESTGREEN; // Variety
                 else if (tile == 1) c = Color.DARKGRAY; // Wall/Obstacle
+                else if (tile == 5) c = Color.SADDLEBROWN; // Bridge
                 pw.setColor(x, y, c);
             }
         }
@@ -443,6 +444,7 @@ public class PlayState implements GameState {
                 else if (tileType == 2) gc.setFill(Color.BLUE);
                 else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
                 else if (tileType == 4) gc.setFill(Color.DARKGREEN.deriveColor(0, 1, 0.8, 1)); // Lighter green for variety
+                else if (tileType == 5) gc.setFill(Color.SADDLEBROWN); // Bridge
                 else gc.setFill(Color.DARKGREEN);
                 
                 gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);

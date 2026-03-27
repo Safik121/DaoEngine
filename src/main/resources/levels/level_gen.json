@@ -11,5 +11,9 @@
   "lakeSize": 20,
   "hasRivers": true,
   "riverCount": 3,
+  "bridgeMin": 1,
+  "bridgeMax": 2,
+  "bridgeMinWidth": 3,
+  "bridgeMaxWidth": 5,
   "tribulationTime": 120.0
 }
