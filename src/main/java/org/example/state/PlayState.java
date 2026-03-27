@@ -12,6 +12,7 @@ import org.example.Input;
 import org.example.entity.Enemy;
 import org.example.entity.Player;
 import org.example.entity.Projectile;
+import org.example.entity.LightningStrike;
 import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
@@ -49,6 +50,10 @@ public class PlayState implements GameState {
     private boolean inTribulation = false;
     /** Timer for periodic enemy spawning during Tribulation. */
     private double tribulationSpawnTimer = 0;
+    /** Timer for periodic lightning strikes during Tribulation. */
+    private double lightningTimer = 0;
+    /** List of all active lightning strikes during Tribulation. */
+    private List<LightningStrike> activeStrikes = new ArrayList<>();
 
     /** Flag indicating if the game logic is currently paused. */
     private boolean isPaused = false;
@@ -62,6 +67,8 @@ public class PlayState implements GameState {
     private boolean showFullMap = false;
     /** Input buffer to detect 'M' key releases. */
     private boolean mapWasPressed = false;
+    /** Input buffer to detect 'E' key releases. */
+    private boolean eWasPressed = false;
 
     /** Cached image of the map background for performance. */
     private WritableImage mapCache;
@@ -112,6 +119,7 @@ public class PlayState implements GameState {
         enemies = new ArrayList<>();
         itemsOnGround = new ArrayList<>();
         projectiles = new ArrayList<>();
+        activeStrikes = new ArrayList<>();
         spawnInitialEnemies();
         spawnInitialItems();
         addTestItems();
@@ -204,6 +212,7 @@ public class PlayState implements GameState {
             // Full map interactions could go here
         } else {
             handleHotbarSelection();
+            handleWorldInteraction();
             handleGameplayLogic(deltaTime);
             updateCamera();
         }
@@ -213,41 +222,32 @@ public class PlayState implements GameState {
 
     /**
      * Handles interaction with objects in the game world (e.g., picking up items).
+     * Now triggered by the 'E' key and uses proximity check for the nearest item.
      */
     private void handleWorldInteraction() {
-        boolean rmbPressed = Input.isRmbPressed();
-        if (rmbPressed && !rmbWasPressed) {
-            double mx = Input.getMouseX();
-            double my = Input.getMouseY();
+        boolean ePressed = Input.isKeyPressed(KeyCode.E);
+        if (ePressed && !eWasPressed) {
+            WorldItem bestItem = null;
+            double minDist = 150.0; // Reach limit
 
-            WorldItem toPick = null;
             for (WorldItem wi : itemsOnGround) {
-                // Adjust mouse coordinates for camera offset when checking world items
-                double worldMx = mx + cameraX;
-                double worldMy = my + cameraY;
-
-                if (wi.isClicked(worldMx, worldMy)) {
-                    // Check distance (optional, but let's allow "infinite" reach for now or small
-                    // limit)
-                    double dx = wi.getX() - player.getX();
-                    double dy = wi.getY() - player.getY();
-                    if (Math.sqrt(dx * dx + dy * dy) < 150) { // Reach limit
-                        toPick = wi;
-                        break;
-                    }
+                double dist = Math.sqrt(Math.pow(wi.getX() - player.getX(), 2) + Math.pow(wi.getY() - player.getY(), 2));
+                if (dist < minDist) {
+                    minDist = dist;
+                    bestItem = wi;
                 }
             }
 
-            if (toPick != null) {
-                if (player.getInventory().addItem(toPick.getItem())) {
-                    itemsOnGround.remove(toPick);
-                    System.out.println("Picked up: " + toPick.getItem().getName());
+            if (bestItem != null) {
+                if (player.getInventory().addItem(bestItem.getItem())) {
+                    itemsOnGround.remove(bestItem);
+                    System.out.println("Picked up: " + bestItem.getItem().getName());
                 } else {
                     System.out.println("Inventory full!");
                 }
             }
         }
-        rmbWasPressed = rmbPressed;
+        eWasPressed = ePressed;
     }
 
     private void handleToggles() {
@@ -284,7 +284,7 @@ public class PlayState implements GameState {
         if (Input.isKeyPressed(KeyCode.DIGIT5))
             player.setActiveHotbarSlot(4);
 
-        if (Input.isKeyPressed(KeyCode.E)) {
+        if (Input.isKeyPressed(KeyCode.F)) {
             Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
             if (activeItem != null)
                 activeItem.use();
@@ -367,12 +367,55 @@ public class PlayState implements GameState {
         } else {
             tribulationSpawnTimer -= deltaTime;
             if (tribulationSpawnTimer <= 0) {
-                double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
-                if (pos != null)
-                    enemies.add(new Enemy(pos[0], pos[1], true));
-                tribulationSpawnTimer = 3.0; // Seconds
+                spawnEnemyNearPlayer();
+                tribulationSpawnTimer = 2.0;
+            }
+
+            lightningTimer -= deltaTime;
+            if (lightningTimer <= 0) {
+                // Target player's current position to force movement
+                double lx = player.getX() + 6; // Center on player
+                double ly = player.getY() + 6; 
+                activeStrikes.add(new LightningStrike(lx, ly));
+                lightningTimer = 1.0 + Math.random() * 2.0; // Slightly slower: 1.0 - 3.0s
             }
         }
+
+        // Update Lightning Strikes
+        for (int i = activeStrikes.size() - 1; i >= 0; i--) {
+            LightningStrike strike = activeStrikes.get(i);
+            strike.update(deltaTime);
+
+            if (strike.isDealingDamage()) {
+                // Damage player
+                double distP = Math.sqrt(Math.pow(strike.getX() - player.getX(), 2) + Math.pow(strike.getY() - player.getY(), 2));
+                if (distP < strike.getRadius()) {
+                    player.takeDamage(20);
+                }
+                // Damage enemies
+                for (Enemy e : enemies) {
+                    double distE = Math.sqrt(Math.pow(strike.getX() - e.getX(), 2) + Math.pow(strike.getY() - e.getY(), 2));
+                    if (distE < strike.getRadius()) {
+                        e.takeDamage(40);
+                    }
+                }
+                strike.markDamaged();
+            }
+
+            if (strike.isExpired()) {
+                activeStrikes.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Spawns a single enemy at a random location away from the player.
+     * Used during the Tribulation phase.
+     */
+    private void spawnEnemyNearPlayer() {
+        double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
+        if (pos != null)
+            enemies.add(new Enemy(pos[0], pos[1], true));
     }
 
     /**
@@ -468,9 +511,13 @@ public class PlayState implements GameState {
             enemy.render(gc, cameraX, cameraY);
         }
 
-        for (Projectile p : projectiles) {
+        // Projectiles
+        for (Projectile p : projectiles)
             p.render(gc, cameraX, cameraY);
-        }
+
+        // Lightning Strikes
+        for (LightningStrike strike : activeStrikes)
+            strike.render(gc, cameraX, cameraY);
 
         player.render(gc, cameraX, cameraY);
 
@@ -530,6 +577,14 @@ public class PlayState implements GameState {
         double scale = mapSize / currentLevel.width;
         int ts = currentLevel.tileSize;
 
+        // Items
+        gc.setFill(Color.GOLD);
+        for (org.example.item.WorldItem wi : itemsOnGround) {
+            double ix = x + (wi.getX() / ts) * scale;
+            double iy = y + (wi.getY() / ts) * scale;
+            gc.fillOval(ix - 1.25, iy - 1.25, 2.5, 2.5);
+        }
+
         // Enemies
         gc.setFill(Color.RED);
         for (Enemy e : enemies) {
@@ -584,6 +639,14 @@ public class PlayState implements GameState {
         // Entities
         double scale = mapSize / currentLevel.width;
         int ts = currentLevel.tileSize;
+
+        // Items
+        gc.setFill(Color.GOLD);
+        for (org.example.item.WorldItem wi : itemsOnGround) {
+            double ix = x + (wi.getX() / ts) * scale;
+            double iy = y + (wi.getY() / ts) * scale;
+            gc.fillOval(ix - 2, iy - 2, 4, 4);
+        }
 
         // Enemies
         gc.setFill(Color.RED);
