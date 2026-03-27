@@ -190,22 +190,25 @@ public class PlayState implements GameState {
      * Main update routine called every frame.
      * Manages input toggles, logic transitions, camera, and specific interaction
      * modes.
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
     @Override
-    public void update() {
-        handleToggles();
+    public void update(double deltaTime) {
         if (isPaused)
             return;
 
         if (inventoryOpen) {
             handleInventoryInteraction();
-            return;
+        } else if (showFullMap) {
+            // Full map interactions could go here
+        } else {
+            handleHotbarSelection();
+            handleGameplayLogic(deltaTime);
+            updateCamera();
         }
 
-        handleHotbarSelection();
-        handleGameplayLogic();
-        handleWorldInteraction();
-        updateCamera();
+        handleToggles();
     }
 
     /**
@@ -320,21 +323,23 @@ public class PlayState implements GameState {
     /**
      * Core gameplay logic update.
      * Manages player/enemy updates, death checks, and Tribulation timers.
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    private void handleGameplayLogic() {
+    private void handleGameplayLogic(double deltaTime) {
         if (player.getHp() <= 0) {
             resetLevel();
             return;
         }
 
-        player.update(currentLevel);
+        player.update(currentLevel, deltaTime);
         for (Enemy enemy : enemies)
-            enemy.update(gameMap, player, enemies);
+            enemy.update(gameMap, player, enemies, deltaTime);
 
         // Update Projectiles
         for (int i = projectiles.size() - 1; i >= 0; i--) {
             Projectile p = projectiles.get(i);
-            p.update(gameMap);
+            p.update(gameMap, deltaTime);
 
             // Collision with enemies
             for (Enemy enemy : enemies) {
@@ -356,16 +361,16 @@ public class PlayState implements GameState {
         enemies.removeIf(Enemy::isDead);
 
         if (!inTribulation) {
-            currentTime -= 1.0 / 60.0;
+            currentTime -= deltaTime;
             if (currentTime <= 0)
                 triggerTribulation();
         } else {
-            tribulationSpawnTimer -= 1.0 / 60.0;
+            tribulationSpawnTimer -= deltaTime;
             if (tribulationSpawnTimer <= 0) {
                 double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
                 if (pos != null)
                     enemies.add(new Enemy(pos[0], pos[1], true));
-                tribulationSpawnTimer = 3.0;
+                tribulationSpawnTimer = 3.0; // Seconds
             }
         }
     }

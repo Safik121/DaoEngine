@@ -11,12 +11,14 @@ import javafx.scene.text.Font;
 public class MenuState implements GameState {
 
     /**
-     * Updates the menu state.
-     * Currently, no logic updates are needed for the menu.
+     * Updates the menu logic.
+     * Currently primarily handles waiting for the user to press ENTER.
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
     @Override
-    public void update() {
-        // No logic updates for now
+    public void update(double deltaTime) {
+        // Menu updates (e.g., animations) could go here
     }
 
     /**

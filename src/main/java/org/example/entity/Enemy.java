@@ -4,8 +4,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.example.level.GameMap;
 import org.example.level.Pathfinder;
-
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -41,7 +41,7 @@ public class Enemy {
     private int pathRecalculateTimer = 0;
 
     /** Cooldown timer between attacks on the player. */
-    private int attackCooldown = 0;
+    private double attackCooldown = 0;
 
     /**
      * Constructs a new Enemy at the specified position.
@@ -74,8 +74,9 @@ public class Enemy {
      * @param gameMap Game map for collision checks and pathfinding.
      * @param player Reference to the player for tracking and attacking.
      * @param allEnemies List of all enemies for separation behavior.
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    public void update(GameMap gameMap, Player player, List<Enemy> allEnemies) {
+    public void update(GameMap gameMap, Player player, List<Enemy> allEnemies, double deltaTime) {
         // 1. Calculate distance to player
         double distX = player.getX() + 6 - (this.x + size / 2);
         double distY = player.getY() + 6 - (this.y + size / 2);
@@ -154,16 +155,17 @@ public class Enemy {
 
             // --- 4. Attack Logic ---
             if (attackCooldown > 0) {
-                attackCooldown--;
+                attackCooldown -= (deltaTime * 60.0);
             } else if (distance < size + 5) {
                 player.takeDamage(damage);
-                attackCooldown = 60;
+                attackCooldown = 60.0;
             }
         }
 
         // --- 5. Apply movement with collision checks ---
-        double nextX = x + moveDirX * speed;
-        double nextY = y + moveDirY * speed;
+        double dtFactor = deltaTime * 60.0;
+        double nextX = x + moveDirX * speed * dtFactor;
+        double nextY = y + moveDirY * speed * dtFactor;
 
         if (moveDirX != 0 && !isSolid(nextX, y, gameMap)) {
             x = nextX;
@@ -231,6 +233,7 @@ public class Enemy {
     public double getY() { return y; }
     /** @return Enemy's hitbox size in pixels. */
     public double getSize() { return size; }
+    /** @return Current HP of the enemy. */
     /** @return Current HP of the enemy. */
     public int getHP() { return hp; }
     /** @return Maximum HP of the enemy. */

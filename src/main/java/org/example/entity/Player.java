@@ -36,7 +36,7 @@ public class Player {
     /** Current active slot in the hotbar (0-4). */
     private int activeHotbarSlot = 0;
     /** Current attack cooldown in frames. */
-    private int attackCooldown = 0;
+    private double attackCooldown = 0;
 
     /**
      * Constructs a new Player at the specified starting position.
@@ -54,12 +54,12 @@ public class Player {
     }
 
     /**
-     * Updates the player's position and handles collisions based on the current level.
-     * Also processes meditation logic.
+     * Updates the player's movement and cooldowns based on input.
      * 
-     * @param level The current game level used for collision checks.
+     * @param level The current level data for collision checks.
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    public void update(Level level) {
+    public void update(Level level, double deltaTime) {
         // --- 1. Meditation Logic ---
         isMeditating = Input.isKeyPressed(KeyCode.SPACE);
         
@@ -80,16 +80,24 @@ public class Player {
 
         double speed = 3.0;
         if (tileType == 2) speed *= 0.5; // Water slow
-        if (tileType == 3 && qi < maxQi) qi += 0.05; // Spirit Vein regen
+        if (tileType == 3 && qi < maxQi) qi += 0.05 * (deltaTime * 60.0); // Spirit Vein regen
 
-        double dx = 0; // Planned movement on the X axis
-        double dy = 0; // Planned movement on the Y axis
+        double moveX = 0;
+        double moveY = 0;
 
-        // Determine intended movement direction
-        if (Input.isKeyPressed(KeyCode.W)) dy -= speed;
-        if (Input.isKeyPressed(KeyCode.S)) dy += speed;
-        if (Input.isKeyPressed(KeyCode.A)) dx -= speed;
-        if (Input.isKeyPressed(KeyCode.D)) dx += speed;
+        if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.UP)) moveY -= 1;
+        if (Input.isKeyPressed(KeyCode.S) || Input.isKeyPressed(KeyCode.DOWN)) moveY += 1;
+        if (Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.LEFT)) moveX -= 1;
+        if (Input.isKeyPressed(KeyCode.D) || Input.isKeyPressed(KeyCode.RIGHT)) moveX += 1;
+
+        if (moveX != 0 || moveY != 0) {
+            double length = Math.sqrt(moveX * moveX + moveY * moveY);
+            moveX /= length;
+            moveY /= length;
+        }
+
+        double dx = moveX * speed * (deltaTime * 60.0);
+        double dy = moveY * speed * (deltaTime * 60.0);
 
         // Apply movement on the X axis if no wall is present
         if (!isSolid(x + dx, y, level)) {
@@ -101,7 +109,7 @@ public class Player {
             y += dy;
         }
 
-        updateCooldowns();
+        updateCooldowns(deltaTime);
     }
 
     /**
@@ -205,14 +213,19 @@ public class Player {
      * @param seconds Cooldown time in seconds.
      */
     public void setAttackCooldown(double seconds) {
-        this.attackCooldown = (int)(seconds * 60);
+        this.attackCooldown = seconds * 60.0; // Changed to double
     }
 
     /**
-     * Updates internal entity cooldowns.
+     * Updates the player's cooldown timers (attack, etc.).
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    private void updateCooldowns() {
-        if (attackCooldown > 0) attackCooldown--;
+    private void updateCooldowns(double deltaTime) {
+        if (attackCooldown > 0) {
+            attackCooldown -= (deltaTime * 60.0);
+            if (attackCooldown < 0) attackCooldown = 0;
+        }
     }
 
     /**

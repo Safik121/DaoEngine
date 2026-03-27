@@ -9,9 +9,10 @@ import javafx.scene.canvas.GraphicsContext;
 public interface GameState {
     /**
      * Updates the internal logic of the game state.
-     * This method is called once per frame in the game loop.
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    void update();
+    void update(double deltaTime);
 
     /**
      * Renders the visual elements of the game state.

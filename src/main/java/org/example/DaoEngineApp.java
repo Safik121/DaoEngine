@@ -25,6 +25,8 @@ public class DaoEngineApp extends Application {
     /** The fixed height of the game window in pixels. */
     private static final int HEIGHT = 768;
 
+    /** NanoTime of the previous frame for delta time calculation. */
+    private long lastNanoTime = 0;
     /** Current active game state. */
     private GameState currentState;
 
@@ -82,7 +84,18 @@ public class DaoEngineApp extends Application {
         AnimationTimer gameLoop = new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
-                update();
+                if (lastNanoTime == 0) {
+                    lastNanoTime = currentNanoTime;
+                    return;
+                }
+
+                double deltaTime = (currentNanoTime - lastNanoTime) / 1_000_000_000.0;
+                lastNanoTime = currentNanoTime;
+
+                // Cap delta time to avoid huge jumps (e.g., during window move or freeze)
+                if (deltaTime > 0.1) deltaTime = 0.1;
+
+                update(deltaTime);
                 render(gc);
             }
         };
@@ -95,11 +108,13 @@ public class DaoEngineApp extends Application {
 
     /**
      * Updates the current game state's logic.
+     * 
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    private void update() {
+    private void update(double deltaTime) {
         // Delegate update call to the active state
         if (currentState != null) {
-            currentState.update();
+            currentState.update(deltaTime);
         }
     }
 

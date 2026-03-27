@@ -61,13 +61,15 @@ public class Projectile {
      * Standard projectiles move by velocity, while Beams remain fixed in duration.
      * 
      * @param gameMap Used to check for collisions with solid terrain.
+     * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    public void update(GameMap gameMap) {
+    public void update(GameMap gameMap, double deltaTime) {
+        double dtFactor = deltaTime * 60.0;
         if (type != WeaponConfig.ProjectileType.BEAM) {
-            x += vx;
-            y += vy;
+            x += vx * dtFactor;
+            y += vy * dtFactor;
         }
-        lifeSpan -= 1.0 / 60.0;
+        lifeSpan -= deltaTime;
         if (lifeSpan <= 0) active = false;
 
         // Wall collision (beams ignore walls for now for simplicity)
