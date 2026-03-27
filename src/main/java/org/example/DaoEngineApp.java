@@ -20,7 +20,9 @@ import org.example.state.PlayState;
  */
 public class DaoEngineApp extends Application {
 
+    /** The fixed width of the game window in pixels. */
     private static final int WIDTH = 1024;
+    /** The fixed height of the game window in pixels. */
     private static final int HEIGHT = 768;
 
     /** Current active game state. */

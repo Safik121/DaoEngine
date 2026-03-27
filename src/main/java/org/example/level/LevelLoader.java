@@ -12,7 +12,7 @@ public class LevelLoader {
     /**
      * Loads a level from the specified JSON file path.
      * 
-     * @param filePath The path to the level JSON file in the resources folder.
+     * @param filePath The path to the level JSON file in the resources folder (e.g., "/levels/level1.json").
      * @return The loaded Level object, or null if an error occurred.
      */
     public static Level loadLevel(String filePath) {

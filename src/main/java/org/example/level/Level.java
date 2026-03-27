@@ -15,6 +15,6 @@ public class Level {
     public int height;
     /** The size of each tile in pixels. */
     public int tileSize;
-    /** The grid data representing the world layout (0 = grass, 1 = wall). */
+    /** The grid data representing the world layout (0 = grass, 1 = wall, 2 = water, 3 = spirit vein). */
     public List<List<Integer>> data;
 }

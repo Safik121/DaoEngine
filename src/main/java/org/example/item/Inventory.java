@@ -7,16 +7,24 @@ import java.util.List;
  * Manages a collection of items, divided into a main inventory and a hotbar.
  */
 public class Inventory {
+    /** Number of slots in the main inventory grid. */
     private static final int MAIN_SLOTS = 25;
+    /** Number of slots in the quick-access hotbar. */
     private static final int HOTBAR_SLOTS = 5;
 
+    /** Array holding items in the main inventory. */
     private Item[] mainInventory;
+    /** Array holding items in the hotbar. */
     private Item[] hotbar;
 
-    // Crafting system: 2 inputs, 1 result
+    /** Current input items for the crafting station. */
     private Item[] craftingInputs;
+    /** The resulting item produced by valid crafting inputs. */
     private Item craftingResult;
 
+    /**
+     * Initializes a new inventory with empty slots and no crafting result.
+     */
     public Inventory() {
         mainInventory = new Item[MAIN_SLOTS];
         hotbar = new Item[HOTBAR_SLOTS];
@@ -27,6 +35,9 @@ public class Inventory {
     /**
      * Attempts to add an item to the first available slot.
      * Checks hotbar first, then main inventory.
+     * 
+     * @param item The item to add.
+     * @return True if the item was added, false if the inventory is full.
      */
     public boolean addItem(Item item) {
         for (int i = 0; i < HOTBAR_SLOTS; i++) {
@@ -44,18 +55,33 @@ public class Inventory {
         return false;
     }
 
+    /**
+     * Retrieves an item from the main inventory.
+     * 
+     * @param index Slot index.
+     * @return The item at the index, or null if empty/out of bounds.
+     */
     public Item getItemInMain(int index) {
         if (index >= 0 && index < MAIN_SLOTS)
             return mainInventory[index];
         return null;
     }
 
+    /**
+     * Retrieves an item from the hotbar.
+     * 
+     * @param index Hotbar index.
+     * @return The item at the index, or null if empty/out of bounds.
+     */
     public Item getItemInHotbar(int index) {
         if (index >= 0 && index < HOTBAR_SLOTS)
             return hotbar[index];
         return null;
     }
 
+    /**
+     * @return The total number of slots in the main inventory.
+     */
     public int getMainSlotsCount() {
         return MAIN_SLOTS;
     }
@@ -140,7 +166,11 @@ public class Inventory {
         return craftingResult;
     }
 
-    /** @param item Programmatically set the crafting result (for testing). */
+    /**
+     * Programmatically sets the crafting result (primarily for testing purposes).
+     * 
+     * @param item The item to set as the result.
+     */
     public void setCraftingResult(Item item) {
         this.craftingResult = item;
     }

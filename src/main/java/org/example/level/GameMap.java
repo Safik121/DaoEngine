@@ -29,11 +29,11 @@ public class GameMap {
     }
 
     /**
-     * Checks if a tile at the given coordinates is solid (a wall).
+     * Checks if a tile at the given grid coordinates is solid (a wall).
      * 
-     * @param x Tile X coordinate.
-     * @param y Tile Y coordinate.
-     * @return true if solid or out of bounds, false otherwise.
+     * @param x Tile X grid coordinate.
+     * @param y Tile Y grid coordinate.
+     * @return true if the tile is solid or out of bounds, false otherwise.
      */
     public boolean isSolid(int x, int y) {
         if (level == null || level.data == null) return true;
@@ -42,7 +42,7 @@ public class GameMap {
     }
 
     /**
-     * Returns the size of a single tile in pixels.
+     * @return The size of a single tile in pixels (as defined by the level config).
      */
     public int getTileSize() {
         return level.tileSize;

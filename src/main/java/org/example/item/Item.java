@@ -19,9 +19,13 @@ public class Item {
         MISC
     }
 
+    /** Unique identifier for the item (used for internal logic). */
     private String id;
+    /** Display name of the item shown to the player. */
     private String name;
+    /** Descriptive text explaining the item's purpose. */
     private String description;
+    /** The general category of the item. */
     private Type type;
 
     /**

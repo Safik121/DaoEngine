@@ -31,21 +31,35 @@ import javafx.scene.text.Font;
  */
 public class PlayState implements GameState {
 
+    /** The current level data being played. */
     private Level currentLevel;
+    /** Spatial manager for the current level. */
     private GameMap gameMap;
+    /** The player entity. */
     private Player player;
+    /** List of all active enemies in the level. */
     private List<Enemy> enemies;
 
+    /** Maximum time before a Tribulation starts (in seconds). */
     private double maxTime = 60.0;
+    /** Remaining time before the next Tribulation phase. */
     private double currentTime = maxTime;
+    /** Flag indicating if a Tribulation event is currently active. */
     private boolean inTribulation = false;
+    /** Timer for periodic enemy spawning during Tribulation. */
     private double tribulationSpawnTimer = 0;
 
+    /** Flag indicating if the game logic is currently paused. */
     private boolean isPaused = false;
+    /** Input buffer to detect ESC key releases. */
     private boolean escWasPressed = false;
+    /** Toggle for the inventory/crafting UI overlay. */
     private boolean inventoryOpen = false;
+    /** Input buffer to detect 'I' key releases. */
     private boolean inventoryWasPressed = false;
+    /** Toggle for the full-screen world map overlay. */
     private boolean showFullMap = false;
+    /** Input buffer to detect 'M' key releases. */
     private boolean mapWasPressed = false;
 
     /** Cached image of the map background for performance. */
@@ -62,12 +76,18 @@ public class PlayState implements GameState {
     private final int screenHeight = 768;
 
     // --- DRAG & DROP STATE ---
+    /** The item currently being dragged by the mouse. */
     private Item draggedItem = null;
+    /** The inventory array from which the item was taken. */
     private Item[] sourceArr = null;
+    /** The original index of the dragged item in its source array. */
     private int sourceIdx = -1;
+    /** Input buffer for the Left Mouse Button. */
     private boolean lmbWasPressed = false;
+    /** Input buffer for the Right Mouse Button. */
     private boolean rmbWasPressed = false;
 
+    /** List of items dropped on the ground in the game world. */
     private List<WorldItem> itemsOnGround;
 
     public PlayState() {
@@ -110,6 +130,9 @@ public class PlayState implements GameState {
         if (cameraY > mapHeightPx - screenHeight) cameraY = mapHeightPx - screenHeight;
     }
 
+    /**
+     * Spawns initial items on the ground at random valid positions.
+     */
     private void spawnInitialItems() {
         // Spawn some items on the ground for testing
         double[] pos1 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 100);
@@ -119,6 +142,9 @@ public class PlayState implements GameState {
         if (pos2 != null) itemsOnGround.add(new WorldItem(new Item("mat_hammer_01", "Rusty Hammer", "Crafting material.", Item.Type.CRAFTING), pos2[0], pos2[1]));
     }
 
+    /**
+     * Spawns initial enemies at random valid positions away from the player.
+     */
     private void spawnInitialEnemies() {
         for (int i = 0; i < 50; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(12, player.getX(), player.getY(), 200);
@@ -128,6 +154,9 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Adds initial starting items to the player's inventory for testing.
+     */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
             player.getInventory().addItem(new Item("sword_01", "Rusty Flying Sword", "A weathered cultivation tool.", Item.Type.WEAPON));
@@ -135,6 +164,10 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Main update routine called every frame.
+     * Manages input toggles, logic transitions, camera, and specific interaction modes.
+     */
     @Override
     public void update() {
         handleToggles();
@@ -151,6 +184,9 @@ public class PlayState implements GameState {
         updateCamera();
     }
 
+    /**
+     * Handles interaction with objects in the game world (e.g., picking up items).
+     */
     private void handleWorldInteraction() {
         boolean rmbPressed = Input.isRmbPressed();
         if (rmbPressed && !rmbWasPressed) {
@@ -219,6 +255,10 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Core gameplay logic update.
+     * Manages player/enemy updates, death checks, and Tribulation timers.
+     */
     private void handleGameplayLogic() {
         if (player.getHp() <= 0) {
             resetLevel();
@@ -241,6 +281,9 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Activates the Tribulation phase, increasing difficulty and spawning dangerous enemies.
+     */
     private void triggerTribulation() {
         inTribulation = true;
         for (int i = 0; i < 2; i++) {
@@ -250,6 +293,10 @@ public class PlayState implements GameState {
         tribulationSpawnTimer = 3.0;
     }
 
+    /**
+     * Completely resets the level by regenerating the map and resetting entity states.
+     * Triggered on player death.
+     */
     private void resetLevel() {
         inTribulation = false;
         currentTime = maxTime;
@@ -270,6 +317,10 @@ public class PlayState implements GameState {
         generateMapCache();
     }
 
+    /**
+     * Generates a 1:1 pixel representation of the map for minimap rendering.
+     * Colors each pixel based on the underlying tile type.
+     */
     private void generateMapCache() {
         if (currentLevel == null || currentLevel.data == null) return;
         int w = currentLevel.width;
@@ -339,6 +390,12 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Renders a small minimap in the top-right corner.
+     * Shows the explored map area and active entities (Player/Enemies).
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
     private void renderMinimap(GraphicsContext gc) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
@@ -379,6 +436,12 @@ public class PlayState implements GameState {
         gc.fillOval(px - 2, py - 2, 4, 4);
     }
 
+    /**
+     * Renders a full-screen interactive world map.
+     * Dimens the background and provides higher detail than the minimap.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
     private void renderFullMap(GraphicsContext gc) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
@@ -427,6 +490,12 @@ public class PlayState implements GameState {
         gc.fillOval(px - 4, py - 4, 8, 8);
     }
 
+    /**
+     * Renders the visible portion of the game map (Tiles).
+     * Implements basic frustum culling for performance on large maps.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
     private void renderMap(GraphicsContext gc) {
         if (currentLevel == null || currentLevel.data == null) return;
         int tileSize = currentLevel.tileSize;
@@ -455,6 +524,12 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Renders the Heads-Up Display (HUD).
+     * Shows HP bars, Qi bars, and time/status labels.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
     private void renderHUD(GraphicsContext gc) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
@@ -493,6 +568,13 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Renders the active hotbar at the bottom of the screen.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     * @param w Canvas width.
+     * @param h Canvas height.
+     */
     private void drawHotbar(GraphicsContext gc, double w, double h) {
         double slotSize = 60, padding = 10, totalWidth = 5 * slotSize + 4 * padding;
         double startX = (w - totalWidth) / 2.0, startY = h - 85;
@@ -517,6 +599,13 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Renders the full inventory and crafting overlay.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     * @param w Canvas width.
+     * @param h Canvas height.
+     */
     private void drawInventory(GraphicsContext gc, double w, double h) {
         gc.setFill(Color.color(0, 0, 0, 0.75));
         gc.fillRect(0, 0, w, h);
@@ -561,6 +650,16 @@ public class PlayState implements GameState {
         gc.fillText("=", cX + slotSize + 30, resY + 55);
     }
 
+    /**
+     * Renders an individual item slot in the inventory.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     * @param x Slot X.
+     * @param y Slot Y.
+     * @param size Slot size.
+     * @param item Item in the slot (can be null).
+     * @param borderColor Color of the slot border.
+     */
     private void drawSlot(GraphicsContext gc, double x, double y, double size, Item item, Color borderColor) {
         gc.setFill(Color.rgb(40, 40, 45));
         gc.fillRect(x, y, size, size);
@@ -570,6 +669,16 @@ public class PlayState implements GameState {
         if (item != null) drawItemIcon(gc, x, y, size, item, Color.ORANGE);
     }
 
+    /**
+     * Helper to draw a simplified icon/box representing an item.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     * @param x Icon X.
+     * @param y Icon Y.
+     * @param size Icon size.
+     * @param item Item to represent.
+     * @param color Base color for the icon box.
+     */
     private void drawItemIcon(GraphicsContext gc, double x, double y, double size, Item item, Color color) {
         gc.setFill(color);
         gc.fillRect(x + 5, y + 5, size - 10, size - 10);
@@ -580,6 +689,9 @@ public class PlayState implements GameState {
         gc.fillText(name, x + 5, y + size - 12);
     }
 
+    /**
+     * Manages logic for inventory interactions (clicking, 시작 dragging).
+     */
     private void handleInventoryInteraction() {
         double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768; // Hardcoded for logic consistency
         boolean lmbPressed = Input.isLmbPressed();
@@ -635,6 +747,10 @@ public class PlayState implements GameState {
         lmbWasPressed = lmbPressed;
     }
 
+    /**
+     * Manages logic for dropping a dragged item into a slot.
+     * Performs boundary checks for all clickable UI elements.
+     */
     private void handleDrop(double mx, double my, double w, double h, double px, double py, double pw, double ph, double ss, double pd, double sx, double sy) {
         boolean dropped = false;
         // Main
@@ -670,10 +786,25 @@ public class PlayState implements GameState {
         draggedItem = null; sourceArr = null; sourceIdx = -1;
     }
 
+    /**
+     * Utility to check if a point is within a square area.
+     * 
+     * @param mx Point X.
+     * @param my Point Y.
+     * @param x Area X.
+     * @param y Area Y.
+     * @param s Area size.
+     * @return true if (mx, my) is inside the area.
+     */
     private boolean isInside(double mx, double my, double x, double y, double s) {
         return mx >= x && mx <= x + s && my >= y && my <= y + s;
     }
 
+    /**
+     * Renders the item box following the mouse cursor during a drag operation.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
     private void drawDraggedItem(GraphicsContext gc) {
         double mx = Input.getMouseX(), my = Input.getMouseY(), s = 60;
         gc.setGlobalAlpha(0.8);

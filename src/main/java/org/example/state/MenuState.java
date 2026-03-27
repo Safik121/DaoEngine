@@ -29,7 +29,7 @@ public class MenuState implements GameState {
     public void render(GraphicsContext gc) {
         // Draw black background
         gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, 800, 600);
+        gc.fillRect(0, 0, 1024, 768);
 
         // Draw game title
         gc.setFill(Color.ORANGE);

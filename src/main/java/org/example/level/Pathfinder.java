@@ -120,14 +120,24 @@ public class Pathfinder {
     }
 
     /**
-     * Heuristic function for distance estimation (Euclidean-ish distance * 10).
+     * Heuristic function for distance estimation between two grid points.
+     * Calculates Euclidean distance multiplied by 10 for integer processing.
+     * 
+     * @param x1 Start X.
+     * @param y1 Start Y.
+     * @param x2 Target X.
+     * @param y2 Target Y.
+     * @return Estimated cost to target.
      */
     private static int heuristic(int x1, int y1, int x2, int y2) {
         return (int) (Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) * 10);
     }
 
     /**
-     * Reconstructs the path from target node back to start.
+     * Reconstructs the calculated path from target node back to start.
+     * 
+     * @param node The target node from which to backtrack.
+     * @return List of tile coordinates [x, y] in order from start to target.
      */
     private static List<int[]> reconstructPath(Node node) {
         List<int[]> path = new ArrayList<>();

@@ -112,6 +112,9 @@ public class MapGenerator {
 
     /**
      * Generates curved rivers using a randomized A* pathfinding algorithm.
+     * 
+     * @param level The level to draw into.
+     * @param config The level configuration containing river and bridge parameters.
      */
     private static void generateRivers(Level level, LevelConfig config) {
         List<List<int[]>> allPaths = new ArrayList<>();
@@ -226,6 +229,14 @@ public class MapGenerator {
 
     /**
      * Draws a solid bridge ONLY if it doesn't overlap with a lake (type 2).
+     * 
+     * @param level The level to draw into.
+     * @param x Center X coordinate of the bridge.
+     * @param y Center Y coordinate of the bridge.
+     * @param thickness Thickness of the bridge in tiles.
+     * @param span Half-length of the bridge span.
+     * @param orientationVertical True for North-South orientation, false for East-West.
+     * @return True if the bridge was successfully drawn, false if it was skipped due to lake overlap.
      */
     private static boolean drawBridgeSafe(Level level, int x, int y, int thickness, int span, boolean orientationVertical) {
         // First check for lakes with a 1-pixel safety margin to account for jagged boundaries
@@ -271,6 +282,12 @@ public class MapGenerator {
 
     /**
      * Specialized blob drawer for rivers that does not overwrite lake tiles (2).
+     * 
+     * @param level The level to draw into.
+     * @param cx Center X coordinate.
+     * @param cy Center Y coordinate.
+     * @param size Radius of the blob.
+     * @param type The tile ID to use.
      */
     private static void drawRiverBlob(Level level, int cx, int cy, int size, int type) {
         for (int ty = cy - size; ty <= cy + size; ty++) {
@@ -288,6 +305,16 @@ public class MapGenerator {
         }
     }
 
+    /**
+     * Finds a curved path for a river using randomized A* pathfinding.
+     * 
+     * @param level The level for bounds checking.
+     * @param startX Starting X coordinate.
+     * @param startY Starting Y coordinate.
+     * @param endX Ending X coordinate.
+     * @param endY Ending Y coordinate.
+     * @return A list of [x, y] coordinates forming the path, or null if no path found.
+     */
     private static List<int[]> findRiverPath(Level level, int startX, int startY, int endX, int endY) {
         PriorityQueue<RiverNode> openSet = new PriorityQueue<>();
         Map<String, RiverNode> allNodes = new HashMap<>();
@@ -341,10 +368,25 @@ public class MapGenerator {
         return null;
     }
 
+    /**
+     * Calculates the Euclidean heuristic for river pathfinding.
+     * 
+     * @param x1 Start X.
+     * @param y1 Start Y.
+     * @param x2 End X.
+     * @param y2 End Y.
+     * @return The distance between points.
+     */
     private static double riverHeuristic(int x1, int y1, int x2, int y2) {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
+    /**
+     * Reconstructs the path from the end node back to the start.
+     * 
+     * @param node The end node of the path.
+     * @return A list of coordinates from start to end.
+     */
     private static List<int[]> reconstructRiverPath(RiverNode node) {
         List<int[]> path = new ArrayList<>();
         RiverNode current = node;
@@ -355,11 +397,32 @@ public class MapGenerator {
         return path;
     }
 
+    /**
+     * Internal node class for the A* river pathfinding algorithm.
+     */
     private static class RiverNode implements Comparable<RiverNode> {
-        int x, y;
-        double g, h, f;
+        /** X coordinate on the grid. */
+        int x;
+        /** Y coordinate on the grid. */
+        int y;
+        /** G-cost: actual cost from the start node. */
+        double g;
+        /** H-cost: estimated cost to the end node. */
+        double h;
+        /** F-cost: total estimated cost (G + H). */
+        double f;
+        /** Reference to the parent node for path reconstruction. */
         RiverNode parent;
 
+        /**
+         * Creates a new river node.
+         * 
+         * @param x X coordinate.
+         * @param y Y coordinate.
+         * @param g Start cost.
+         * @param h Heuristic cost.
+         * @param parent Parent node.
+         */
         RiverNode(int x, int y, double g, double h, RiverNode parent) {
             this.x = x;
             this.y = y;

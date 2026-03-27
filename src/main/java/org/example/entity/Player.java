@@ -151,15 +151,25 @@ public class Player {
         gc.fillRect(x - camX, y - camY, size, size);
     }
 
+    /** @return Player's current X coordinate in pixels. */
     public double getX() { return x; }
+    /** @return Player's current Y coordinate in pixels. */
     public double getY() { return y; }
+    /** @return Player's current Health Points. */
     public double getHp() { return hp; }
+    /** @return Player's maximum Health Points. */
     public double getMaxHp() { return maxHp; }
+    /** @return Player's current Spiritual Energy (Qi). */
     public double getQi() { return qi; }
+    /** @return Player's maximum Spiritual Energy capacity. */
     public double getMaxQi() { return maxQi; }
+    /** @return true if the player is currently in a meditation state. */
     public boolean isMeditating() { return isMeditating; }
+    /** @return The player's inventory system. */
     public Inventory getInventory() { return inventory; }
+    /** @return The index of the currently active hotbar slot. */
     public int getActiveHotbarSlot() { return activeHotbarSlot; }
+    /** @param slot The index to set as the active hotbar slot. */
     public void setActiveHotbarSlot(int slot) { this.activeHotbarSlot = slot; }
 
     /**

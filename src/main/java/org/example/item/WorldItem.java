@@ -7,8 +7,13 @@ import javafx.scene.paint.Color;
  * Represents an item that exists in the game world, waiting to be picked up.
  */
 public class WorldItem {
+    /** The underlying Item data. */
     private Item item;
-    private double x, y;
+    /** The world X coordinate of the item in pixels. */
+    private double x;
+    /** The world Y coordinate of the item in pixels. */
+    private double y;
+    /** The display size of the item icon. */
     private double size = 16.0;
 
     /**
@@ -54,7 +59,10 @@ public class WorldItem {
         return mx >= x - 5 && mx <= x + size + 5 && my >= y - 5 && my <= y + size + 5;
     }
 
+    /** @return The underlying Item object. */
     public Item getItem() { return item; }
+    /** @return Current world X coordinate of the item. */
     public double getX() { return x; }
+    /** @return Current world Y coordinate of the item. */
     public double getY() { return y; }
 }

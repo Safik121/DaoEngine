@@ -201,6 +201,8 @@ public class Enemy {
         gc.fillRect(x - camX, y - camY, size, size);
     }
 
+    /** @return Enemy's current X coordinate in pixels. */
     public double getX() { return x; }
+    /** @return Enemy's current Y coordinate in pixels. */
     public double getY() { return y; }
 }
