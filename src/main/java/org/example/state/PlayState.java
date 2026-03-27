@@ -100,7 +100,7 @@ public class PlayState implements GameState {
         // Load configuration from JSON
         LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
         currentLevel = MapGenerator.generate(config);
-        
+
         gameMap = new GameMap(currentLevel);
 
         // Player starting position (middle of the large map for testing)
@@ -120,7 +120,8 @@ public class PlayState implements GameState {
     }
 
     /**
-     * Updates the camera position to follow the player and stay within map boundaries.
+     * Updates the camera position to follow the player and stay within map
+     * boundaries.
      */
     private void updateCamera() {
         // Center camera on player
@@ -131,10 +132,14 @@ public class PlayState implements GameState {
         double mapWidthPx = currentLevel.width * currentLevel.tileSize;
         double mapHeightPx = currentLevel.height * currentLevel.tileSize;
 
-        if (cameraX < 0) cameraX = 0;
-        if (cameraY < 0) cameraY = 0;
-        if (cameraX > mapWidthPx - screenWidth) cameraX = mapWidthPx - screenWidth;
-        if (cameraY > mapHeightPx - screenHeight) cameraY = mapHeightPx - screenHeight;
+        if (cameraX < 0)
+            cameraX = 0;
+        if (cameraY < 0)
+            cameraY = 0;
+        if (cameraX > mapWidthPx - screenWidth)
+            cameraX = mapWidthPx - screenWidth;
+        if (cameraY > mapHeightPx - screenHeight)
+            cameraY = mapHeightPx - screenHeight;
     }
 
     /**
@@ -143,10 +148,16 @@ public class PlayState implements GameState {
     private void spawnInitialItems() {
         // Spawn some items on the ground for testing
         double[] pos1 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 100);
-        if (pos1 != null) itemsOnGround.add(new WorldItem(new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE), pos1[0], pos1[1]));
-        
+        if (pos1 != null)
+            itemsOnGround.add(new WorldItem(
+                    new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE), pos1[0],
+                    pos1[1]));
+
         double[] pos2 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 150);
-        if (pos2 != null) itemsOnGround.add(new WorldItem(new Item("mat_hammer_01", "Rusty Hammer", "Crafting material.", Item.Type.CRAFTING), pos2[0], pos2[1]));
+        if (pos2 != null)
+            itemsOnGround.add(
+                    new WorldItem(new Item("mat_hammer_01", "Rusty Hammer", "Crafting material.", Item.Type.CRAFTING),
+                            pos2[0], pos2[1]));
     }
 
     /**
@@ -166,20 +177,25 @@ public class PlayState implements GameState {
      */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
-            player.getInventory().addItem(new Item("sword_01", "Flying Sword", "A basic spiritual sword.", Item.Type.WEAPON));
-            player.getInventory().addItem(new Item("fireball_staff", "Fireball Staff", "Hurl spheres of fire.", Item.Type.WEAPON));
-            player.getInventory().addItem(new Item("divine_eyes", "Divine Eyes", "A beam of concentrated spiritual energy.", Item.Type.WEAPON));
+            player.getInventory()
+                    .addItem(new Item("sword_01", "Flying Sword", "A basic spiritual sword.", Item.Type.WEAPON));
+            player.getInventory()
+                    .addItem(new Item("fireball_staff", "Fireball Staff", "Hurl spheres of fire.", Item.Type.WEAPON));
+            player.getInventory().addItem(new Item("divine_eyes", "Divine Eyes",
+                    "A beam of concentrated spiritual energy.", Item.Type.WEAPON));
         }
     }
 
     /**
      * Main update routine called every frame.
-     * Manages input toggles, logic transitions, camera, and specific interaction modes.
+     * Manages input toggles, logic transitions, camera, and specific interaction
+     * modes.
      */
     @Override
     public void update() {
         handleToggles();
-        if (isPaused) return;
+        if (isPaused)
+            return;
 
         if (inventoryOpen) {
             handleInventoryInteraction();
@@ -200,7 +216,7 @@ public class PlayState implements GameState {
         if (rmbPressed && !rmbWasPressed) {
             double mx = Input.getMouseX();
             double my = Input.getMouseY();
-            
+
             WorldItem toPick = null;
             for (WorldItem wi : itemsOnGround) {
                 // Adjust mouse coordinates for camera offset when checking world items
@@ -208,16 +224,17 @@ public class PlayState implements GameState {
                 double worldMy = my + cameraY;
 
                 if (wi.isClicked(worldMx, worldMy)) {
-                    // Check distance (optional, but let's allow "infinite" reach for now or small limit)
+                    // Check distance (optional, but let's allow "infinite" reach for now or small
+                    // limit)
                     double dx = wi.getX() - player.getX();
                     double dy = wi.getY() - player.getY();
-                    if (Math.sqrt(dx*dx + dy*dy) < 150) { // Reach limit
+                    if (Math.sqrt(dx * dx + dy * dy) < 150) { // Reach limit
                         toPick = wi;
                         break;
                     }
                 }
             }
-            
+
             if (toPick != null) {
                 if (player.getInventory().addItem(toPick.getItem())) {
                     itemsOnGround.remove(toPick);
@@ -232,7 +249,8 @@ public class PlayState implements GameState {
 
     private void handleToggles() {
         boolean escIsPressed = Input.isKeyPressed(KeyCode.ESCAPE);
-        if (escIsPressed && !escWasPressed) isPaused = !isPaused;
+        if (escIsPressed && !escWasPressed)
+            isPaused = !isPaused;
         escWasPressed = escIsPressed;
 
         boolean invIsPressed = Input.isKeyPressed(KeyCode.I);
@@ -246,20 +264,27 @@ public class PlayState implements GameState {
         inventoryWasPressed = invIsPressed;
 
         boolean mapIsPressed = Input.isKeyPressed(KeyCode.M);
-        if (mapIsPressed && !mapWasPressed) showFullMap = !showFullMap;
+        if (mapIsPressed && !mapWasPressed)
+            showFullMap = !showFullMap;
         mapWasPressed = mapIsPressed;
     }
 
     private void handleHotbarSelection() {
-        if (Input.isKeyPressed(KeyCode.DIGIT1)) player.setActiveHotbarSlot(0);
-        if (Input.isKeyPressed(KeyCode.DIGIT2)) player.setActiveHotbarSlot(1);
-        if (Input.isKeyPressed(KeyCode.DIGIT3)) player.setActiveHotbarSlot(2);
-        if (Input.isKeyPressed(KeyCode.DIGIT4)) player.setActiveHotbarSlot(3);
-        if (Input.isKeyPressed(KeyCode.DIGIT5)) player.setActiveHotbarSlot(4);
+        if (Input.isKeyPressed(KeyCode.DIGIT1))
+            player.setActiveHotbarSlot(0);
+        if (Input.isKeyPressed(KeyCode.DIGIT2))
+            player.setActiveHotbarSlot(1);
+        if (Input.isKeyPressed(KeyCode.DIGIT3))
+            player.setActiveHotbarSlot(2);
+        if (Input.isKeyPressed(KeyCode.DIGIT4))
+            player.setActiveHotbarSlot(3);
+        if (Input.isKeyPressed(KeyCode.DIGIT5))
+            player.setActiveHotbarSlot(4);
 
         if (Input.isKeyPressed(KeyCode.E)) {
             Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
-            if (activeItem != null) activeItem.use();
+            if (activeItem != null)
+                activeItem.use();
         }
 
         handleCombatInput();
@@ -269,7 +294,8 @@ public class PlayState implements GameState {
      * Handles player combat input (Left Mouse Button to fire active weapon).
      */
     private void handleCombatInput() {
-        if (inventoryOpen || showFullMap || isPaused) return;
+        if (inventoryOpen || showFullMap || isPaused)
+            return;
 
         if (Input.isLmbPressed() && player.canAttack()) {
             Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
@@ -282,7 +308,7 @@ public class PlayState implements GameState {
                         double mx = Input.getMouseX() + cameraX;
                         double my = Input.getMouseY() + cameraY;
                         double angle = Math.atan2(my - (player.getY() + 6), mx - (player.getX() + 6));
-                        
+
                         projectiles.add(new Projectile(player.getX() + 6, player.getY() + 6, angle, wConfig));
                         player.setAttackCooldown(wConfig.cooldown);
                     }
@@ -302,19 +328,22 @@ public class PlayState implements GameState {
         }
 
         player.update(currentLevel);
-        for (Enemy enemy : enemies) enemy.update(gameMap, player, enemies);
+        for (Enemy enemy : enemies)
+            enemy.update(gameMap, player, enemies);
 
         // Update Projectiles
         for (int i = projectiles.size() - 1; i >= 0; i--) {
             Projectile p = projectiles.get(i);
             p.update(gameMap);
-            
+
             // Collision with enemies
             for (Enemy enemy : enemies) {
                 if (p.checkCollision(enemy)) {
                     enemy.takeDamage(p.getDamage());
-                    p.deactivate();
-                    break;
+                    if (p.getType() != WeaponConfig.ProjectileType.BEAM) {
+                        p.deactivate();
+                        break;
+                    }
                 }
             }
 
@@ -328,31 +357,36 @@ public class PlayState implements GameState {
 
         if (!inTribulation) {
             currentTime -= 1.0 / 60.0;
-            if (currentTime <= 0) triggerTribulation();
+            if (currentTime <= 0)
+                triggerTribulation();
         } else {
             tribulationSpawnTimer -= 1.0 / 60.0;
             if (tribulationSpawnTimer <= 0) {
                 double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
-                if (pos != null) enemies.add(new Enemy(pos[0], pos[1], true));
+                if (pos != null)
+                    enemies.add(new Enemy(pos[0], pos[1], true));
                 tribulationSpawnTimer = 3.0;
             }
         }
     }
 
     /**
-     * Activates the Tribulation phase, increasing difficulty and spawning dangerous enemies.
+     * Activates the Tribulation phase, increasing difficulty and spawning dangerous
+     * enemies.
      */
     private void triggerTribulation() {
         inTribulation = true;
         for (int i = 0; i < 2; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 250);
-            if (pos != null) enemies.add(new Enemy(pos[0], pos[1], true));
+            if (pos != null)
+                enemies.add(new Enemy(pos[0], pos[1], true));
         }
         tribulationSpawnTimer = 3.0;
     }
 
     /**
-     * Completely resets the level by regenerating the map and resetting entity states.
+     * Completely resets the level by regenerating the map and resetting entity
+     * states.
      * Triggered on player death.
      */
     private void resetLevel() {
@@ -364,10 +398,10 @@ public class PlayState implements GameState {
         currentLevel = MapGenerator.generate(config);
         gameMap = new GameMap(currentLevel);
         player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
-        
+
         maxTime = config.tribulationTime;
         currentTime = maxTime;
-        
+
         enemies.clear();
         spawnInitialEnemies();
         addTestItems();
@@ -380,7 +414,8 @@ public class PlayState implements GameState {
      * Colors each pixel based on the underlying tile type.
      */
     private void generateMapCache() {
-        if (currentLevel == null || currentLevel.data == null) return;
+        if (currentLevel == null || currentLevel.data == null)
+            return;
         int w = currentLevel.width;
         int h = currentLevel.height;
         mapCache = new WritableImage(w, h);
@@ -390,11 +425,16 @@ public class PlayState implements GameState {
             for (int x = 0; x < w; x++) {
                 int tile = currentLevel.data.get(y).get(x);
                 Color c = Color.GREEN;
-                if (tile == 2) c = Color.BLUE; // Water (Wait, is it 1 or 2? Checking renderMap...)
-                else if (tile == 3) c = Color.CYAN; // Spirit Vein
-                else if (tile == 4) c = Color.FORESTGREEN; // Variety
-                else if (tile == 1) c = Color.DARKGRAY; // Wall/Obstacle
-                else if (tile == 5) c = Color.SADDLEBROWN; // Bridge
+                if (tile == 2)
+                    c = Color.BLUE; // Water (Wait, is it 1 or 2? Checking renderMap...)
+                else if (tile == 3)
+                    c = Color.CYAN; // Spirit Vein
+                else if (tile == 4)
+                    c = Color.FORESTGREEN; // Variety
+                else if (tile == 1)
+                    c = Color.DARKGRAY; // Wall/Obstacle
+                else if (tile == 5)
+                    c = Color.SADDLEBROWN; // Bridge
                 pw.setColor(x, y, c);
             }
         }
@@ -413,12 +453,12 @@ public class PlayState implements GameState {
         gc.fillRect(0, 0, w, h);
 
         renderMap(gc);
-        
+
         // Render world entities with camera offset
         for (WorldItem wi : itemsOnGround) {
             wi.render(gc, cameraX, cameraY);
         }
-        
+
         for (Enemy enemy : enemies) {
             enemy.render(gc, cameraX, cameraY);
         }
@@ -426,7 +466,7 @@ public class PlayState implements GameState {
         for (Projectile p : projectiles) {
             p.render(gc, cameraX, cameraY);
         }
-        
+
         player.render(gc, cameraX, cameraY);
 
         // --- HUD / UI ---
@@ -435,13 +475,14 @@ public class PlayState implements GameState {
         if (inventoryOpen) {
             drawInventory(gc, w, h);
         }
-        
+
         if (draggedItem != null) {
             drawDraggedItem(gc);
         }
         // Render Maps
         renderMinimap(gc);
-        if (showFullMap) renderFullMap(gc);
+        if (showFullMap)
+            renderFullMap(gc);
 
         if (isPaused) {
             gc.setFill(new Color(0, 0, 0, 0.5));
@@ -461,7 +502,7 @@ public class PlayState implements GameState {
     private void renderMinimap(GraphicsContext gc) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
-        
+
         double mapSize = 150;
         double padding = 20;
         double x = w - mapSize - padding;
@@ -474,7 +515,8 @@ public class PlayState implements GameState {
         gc.setLineWidth(2);
         gc.strokeRect(x - 2, y - 2, mapSize + 4, mapSize + 4);
 
-        if (mapCache == null) return;
+        if (mapCache == null)
+            return;
 
         // Map Image
         gc.drawImage(mapCache, x, y, mapSize, mapSize);
@@ -482,7 +524,7 @@ public class PlayState implements GameState {
         // Entities
         double scale = mapSize / currentLevel.width;
         int ts = currentLevel.tileSize;
-        
+
         // Enemies
         gc.setFill(Color.RED);
         for (Enemy e : enemies) {
@@ -528,7 +570,8 @@ public class PlayState implements GameState {
         gc.setFont(new Font("Arial", 24));
         gc.fillText("WORLD MAP ('M' to close)", x + 10, y - 10);
 
-        if (mapCache == null) return;
+        if (mapCache == null)
+            return;
 
         // Map Image
         gc.drawImage(mapCache, x, y, mapSize, mapSize);
@@ -536,7 +579,7 @@ public class PlayState implements GameState {
         // Entities
         double scale = mapSize / currentLevel.width;
         int ts = currentLevel.tileSize;
-        
+
         // Enemies
         gc.setFill(Color.RED);
         for (Enemy e : enemies) {
@@ -559,9 +602,10 @@ public class PlayState implements GameState {
      * @param gc The GraphicsContext used for drawing.
      */
     private void renderMap(GraphicsContext gc) {
-        if (currentLevel == null || currentLevel.data == null) return;
+        if (currentLevel == null || currentLevel.data == null)
+            return;
         int tileSize = currentLevel.tileSize;
-        
+
         // Frustum Culling: Only render visible tiles
         int startX = Math.max(0, (int) (cameraX / tileSize));
         int endX = Math.min(currentLevel.width, (int) ((cameraX + screenWidth) / tileSize) + 1);
@@ -571,17 +615,24 @@ public class PlayState implements GameState {
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
                 int tileType = currentLevel.data.get(y).get(x);
-                if (tileType == 1) gc.setFill(Color.DARKGRAY);
-                else if (tileType == 2) gc.setFill(Color.BLUE);
-                else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
-                else if (tileType == 4) gc.setFill(Color.DARKGREEN.deriveColor(0, 1, 0.8, 1)); // Lighter green for variety
-                else if (tileType == 5) gc.setFill(Color.SADDLEBROWN); // Bridge
-                else gc.setFill(Color.DARKGREEN);
-                
+                if (tileType == 1)
+                    gc.setFill(Color.DARKGRAY);
+                else if (tileType == 2)
+                    gc.setFill(Color.BLUE);
+                else if (tileType == 3)
+                    gc.setFill(Color.MEDIUMPURPLE);
+                else if (tileType == 4)
+                    gc.setFill(Color.DARKGREEN.deriveColor(0, 1, 0.8, 1)); // Lighter green for variety
+                else if (tileType == 5)
+                    gc.setFill(Color.SADDLEBROWN); // Bridge
+                else
+                    gc.setFill(Color.DARKGREEN);
+
                 gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
                 // Optional: Grid lines for debugging (too heavy for 400x400?)
                 // gc.setStroke(Color.BLACK);
-                // gc.strokeRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                // gc.strokeRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize,
+                // tileSize);
             }
         }
     }
@@ -614,7 +665,7 @@ public class PlayState implements GameState {
         if (!inTribulation) {
             gc.setFill(Color.WHITE);
             gc.setFont(new javafx.scene.text.Font("Arial Bold", 14));
-            gc.fillText("Time: " + (int)currentTime + "s", 20, 85);
+            gc.fillText("Time: " + (int) currentTime + "s", 20, 85);
         } else {
             gc.setFill(Color.RED);
             gc.setFont(new javafx.scene.text.Font("Arial Bold", 24));
@@ -626,7 +677,7 @@ public class PlayState implements GameState {
             gc.fillRect(0, 0, w, h);
             gc.setFill(Color.WHITE);
             gc.setFont(new javafx.scene.text.Font("Arial Bold", 80));
-            gc.fillText("PAUSED", w/2 - 160, h/2);
+            gc.fillText("PAUSED", w / 2 - 160, h / 2);
         }
     }
 
@@ -634,16 +685,16 @@ public class PlayState implements GameState {
      * Renders the active hotbar at the bottom of the screen.
      * 
      * @param gc The GraphicsContext used for drawing.
-     * @param w Canvas width.
-     * @param h Canvas height.
+     * @param w  Canvas width.
+     * @param h  Canvas height.
      */
     /**
      * Renders the hotbar HUD at the bottom of the screen.
      * Highlights the active slot and displays icons for assigned items.
      * 
      * @param gc The GraphicsContext used for drawing.
-     * @param w Canvas width.
-     * @param h Canvas height.
+     * @param w  Canvas width.
+     * @param h  Canvas height.
      */
     private void drawHotbar(GraphicsContext gc, double w, double h) {
         double slotSize = 60, padding = 10, totalWidth = 5 * slotSize + 4 * padding;
@@ -661,8 +712,9 @@ public class PlayState implements GameState {
             gc.strokeRect(sx, startY, slotSize, slotSize);
 
             Item item = player.getInventory().getItemInHotbar(i);
-            if (item != null) drawItemIcon(gc, sx, startY, slotSize, item, Color.SKYBLUE);
-            
+            if (item != null)
+                drawItemIcon(gc, sx, startY, slotSize, item, Color.SKYBLUE);
+
             gc.setFill(Color.LIGHTGRAY);
             gc.setFont(new javafx.scene.text.Font("Arial", 12));
             gc.fillText(String.valueOf(i + 1), sx + 4, startY + 16);
@@ -673,8 +725,8 @@ public class PlayState implements GameState {
      * Renders the full inventory and crafting overlay.
      * 
      * @param gc The GraphicsContext used for drawing.
-     * @param w Canvas width.
-     * @param h Canvas height.
+     * @param w  Canvas width.
+     * @param h  Canvas height.
      */
     private void drawInventory(GraphicsContext gc, double w, double h) {
         gc.setFill(Color.color(0, 0, 0, 0.75));
@@ -723,11 +775,11 @@ public class PlayState implements GameState {
     /**
      * Renders an individual item slot in the inventory.
      * 
-     * @param gc The GraphicsContext used for drawing.
-     * @param x Slot X.
-     * @param y Slot Y.
-     * @param size Slot size.
-     * @param item Item in the slot (can be null).
+     * @param gc          The GraphicsContext used for drawing.
+     * @param x           Slot X.
+     * @param y           Slot Y.
+     * @param size        Slot size.
+     * @param item        Item in the slot (can be null).
      * @param borderColor Color of the slot border.
      */
     private void drawSlot(GraphicsContext gc, double x, double y, double size, Item item, Color borderColor) {
@@ -736,17 +788,18 @@ public class PlayState implements GameState {
         gc.setStroke(borderColor);
         gc.setLineWidth(borderColor == Color.GOLD || borderColor.equals(Color.web("#2ecc71")) ? 3 : 1);
         gc.strokeRect(x, y, size, size);
-        if (item != null) drawItemIcon(gc, x, y, size, item, Color.ORANGE);
+        if (item != null)
+            drawItemIcon(gc, x, y, size, item, Color.ORANGE);
     }
 
     /**
      * Helper to draw a simplified icon/box representing an item.
      * 
-     * @param gc The GraphicsContext used for drawing.
-     * @param x Icon X.
-     * @param y Icon Y.
-     * @param size Icon size.
-     * @param item Item to represent.
+     * @param gc    The GraphicsContext used for drawing.
+     * @param x     Icon X.
+     * @param y     Icon Y.
+     * @param size  Icon size.
+     * @param item  Item to represent.
      * @param color Base color for the icon box.
      */
     private void drawItemIcon(GraphicsContext gc, double x, double y, double size, Item item, Color color) {
@@ -755,7 +808,8 @@ public class PlayState implements GameState {
         gc.setFill(Color.WHITE);
         gc.setFont(new javafx.scene.text.Font("Arial Bold", 12));
         String name = item.getName();
-        if (name.length() > 8) name = name.substring(0, 8);
+        if (name.length() > 8)
+            name = name.substring(0, 8);
         gc.fillText(name, x + 5, y + size - 12);
     }
 
@@ -763,34 +817,43 @@ public class PlayState implements GameState {
      * Manages logic for inventory interactions (clicking, 시작 dragging).
      */
     /**
-     * Handles logic for inventory interactions, including item dragging and dropping.
+     * Handles logic for inventory interactions, including item dragging and
+     * dropping.
      * Manages click detection for all UI elements (Grid, Hotbar, Crafting).
      */
     private void handleInventoryInteraction() {
         double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768; // Hardcoded for logic consistency
         boolean lmbPressed = Input.isLmbPressed();
-        
-        double panelW = 800, panelH = 550, panelX = (w - panelW)/2, panelY = (h - panelH)/2;
+
+        double panelW = 800, panelH = 550, panelX = (w - panelW) / 2, panelY = (h - panelH) / 2;
         double slotSize = 70, padding = 12, startX = panelX + 40, startY = panelY + 80;
 
         if (lmbPressed && !lmbWasPressed && draggedItem == null) {
             // Main slots
             for (int i = 0; i < 25; i++) {
-                double sx = startX + (i % 5)* (slotSize + padding), sy = startY + (i / 5)* (slotSize + padding);
-                if (isInside(mx, my, sx, sy, slotSize)) { 
+                double sx = startX + (i % 5) * (slotSize + padding), sy = startY + (i / 5) * (slotSize + padding);
+                if (isInside(mx, my, sx, sy, slotSize)) {
                     draggedItem = player.getInventory().getMainInventory()[i];
-                    if (draggedItem != null) { sourceArr = player.getInventory().getMainInventory(); sourceIdx = i; sourceArr[i] = null; }
+                    if (draggedItem != null) {
+                        sourceArr = player.getInventory().getMainInventory();
+                        sourceIdx = i;
+                        sourceArr[i] = null;
+                    }
                     break;
                 }
             }
             // Crafting
             if (draggedItem == null) {
-                double cX = panelX + 30 + 500, cYs[] = {panelY + 120, panelY + 320}; // Adjusted
+                double cX = panelX + 30 + 500, cYs[] = { panelY + 120, panelY + 320 }; // Adjusted
                 cX = panelX + 530;
                 for (int i = 0; i < 2; i++) {
                     if (isInside(mx, my, cX, cYs[i], slotSize)) {
                         draggedItem = player.getInventory().getCraftingInputs()[i];
-                        if (draggedItem != null) { sourceArr = player.getInventory().getCraftingInputs(); sourceIdx = i; sourceArr[i] = null; }
+                        if (draggedItem != null) {
+                            sourceArr = player.getInventory().getCraftingInputs();
+                            sourceIdx = i;
+                            sourceArr[i] = null;
+                        }
                         break;
                     }
                 }
@@ -799,16 +862,24 @@ public class PlayState implements GameState {
             if (draggedItem == null) {
                 if (isInside(mx, my, panelX + 680, panelY + 220, slotSize + 15)) {
                     draggedItem = player.getInventory().getCraftingResult();
-                    if (draggedItem != null) { player.getInventory().consumeCraftingInputs(); sourceArr = null; sourceIdx = -1; }
+                    if (draggedItem != null) {
+                        player.getInventory().consumeCraftingInputs();
+                        sourceArr = null;
+                        sourceIdx = -1;
+                    }
                 }
             }
             // Hotbar (HUD only)
             if (draggedItem == null) {
-                double hudS = 60, hudP = 10, hX = (w - (5*hudS + 4*hudP))/2, hY = h - 85;
+                double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
                 for (int i = 0; i < 5; i++) {
                     if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
                         draggedItem = player.getInventory().getHotbar()[i];
-                        if (draggedItem != null) { sourceArr = player.getInventory().getHotbar(); sourceIdx = i; sourceArr[i] = null; }
+                        if (draggedItem != null) {
+                            sourceArr = player.getInventory().getHotbar();
+                            sourceIdx = i;
+                            sourceArr[i] = null;
+                        }
                         break;
                     }
                 }
@@ -825,39 +896,50 @@ public class PlayState implements GameState {
      * Manages logic for dropping a dragged item into a slot.
      * Performs boundary checks for all clickable UI elements.
      */
-    private void handleDrop(double mx, double my, double w, double h, double px, double py, double pw, double ph, double ss, double pd, double sx, double sy) {
+    private void handleDrop(double mx, double my, double w, double h, double px, double py, double pw, double ph,
+            double ss, double pd, double sx, double sy) {
         boolean dropped = false;
         // Main
         for (int i = 0; i < 25; i++) {
-            if (isInside(mx, my, sx + (i % 5)* (ss + pd), sy + (i / 5)* (ss + pd), ss)) {
-                player.getInventory().swapSlots(new Item[]{draggedItem}, 0, player.getInventory().getMainInventory(), i);
-                dropped = true; break;
+            if (isInside(mx, my, sx + (i % 5) * (ss + pd), sy + (i / 5) * (ss + pd), ss)) {
+                player.getInventory().swapSlots(new Item[] { draggedItem }, 0, player.getInventory().getMainInventory(),
+                        i);
+                dropped = true;
+                break;
             }
         }
         // Crafting
         if (!dropped) {
-            double cX = px + 530, cYs[] = {py + 120, py + 320};
+            double cX = px + 530, cYs[] = { py + 120, py + 320 };
             for (int i = 0; i < 2; i++) {
                 if (isInside(mx, my, cX, cYs[i], ss)) {
-                    player.getInventory().swapSlots(new Item[]{draggedItem}, 0, player.getInventory().getCraftingInputs(), i);
-                    dropped = true; break;
+                    player.getInventory().swapSlots(new Item[] { draggedItem }, 0,
+                            player.getInventory().getCraftingInputs(), i);
+                    dropped = true;
+                    break;
                 }
             }
         }
         // HUD Hotbar
         if (!dropped) {
-            double hudS = 60, hudP = 10, hX = (w - (5*hudS + 4*hudP))/2, hY = h - 85;
+            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
             for (int i = 0; i < 5; i++) {
-                if (isInside(mx, my, hX + i*(hudS+hudP), hY, hudS)) {
-                    player.getInventory().swapSlots(new Item[]{draggedItem}, 0, player.getInventory().getHotbar(), i);
-                    dropped = true; break;
+                if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
+                    player.getInventory().swapSlots(new Item[] { draggedItem }, 0, player.getInventory().getHotbar(),
+                            i);
+                    dropped = true;
+                    break;
                 }
             }
         }
 
-        if (!dropped && sourceArr != null) sourceArr[sourceIdx] = draggedItem;
-        else if (!dropped && sourceArr == null) player.getInventory().addItem(draggedItem);
-        draggedItem = null; sourceArr = null; sourceIdx = -1;
+        if (!dropped && sourceArr != null)
+            sourceArr[sourceIdx] = draggedItem;
+        else if (!dropped && sourceArr == null)
+            player.getInventory().addItem(draggedItem);
+        draggedItem = null;
+        sourceArr = null;
+        sourceIdx = -1;
     }
 
     /**
@@ -865,9 +947,9 @@ public class PlayState implements GameState {
      * 
      * @param mx Point X.
      * @param my Point Y.
-     * @param x Area X.
-     * @param y Area Y.
-     * @param s Area size.
+     * @param x  Area X.
+     * @param y  Area Y.
+     * @param s  Area size.
      * @return true if (mx, my) is inside the area.
      */
     private boolean isInside(double mx, double my, double x, double y, double s) {
@@ -883,9 +965,9 @@ public class PlayState implements GameState {
         double mx = Input.getMouseX(), my = Input.getMouseY(), s = 60;
         gc.setGlobalAlpha(0.8);
         gc.setFill(Color.ORANGE);
-        gc.fillRect(mx - s/2, my - s/2, s, s);
+        gc.fillRect(mx - s / 2, my - s / 2, s, s);
         gc.setStroke(Color.WHITE);
-        gc.strokeRect(mx - s/2, my - s/2, s, s);
+        gc.strokeRect(mx - s / 2, my - s / 2, s, s);
         gc.setGlobalAlpha(1.0);
     }
 }
