@@ -205,4 +205,19 @@ public class Enemy {
     public double getX() { return x; }
     /** @return Enemy's current Y coordinate in pixels. */
     public double getY() { return y; }
+    /** @return Enemy's hitbox size in pixels. */
+    public double getSize() { return size; }
+    /** @return Current HP of the enemy. */
+    public int getHP() { return hp; }
+    /** @return true if the enemy is dead (HP <= 0). */
+    public boolean isDead() { return hp <= 0; }
+
+    /**
+     * Reduces the enemy's HP by the specified amount.
+     * @param amount The damage amount.
+     */
+    public void takeDamage(int amount) {
+        this.hp -= amount;
+        if (hp < 0) hp = 0;
+    }
 }

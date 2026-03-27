@@ -35,6 +35,8 @@ public class Player {
     private Inventory inventory;
     /** Current active slot in the hotbar (0-4). */
     private int activeHotbarSlot = 0;
+    /** Current attack cooldown in frames. */
+    private int attackCooldown = 0;
 
     /**
      * Constructs a new Player at the specified starting position.
@@ -98,6 +100,8 @@ public class Player {
         if (!isSolid(x, y + dy, level)) {
             y += dy;
         }
+
+        updateCooldowns();
     }
 
     /**
@@ -169,8 +173,47 @@ public class Player {
     public Inventory getInventory() { return inventory; }
     /** @return The index of the currently active hotbar slot. */
     public int getActiveHotbarSlot() { return activeHotbarSlot; }
-    /** @param slot The index to set as the active hotbar slot. */
+    /** Sets the index of the currently active hotbar slot. */
     public void setActiveHotbarSlot(int slot) { this.activeHotbarSlot = slot; }
+
+    /**
+     * Spends Qi to perform an action.
+     * 
+     * @param amount The amount of Qi to spend.
+     * @return true if player had enough Qi, false otherwise.
+     */
+    public boolean spendQi(double amount) {
+        if (qi >= amount) {
+            qi -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the player is ready to attack.
+     * 
+     * @return true if cooldown is zero.
+     */
+    public boolean canAttack() {
+        return attackCooldown <= 0;
+    }
+
+    /**
+     * Sets the attack cooldown based on weapon properties.
+     * 
+     * @param seconds Cooldown time in seconds.
+     */
+    public void setAttackCooldown(double seconds) {
+        this.attackCooldown = (int)(seconds * 60);
+    }
+
+    /**
+     * Updates internal entity cooldowns.
+     */
+    private void updateCooldowns() {
+        if (attackCooldown > 0) attackCooldown--;
+    }
 
     /**
      * Applies damage to the player. HP will not drop below 0.

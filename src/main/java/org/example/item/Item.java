@@ -59,4 +59,16 @@ public class Item {
     public String getDescription() { return description; }
     /** @return Item classification. */
     public Type getType() { return type; }
+
+    /**
+     * Retrieves the weapon configuration for this item if it is a weapon.
+     * 
+     * @return The WeaponConfig associated with this item ID, or null if not a weapon.
+     */
+    public WeaponConfig getWeaponConfig() {
+        if (type == Type.WEAPON) {
+            return WeaponRegistry.getWeaponConfig(id);
+        }
+        return null;
+    }
 }

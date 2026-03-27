@@ -3,26 +3,27 @@ package org.example.state;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.input.MouseButton;
+
 import org.example.Input;
 import org.example.entity.Enemy;
 import org.example.entity.Player;
+import org.example.entity.Projectile;
 import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
-import org.example.item.Item;
-import org.example.item.WorldItem;
-import javafx.scene.input.MouseButton;
-
-import javafx.scene.image.WritableImage;
-import javafx.scene.image.PixelWriter;
 import org.example.level.LevelConfig;
 import org.example.level.MapGenerator;
+import org.example.item.Item;
+import org.example.item.WorldItem;
+import org.example.item.WeaponRegistry;
+import org.example.item.WeaponConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.paint.Color;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.text.Font;
 
 /**
  * Game state where the actual gameplay takes place.
@@ -87,10 +88,15 @@ public class PlayState implements GameState {
     /** Input buffer for the Right Mouse Button. */
     private boolean rmbWasPressed = false;
 
+    /** List of active projectiles in the world. */
+    private List<Projectile> projectiles;
     /** List of items dropped on the ground in the game world. */
     private List<WorldItem> itemsOnGround;
 
     public PlayState() {
+        // Load weapon configurations
+        WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");
+
         // Load configuration from JSON
         LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
         currentLevel = MapGenerator.generate(config);
@@ -105,6 +111,7 @@ public class PlayState implements GameState {
 
         enemies = new ArrayList<>();
         itemsOnGround = new ArrayList<>();
+        projectiles = new ArrayList<>();
         spawnInitialEnemies();
         spawnInitialItems();
         addTestItems();
@@ -159,8 +166,9 @@ public class PlayState implements GameState {
      */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
-            player.getInventory().addItem(new Item("sword_01", "Rusty Flying Sword", "A weathered cultivation tool.", Item.Type.WEAPON));
-            player.getInventory().addItem(new Item("pill_01", "Qi Pill", "Restores a small amount of Qi.", Item.Type.CONSUMABLE));
+            player.getInventory().addItem(new Item("sword_01", "Flying Sword", "A basic spiritual sword.", Item.Type.WEAPON));
+            player.getInventory().addItem(new Item("fireball_staff", "Fireball Staff", "Hurl spheres of fire.", Item.Type.WEAPON));
+            player.getInventory().addItem(new Item("divine_eyes", "Divine Eyes", "A beam of concentrated spiritual energy.", Item.Type.WEAPON));
         }
     }
 
@@ -253,6 +261,34 @@ public class PlayState implements GameState {
             Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
             if (activeItem != null) activeItem.use();
         }
+
+        handleCombatInput();
+    }
+
+    /**
+     * Handles player combat input (Left Mouse Button to fire active weapon).
+     */
+    private void handleCombatInput() {
+        if (inventoryOpen || showFullMap || isPaused) return;
+
+        if (Input.isLmbPressed() && player.canAttack()) {
+            Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
+            if (activeItem != null && activeItem.getType() == Item.Type.WEAPON) {
+                WeaponConfig wConfig = activeItem.getWeaponConfig();
+                if (wConfig != null) {
+                    // Check Qi cost
+                    if (player.spendQi(wConfig.qiCost)) {
+                        // Calculate angle to mouse
+                        double mx = Input.getMouseX() + cameraX;
+                        double my = Input.getMouseY() + cameraY;
+                        double angle = Math.atan2(my - (player.getY() + 6), mx - (player.getX() + 6));
+                        
+                        projectiles.add(new Projectile(player.getX() + 6, player.getY() + 6, angle, wConfig));
+                        player.setAttackCooldown(wConfig.cooldown);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -267,6 +303,28 @@ public class PlayState implements GameState {
 
         player.update(currentLevel);
         for (Enemy enemy : enemies) enemy.update(gameMap, player, enemies);
+
+        // Update Projectiles
+        for (int i = projectiles.size() - 1; i >= 0; i--) {
+            Projectile p = projectiles.get(i);
+            p.update(gameMap);
+            
+            // Collision with enemies
+            for (Enemy enemy : enemies) {
+                if (p.checkCollision(enemy)) {
+                    enemy.takeDamage(p.getDamage());
+                    p.deactivate();
+                    break;
+                }
+            }
+
+            if (!p.isActive()) {
+                projectiles.remove(i);
+            }
+        }
+
+        // Clean up dead enemies
+        enemies.removeIf(Enemy::isDead);
 
         if (!inTribulation) {
             currentTime -= 1.0 / 60.0;
@@ -363,6 +421,10 @@ public class PlayState implements GameState {
         
         for (Enemy enemy : enemies) {
             enemy.render(gc, cameraX, cameraY);
+        }
+
+        for (Projectile p : projectiles) {
+            p.render(gc, cameraX, cameraY);
         }
         
         player.render(gc, cameraX, cameraY);
@@ -575,6 +637,14 @@ public class PlayState implements GameState {
      * @param w Canvas width.
      * @param h Canvas height.
      */
+    /**
+     * Renders the hotbar HUD at the bottom of the screen.
+     * Highlights the active slot and displays icons for assigned items.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     * @param w Canvas width.
+     * @param h Canvas height.
+     */
     private void drawHotbar(GraphicsContext gc, double w, double h) {
         double slotSize = 60, padding = 10, totalWidth = 5 * slotSize + 4 * padding;
         double startX = (w - totalWidth) / 2.0, startY = h - 85;
@@ -691,6 +761,10 @@ public class PlayState implements GameState {
 
     /**
      * Manages logic for inventory interactions (clicking, 시작 dragging).
+     */
+    /**
+     * Handles logic for inventory interactions, including item dragging and dropping.
+     * Manages click detection for all UI elements (Grid, Hotbar, Crafting).
      */
     private void handleInventoryInteraction() {
         double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768; // Hardcoded for logic consistency
