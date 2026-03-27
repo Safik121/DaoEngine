@@ -189,13 +189,18 @@ public class Enemy {
      * Renders the enemy. Color depends on whether it's a Tribulation enemy.
      * 
      * @param gc GraphicsContext for drawing.
+     * @param camX Camera X offset.
+     * @param camY Camera Y offset.
      */
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, double camX, double camY) {
         if (isTribulation) {
-            gc.setFill(Color.CRIMSON); // Crimson for Tribulation
+            gc.setFill(Color.CRIMSON);
         } else {
-            gc.setFill(Color.PURPLE); // Purple for regular enemies
+            gc.setFill(Color.PURPLE);
         }
-        gc.fillRect(x, y, size, size);
+        gc.fillRect(x - camX, y - camY, size, size);
     }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
 }

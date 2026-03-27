@@ -13,14 +13,16 @@ import org.example.item.Item;
 import org.example.item.WorldItem;
 import javafx.scene.input.MouseButton;
 
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.PixelWriter;
+import org.example.level.LevelConfig;
+import org.example.level.MapGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
-import org.example.level.LevelConfig;
-import org.example.level.MapGenerator;
-import org.example.level.LevelLoader;
 
 /**
  * Game state where the actual gameplay takes place.
@@ -43,6 +45,11 @@ public class PlayState implements GameState {
     private boolean escWasPressed = false;
     private boolean inventoryOpen = false;
     private boolean inventoryWasPressed = false;
+    private boolean showFullMap = false;
+    private boolean mapWasPressed = false;
+
+    /** Cached image of the map background for performance. */
+    private WritableImage mapCache;
 
     // --- CAMERA SYSTEM ---
     /** Current X offset of the camera (world space to screen space). */
@@ -81,6 +88,8 @@ public class PlayState implements GameState {
         spawnInitialEnemies();
         spawnInitialItems();
         addTestItems();
+
+        generateMapCache();
     }
 
     /**
@@ -191,6 +200,10 @@ public class PlayState implements GameState {
             }
         }
         inventoryWasPressed = invIsPressed;
+
+        boolean mapIsPressed = Input.isKeyPressed(KeyCode.M);
+        if (mapIsPressed && !mapWasPressed) showFullMap = !showFullMap;
+        mapWasPressed = mapIsPressed;
     }
 
     private void handleHotbarSelection() {
@@ -253,6 +266,28 @@ public class PlayState implements GameState {
         enemies.clear();
         spawnInitialEnemies();
         addTestItems();
+
+        generateMapCache();
+    }
+
+    private void generateMapCache() {
+        if (currentLevel == null || currentLevel.data == null) return;
+        int w = currentLevel.width;
+        int h = currentLevel.height;
+        mapCache = new WritableImage(w, h);
+        PixelWriter pw = mapCache.getPixelWriter();
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int tile = currentLevel.data.get(y).get(x);
+                Color c = Color.GREEN;
+                if (tile == 2) c = Color.BLUE; // Water (Wait, is it 1 or 2? Checking renderMap...)
+                else if (tile == 3) c = Color.CYAN; // Spirit Vein
+                else if (tile == 4) c = Color.FORESTGREEN; // Variety
+                else if (tile == 1) c = Color.DARKGRAY; // Wall/Obstacle
+                pw.setColor(x, y, c);
+            }
+        }
     }
 
     /**
@@ -271,26 +306,16 @@ public class PlayState implements GameState {
         
         // Render world entities with camera offset
         for (WorldItem wi : itemsOnGround) {
-            gc.save();
-            gc.translate(-cameraX, -cameraY);
-            wi.render(gc);
-            gc.restore();
+            wi.render(gc, cameraX, cameraY);
         }
         
         for (Enemy enemy : enemies) {
-            gc.save();
-            gc.translate(-cameraX, -cameraY);
-            enemy.render(gc);
-            gc.restore();
+            enemy.render(gc, cameraX, cameraY);
         }
+        
+        player.render(gc, cameraX, cameraY);
 
-        // Render player
-        gc.save();
-        gc.translate(-cameraX, -cameraY);
-        player.render(gc);
-        gc.restore();
-
-        // UI is rendered on top (static positions)
+        // --- HUD / UI ---
         renderHUD(gc);
         drawHotbar(gc, w, h);
         if (inventoryOpen) {
@@ -300,6 +325,105 @@ public class PlayState implements GameState {
         if (draggedItem != null) {
             drawDraggedItem(gc);
         }
+        // Render Maps
+        renderMinimap(gc);
+        if (showFullMap) renderFullMap(gc);
+
+        if (isPaused) {
+            gc.setFill(new Color(0, 0, 0, 0.5));
+            gc.fillRect(0, 0, w, h);
+            gc.setFill(Color.WHITE);
+            gc.setFont(new Font("Arial", 48));
+            gc.fillText("PAUSED", w / 2 - 100, h / 2);
+        }
+    }
+
+    private void renderMinimap(GraphicsContext gc) {
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
+        
+        double mapSize = 150;
+        double padding = 20;
+        double x = w - mapSize - padding;
+        double y = padding;
+
+        // Background / Border
+        gc.setFill(new Color(0, 0, 0, 0.7));
+        gc.fillRect(x - 2, y - 2, mapSize + 4, mapSize + 4);
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(2);
+        gc.strokeRect(x - 2, y - 2, mapSize + 4, mapSize + 4);
+
+        if (mapCache == null) return;
+
+        // Map Image
+        gc.drawImage(mapCache, x, y, mapSize, mapSize);
+
+        // Entities
+        double scale = mapSize / currentLevel.width;
+        int ts = currentLevel.tileSize;
+        
+        // Enemies
+        gc.setFill(Color.RED);
+        for (Enemy e : enemies) {
+            double ex = x + (e.getX() / ts) * scale;
+            double ey = y + (e.getY() / ts) * scale;
+            gc.fillOval(ex - 1.5, ey - 1.5, 3, 3);
+        }
+
+        // Player
+        gc.setFill(Color.WHITE);
+        double px = x + (player.getX() / ts) * scale;
+        double py = y + (player.getY() / ts) * scale;
+        gc.fillOval(px - 2, py - 2, 4, 4);
+    }
+
+    private void renderFullMap(GraphicsContext gc) {
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
+
+        double mapSize = 600;
+        double x = (w - mapSize) / 2.0;
+        double y = (h - mapSize) / 2.0;
+
+        // Dim background
+        gc.setFill(new Color(0, 0, 0, 0.8));
+        gc.fillRect(0, 0, w, h);
+
+        // Border
+        gc.setFill(new Color(0.1, 0.1, 0.1, 1.0));
+        gc.fillRect(x - 10, y - 40, mapSize + 20, mapSize + 50);
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(3);
+        gc.strokeRect(x - 10, y - 40, mapSize + 20, mapSize + 50);
+
+        // Title
+        gc.setFill(Color.GOLD);
+        gc.setFont(new Font("Arial", 24));
+        gc.fillText("WORLD MAP ('M' to close)", x + 10, y - 10);
+
+        if (mapCache == null) return;
+
+        // Map Image
+        gc.drawImage(mapCache, x, y, mapSize, mapSize);
+
+        // Entities
+        double scale = mapSize / currentLevel.width;
+        int ts = currentLevel.tileSize;
+        
+        // Enemies
+        gc.setFill(Color.RED);
+        for (Enemy e : enemies) {
+            double ex = x + (e.getX() / ts) * scale;
+            double ey = y + (e.getY() / ts) * scale;
+            gc.fillOval(ex - 2, ey - 2, 4, 4);
+        }
+
+        // Player
+        gc.setFill(Color.WHITE);
+        double px = x + (player.getX() / ts) * scale;
+        double py = y + (player.getY() / ts) * scale;
+        gc.fillOval(px - 4, py - 4, 8, 8);
     }
 
     private void renderMap(GraphicsContext gc) {

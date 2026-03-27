@@ -135,18 +135,20 @@ public class Player {
      * Renders the player entity using the provided GraphicsContext.
      * 
      * @param gc The GraphicsContext used for drawing.
+     * @param camX Camera X offset.
+     * @param camY Camera Y offset.
      */
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, double camX, double camY) {
         // Change color and add aura when meditating
         if (isMeditating) {
             gc.setGlobalAlpha(0.3);
             gc.setFill(Color.LIGHTBLUE);
-            gc.fillOval(x - 5, y - 5, size + 10, size + 10);
+            gc.fillOval(x - camX - 5, y - camY - 5, size + 10, size + 10);
             gc.setGlobalAlpha(1.0);
         }
 
         gc.setFill(Color.BLUE);
-        gc.fillRect(x, y, size, size);
+        gc.fillRect(x - camX, y - camY, size, size);
     }
 
     public double getX() { return x; }

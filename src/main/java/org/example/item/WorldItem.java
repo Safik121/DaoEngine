@@ -28,19 +28,19 @@ public class WorldItem {
      * Renders the item in the world with a golden border and orange fill.
      * 
      * @param gc The GraphicsContext to draw on.
+     * @param camX Camera X offset.
+     * @param camY Camera Y offset.
      */
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, double camX, double camY) {
         // Draw a small crate-like icon with an indicator color
         gc.setFill(Color.web("#d4af37")); // Golden border
-        gc.fillRect(x - 2, y - 2, size + 4, size + 4);
+        gc.fillRect(x - camX - 2, y - camY - 2, size + 4, size + 4);
         
         gc.setFill(Color.ORANGE);
-        gc.fillRect(x, y, size, size);
+        gc.fillRect(x - camX, y - camY, size, size);
         
-        // Tooltip or label placeholder
         gc.setFill(Color.WHITE);
         gc.setFont(new javafx.scene.text.Font("Arial", 8));
-        // Optional: gc.fillText(item.getName(), x, y - 5);
     }
 
     /**
