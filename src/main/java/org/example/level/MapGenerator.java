@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
+import org.example.entity.GateOfRealms;
+import org.example.entity.InteractableEntity;
+import org.example.item.Item;
 
 /**
  * Generates level data procedurally based on a LevelConfig.
@@ -79,7 +82,73 @@ public class MapGenerator {
             }
         }
 
+        // 6. Spawn Gate of Realms (Far from center)
+        int centerThreshold = Math.min(level.width, level.height) / 3;
+        int gx = 0, gy = 0;
+        boolean found = false;
+
+        for (int attempt = 0; attempt < 200; attempt++) {
+            gx = random.nextInt(level.width - 10) + 5;
+            gy = random.nextInt(level.height - 10) + 5;
+
+            double distFromCenter = Math.sqrt(Math.pow(gx - level.width / 2.0, 2) + Math.pow(gy - level.height / 2.0, 2));
+            if (level.data.get(gy).get(gx) == 0 && distFromCenter > centerThreshold) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            level.gate = new GateOfRealms(gx * level.tileSize, gy * level.tileSize);
+        }
+
+        // 7. Spawn NPCs and Steles
+        spawnInteractables(level);
+
         return level;
+    }
+
+    /**
+     * Spawns a few NPCs and Steles at random grass positions.
+     */
+    private static void spawnInteractables(Level level) {
+        // Spawn 2 Steles
+        for (int i = 0; i < 2; i++) {
+            double[] pos = findRandomGrass(level);
+            if (pos != null) {
+                InteractableEntity stele = new InteractableEntity(pos[0], pos[1], "Ancient Stele", InteractableEntity.Type.STELE);
+                stele.addDialogue("The writing on this stone is ancient...");
+                stele.addDialogue("It speaks of a great war between the heavens and the earth.");
+                stele.addDialogue("To transcend, one must prove their worth through the Gate of Realms.");
+                level.interactables.add(stele);
+            }
+        }
+
+        // Spawn 1 NPC (The Mysterious Traveler)
+        double[] npos = findRandomGrass(level);
+        if (npos != null) {
+            InteractableEntity npc = new InteractableEntity(npos[0], npos[1], "Mysterious Traveler", InteractableEntity.Type.NPC);
+            npc.addDialogue("Greetings, young cultivator.");
+            npc.addDialogue("The path ahead is filled with tribulation, the heavens seek to test you.");
+            npc.addDialogue("I have items from many realms. Take this pill, and survive the next storm.");
+            // Reward: Rare Pill
+            npc.setRewardItem(new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE));
+            level.interactables.add(npc);
+        }
+    }
+
+    /**
+     * Helper to find a random grass tile position.
+     */
+    private static double[] findRandomGrass(Level level) {
+        for (int attempt = 0; attempt < 100; attempt++) {
+            int rx = random.nextInt(level.width);
+            int ry = random.nextInt(level.height);
+            if (level.data.get(ry).get(rx) == 0) {
+                return new double[] { rx * level.tileSize, ry * level.tileSize };
+            }
+        }
+        return null;
     }
 
     /**

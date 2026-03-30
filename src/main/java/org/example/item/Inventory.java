@@ -174,4 +174,22 @@ public class Inventory {
     public void setCraftingResult(Item item) {
         this.craftingResult = item;
     }
+
+    /**
+     * Checks if the inventory contains an item with the given ID.
+     * 
+     * @param id The item ID to search for.
+     * @return true if the item exists in main inventory or hotbar.
+     */
+    public boolean hasItem(String id) {
+        for (Item item : hotbar) {
+            if (item != null && item.getId().equals(id))
+                return true;
+        }
+        for (Item item : mainInventory) {
+            if (item != null && item.getId().equals(id))
+                return true;
+        }
+        return false;
+    }
 }

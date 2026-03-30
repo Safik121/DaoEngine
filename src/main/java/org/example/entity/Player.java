@@ -165,8 +165,12 @@ public class Player {
 
     /** @return Player's current X coordinate in pixels. */
     public double getX() { return x; }
+    /** Sets the player's X coordinate. */
+    public void setX(double x) { this.x = x; }
     /** @return Player's current Y coordinate in pixels. */
     public double getY() { return y; }
+    /** Sets the player's Y coordinate. */
+    public void setY(double y) { this.y = y; }
     /** @return Player's current Health Points. */
     public double getHp() { return hp; }
     /** @return Player's maximum Health Points. */

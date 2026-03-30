@@ -13,6 +13,7 @@ import org.example.entity.Enemy;
 import org.example.entity.Player;
 import org.example.entity.Projectile;
 import org.example.entity.LightningStrike;
+import org.example.entity.GateOfRealms;
 import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
@@ -22,7 +23,7 @@ import org.example.item.Item;
 import org.example.item.WorldItem;
 import org.example.item.WeaponRegistry;
 import org.example.item.WeaponConfig;
-
+import org.example.entity.InteractableEntity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +71,13 @@ public class PlayState implements GameState {
     /** Input buffer to detect 'E' key releases. */
     private boolean eWasPressed = false;
 
+    /** The currently active NPC/Stele dialogue, if any. */
+    private InteractableEntity activeDialogue = null;
+    /** Current index of the line being displayed in the active dialogue. */
+    private int dialogueIndex = 0;
+    /** Flag to prevent combat input while in dialogue. */
+    private boolean inDialogue = false;
+
     /** Cached image of the map background for performance. */
     private WritableImage mapCache;
 
@@ -104,13 +112,13 @@ public class PlayState implements GameState {
         // Load weapon configurations
         WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");
 
-        // Load configuration from JSON
-        LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
+        // Load configuration from JSON (Small level for faster testing)
+        LevelConfig config = LevelLoader.loadConfig("/levels/level_small.json");
         currentLevel = MapGenerator.generate(config);
 
         gameMap = new GameMap(currentLevel);
 
-        // Player starting position (middle of the large map for testing)
+        // Player starting position (middle of the map)
         player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
 
         maxTime = config.tribulationTime;
@@ -140,14 +148,15 @@ public class PlayState implements GameState {
         double mapWidthPx = currentLevel.width * currentLevel.tileSize;
         double mapHeightPx = currentLevel.height * currentLevel.tileSize;
 
-        if (cameraX < 0)
-            cameraX = 0;
-        if (cameraY < 0)
-            cameraY = 0;
-        if (cameraX > mapWidthPx - screenWidth)
-            cameraX = mapWidthPx - screenWidth;
-        if (cameraY > mapHeightPx - screenHeight)
-            cameraY = mapHeightPx - screenHeight;
+        double padding = 100;
+        if (cameraX < -padding)
+            cameraX = -padding;
+        if (cameraY < -padding)
+            cameraY = -padding;
+        if (cameraX > mapWidthPx - screenWidth + padding)
+            cameraX = mapWidthPx - screenWidth + padding;
+        if (cameraY > mapHeightPx - screenHeight + padding)
+            cameraY = mapHeightPx - screenHeight + padding;
     }
 
     /**
@@ -172,7 +181,8 @@ public class PlayState implements GameState {
      * Spawns initial enemies at random valid positions away from the player.
      */
     private void spawnInitialEnemies() {
-        for (int i = 0; i < 50; i++) {
+        int enemyCount = 10; // Reduced for the small test map
+        for (int i = 0; i < enemyCount; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(12, player.getX(), player.getY(), 200);
             if (pos != null) {
                 enemies.add(new Enemy(pos[0], pos[1], false));
@@ -191,6 +201,8 @@ public class PlayState implements GameState {
                     .addItem(new Item("fireball_staff", "Fireball Staff", "Hurl spheres of fire.", Item.Type.WEAPON));
             player.getInventory().addItem(new Item("divine_eyes", "Divine Eyes",
                     "A beam of concentrated spiritual energy.", Item.Type.WEAPON));
+            // Add Realm Token for testing Gate interaction
+            player.getInventory().addItem(new Item("realm_token", "Realm Token", "Required to transition between realms.", Item.Type.MISC));
         }
     }
 
@@ -203,6 +215,8 @@ public class PlayState implements GameState {
      */
     @Override
     public void update(double deltaTime) {
+        handleToggles();
+
         if (isPaused)
             return;
 
@@ -210,14 +224,14 @@ public class PlayState implements GameState {
             handleInventoryInteraction();
         } else if (showFullMap) {
             // Full map interactions could go here
-        } else {
-            handleHotbarSelection();
-            handleWorldInteraction();
-            handleGameplayLogic(deltaTime);
-            updateCamera();
         }
 
-        handleToggles();
+        // --- Live Gameplay Updates ---
+        // Even when Inventory or Map is open, the world continues to run!
+        handleHotbarSelection();
+        handleWorldInteraction();
+        handleGameplayLogic(deltaTime);
+        updateCamera();
     }
 
     /**
@@ -227,6 +241,45 @@ public class PlayState implements GameState {
     private void handleWorldInteraction() {
         boolean ePressed = Input.isKeyPressed(KeyCode.E);
         if (ePressed && !eWasPressed) {
+            // --- Interactable Interaction (NPCs/Steles) ---
+            if (activeDialogue == null) {
+                InteractableEntity bestInteractable = null;
+                double minIdx = 60.0;
+                for (InteractableEntity ie : currentLevel.interactables) {
+                    double dist = Math.sqrt(
+                            Math.pow(ie.getX() - player.getX(), 2) + Math.pow(ie.getY() - player.getY(), 2));
+                    if (dist < minIdx) {
+                        minIdx = dist;
+                        bestInteractable = ie;
+                    }
+                }
+                if (bestInteractable != null) {
+                    activeDialogue = bestInteractable;
+                    dialogueIndex = 0;
+                    inDialogue = true;
+                    eWasPressed = ePressed;
+                    return; // Enter dialogue mode
+                }
+            } else {
+                // Advance dialogue
+                dialogueIndex++;
+                if (dialogueIndex >= activeDialogue.getDialogueLines().size()) {
+                    // Check for reward
+                    if (activeDialogue.getRewardItem() != null && !activeDialogue.hasGivenReward()) {
+                        if (player.getInventory().addItem(activeDialogue.getRewardItem())) {
+                            System.out.println("Received reward from " + activeDialogue.getName());
+                            activeDialogue.setHasGivenReward(true);
+                        } else {
+                            System.out.println("Inventory full! Could not receive reward.");
+                        }
+                    }
+                    activeDialogue = null;
+                    inDialogue = false;
+                }
+                eWasPressed = ePressed;
+                return;
+            }
+
             WorldItem bestItem = null;
             double minDist = 150.0; // Reach limit
 
@@ -244,6 +297,20 @@ public class PlayState implements GameState {
                     System.out.println("Picked up: " + bestItem.getItem().getName());
                 } else {
                     System.out.println("Inventory full!");
+                }
+            }
+
+            // --- Gate of Realms Interaction ---
+            if (currentLevel.gate != null) {
+                double distG = Math.sqrt(
+                        Math.pow(currentLevel.gate.getX() - player.getX(), 2)
+                                + Math.pow(currentLevel.gate.getY() - player.getY(), 2));
+                if (distG < 60) {
+                    if (player.getInventory().hasItem("realm_token")) {
+                        nextLevel();
+                    } else {
+                        System.out.println("You lack the required artifact to transcend!");
+                    }
                 }
             }
         }
@@ -297,7 +364,7 @@ public class PlayState implements GameState {
      * Handles player combat input (Left Mouse Button to fire active weapon).
      */
     private void handleCombatInput() {
-        if (inventoryOpen || showFullMap || isPaused)
+        if (inventoryOpen || showFullMap || isPaused || activeDialogue != null)
             return;
 
         if (Input.isLmbPressed() && player.canAttack()) {
@@ -318,6 +385,36 @@ public class PlayState implements GameState {
                 }
             }
         }
+    }
+
+
+    /**
+     * Transitions to the next level by regenerating the world.
+     */
+    private void nextLevel() {
+        System.out.println("Transcending to the next realm...");
+        
+        // Reset state
+        currentTime = maxTime;
+        inTribulation = false;
+        activeStrikes.clear();
+        enemies.clear();
+        projectiles.clear();
+        itemsOnGround.clear();
+        
+        // Load configuration and regenerate (Using small level for testing)
+        LevelConfig config = LevelLoader.loadConfig("/levels/level_small.json");
+        currentLevel = MapGenerator.generate(config);
+        gameMap = new GameMap(currentLevel);
+        
+        // Reposition player
+        player.setX(currentLevel.width * currentLevel.tileSize / 2.0);
+        player.setY(currentLevel.height * currentLevel.tileSize / 2.0);
+        
+        // Re-spawn initial entities and refresh cache
+        spawnInitialEnemies();
+        spawnInitialItems();
+        generateMapCache();
     }
 
     /**
@@ -519,6 +616,25 @@ public class PlayState implements GameState {
         for (LightningStrike strike : activeStrikes)
             strike.render(gc, cameraX, cameraY);
 
+        // Gate of Realms
+        if (currentLevel.gate != null) {
+            currentLevel.gate.update(0.016); // Simple fixed dt for animation
+            currentLevel.gate.render(gc, cameraX, cameraY);
+        }
+
+        // Interactables (NPCs/Steles)
+        for (InteractableEntity ie : currentLevel.interactables) {
+            ie.render(gc, cameraX, cameraY);
+            
+            // Interaction visual prompt
+            double dist = Math.sqrt(Math.pow(ie.getX() - player.getX(), 2) + Math.pow(ie.getY() - player.getY(), 2));
+            if (activeDialogue == null && dist < 70) {
+                gc.setFill(Color.GOLD);
+                gc.setFont(new javafx.scene.text.Font("Arial Bold", 14));
+                gc.fillText("[E]", ie.getX() - cameraX + 4, ie.getY() - cameraY - 8);
+            }
+        }
+
         player.render(gc, cameraX, cameraY);
 
         // --- HUD / UI ---
@@ -535,6 +651,11 @@ public class PlayState implements GameState {
         renderMinimap(gc);
         if (showFullMap)
             renderFullMap(gc);
+
+        // Dialogue UI
+        if (activeDialogue != null) {
+            renderDialogue(gc);
+        }
 
         if (isPaused) {
             gc.setFill(new Color(0, 0, 0, 0.5));
@@ -614,8 +735,8 @@ public class PlayState implements GameState {
         double x = (w - mapSize) / 2.0;
         double y = (h - mapSize) / 2.0;
 
-        // Dim background
-        gc.setFill(new Color(0, 0, 0, 0.8));
+        // Dim background (Live UI: more transparent)
+        gc.setFill(new Color(0, 0, 0, 0.45));
         gc.fillRect(0, 0, w, h);
 
         // Border
@@ -739,14 +860,6 @@ public class PlayState implements GameState {
             gc.setFont(new javafx.scene.text.Font("Arial Bold", 24));
             gc.fillText("TRIBULATION!", 20, 85);
         }
-
-        if (isPaused) {
-            gc.setFill(Color.color(0, 0, 0, 0.6));
-            gc.fillRect(0, 0, w, h);
-            gc.setFill(Color.WHITE);
-            gc.setFont(new javafx.scene.text.Font("Arial Bold", 80));
-            gc.fillText("PAUSED", w / 2 - 160, h / 2);
-        }
     }
 
     /**
@@ -768,8 +881,15 @@ public class PlayState implements GameState {
         double slotSize = 60, padding = 10, totalWidth = 5 * slotSize + 4 * padding;
         double startX = (w - totalWidth) / 2.0, startY = h - 85;
 
-        gc.setFill(Color.rgb(30, 30, 30, 0.8));
+        // Adaptive Alpha: If player is at the bottom, make UI extra transparent
+        double drawAlpha = 0.8;
+        double screenY = (player.getY() + 6) - cameraY;
+        if (screenY > h - 160) drawAlpha = 0.35;
+
+        gc.setGlobalAlpha(drawAlpha / 0.8 * 0.8); // Scale base alpha
+        gc.setFill(Color.rgb(30, 30, 30, drawAlpha));
         gc.fillRoundRect(startX - 15, startY - 15, totalWidth + 30, slotSize + 30, 15, 15);
+        gc.setGlobalAlpha(1.0);
 
         for (int i = 0; i < 5; i++) {
             double sx = startX + i * (slotSize + padding);
@@ -797,7 +917,8 @@ public class PlayState implements GameState {
      * @param h  Canvas height.
      */
     private void drawInventory(GraphicsContext gc, double w, double h) {
-        gc.setFill(Color.color(0, 0, 0, 0.75));
+        // Live UI: more transparent background
+        gc.setFill(Color.color(0, 0, 0, 0.45));
         gc.fillRect(0, 0, w, h);
 
         double panelW = 800, panelH = 500; // Reduced height
@@ -1037,5 +1158,46 @@ public class PlayState implements GameState {
         gc.setStroke(Color.WHITE);
         gc.strokeRect(mx - s / 2, my - s / 2, s, s);
         gc.setGlobalAlpha(1.0);
+    }
+
+    /**
+     * Renders the dialogue box at the bottom of the screen.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
+    private void renderDialogue(GraphicsContext gc) {
+        double width = 800;
+        double height = 150;
+        double x = (screenWidth - width) / 2.0;
+        double y = screenHeight - height - 50;
+
+        // Adaptive Alpha for dialogue
+        double drawAlpha = 0.85;
+        double screenY = (player.getY() + 6) - cameraY;
+        if (screenY > y - 20) drawAlpha = 0.4;
+
+        // Box
+        gc.setGlobalAlpha(drawAlpha);
+        gc.setFill(Color.BLACK);
+        gc.fillRoundRect(x, y, width, height, 15, 15);
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(2);
+        gc.strokeRoundRect(x, y, width, height, 15, 15);
+        gc.setGlobalAlpha(1.0);
+
+        // Name
+        gc.setFill(Color.AQUAMARINE);
+        gc.setFont(new Font("Inter", 18));
+        gc.fillText(activeDialogue.getName(), x + 20, y + 35);
+
+        // Text
+        gc.setFill(Color.WHITE);
+        gc.setFont(new Font("Inter", 16));
+        gc.fillText(activeDialogue.getDialogueLines().get(dialogueIndex), x + 20, y + 70);
+
+        // Prompt
+        gc.setFill(Color.GRAY);
+        gc.setFont(new Font("Inter", 12));
+        gc.fillText("[E] Continue", x + width - 100, y + height - 20);
     }
 }
