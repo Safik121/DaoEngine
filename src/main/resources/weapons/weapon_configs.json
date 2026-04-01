@@ -57,5 +57,16 @@
     "size": 160.0,
     "qiCost": 30.0,
     "lifeSpan": 6.0
+  },
+  "heavenly_flame_sword": {
+    "projectileType": "FIREBALL",
+    "damage": 35.0,
+    "cooldown": 0.3,
+    "speed": 8.0,
+    "size": 18.0,
+    "qiCost": 12.0,
+    "lifeSpan": 3.0,
+    "burstCount": 3,
+    "burstDelay": 0.1
   }
 }

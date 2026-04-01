@@ -15,5 +15,14 @@
   "bridgeMax": 1,
   "bridgeMinWidth": 2,
   "bridgeMaxWidth": 3,
-  "tribulationTime": 800.0
+  "tribulationTime": 8.0,
+  "initialEnemyCount": 10,
+  "tribulationInitialSpawnCount": 3,
+  "tribulationSpawnInterval": 2.5,
+  "tribulationSpawnLimit": 3,
+  "tribulationScalingFactor": 1.2,
+  "enemyPool": [
+    "bat_01",
+    "zombie_01"
+  ]
 }

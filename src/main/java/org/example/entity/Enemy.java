@@ -31,6 +31,11 @@ public class Enemy {
     /** Damage dealt to the player on contact. */
     private double damage;
 
+    /** Name of the enemy type. */
+    private String name;
+    /** Current hex color code for rendering. */
+    private String colorHex = "#0000FF";
+
     /** The range in pixels within which a regular enemy detects the player. */
     private double detectionRange = 150.0;
 
@@ -44,6 +49,7 @@ public class Enemy {
 
     /**
      * Constructs a new Enemy at the specified position.
+     * Use {@link #setStats} to initialize stats from a registry.
      * 
      * @param startX Initial X pixel coordinate.
      * @param startY Initial Y pixel coordinate.
@@ -53,18 +59,26 @@ public class Enemy {
         this.x = startX;
         this.y = startY;
         this.isTribulation = isTribulation;
+    }
 
-        if (isTribulation) {
-            this.hp = 100.0;
-            this.maxHp = 100.0;
-            this.damage = 25.0;
-            this.speed = 2.0;
-        } else {
-            this.hp = 40.0;
-            this.maxHp = 40.0;
-            this.damage = 10.0;
-            this.speed = 1.0;
-        }
+    /**
+     * Initializes the enemy statistics and appearance from a configuration.
+     * 
+     * @param name Name of the monster.
+     * @param hp Initial and max health.
+     * @param damage Attack damage.
+     * @param speed Movement speed.
+     * @param size Hitbox size.
+     * @param colorHex Rendering color.
+     */
+    public void setStats(String name, double hp, double damage, double speed, double size, String colorHex) {
+        this.name = name;
+        this.hp = hp;
+        this.maxHp = hp;
+        this.damage = damage;
+        this.speed = speed;
+        this.size = size;
+        this.colorHex = colorHex;
     }
 
     /**
@@ -198,11 +212,8 @@ public class Enemy {
      * @param camY Camera Y offset.
      */
     public void render(GraphicsContext gc, double camX, double camY) {
-        if (isTribulation) {
-            gc.setFill(Color.CRIMSON);
-        } else {
-            gc.setFill(Color.PURPLE);
-        }
+        // Draw body using configured hex color
+        gc.setFill(Color.web(colorHex));
         gc.fillRect(x - camX, y - camY, size, size);
 
         // --- HP Bar ---
@@ -238,6 +249,11 @@ public class Enemy {
     public double getMaxHP() { return maxHp; }
     /** @return true if the enemy is dead (HP <= 0). */
     public boolean isDead() { return hp <= 0; }
+    /** 
+     * Checks if this enemy was spawned as part of a Tribulation phase. 
+     * @return true if it is a Tribulation elite enemy. 
+     */
+    public boolean isTribulation() { return isTribulation; }
 
     /**
      * Reduces the enemy's HP by the specified amount.

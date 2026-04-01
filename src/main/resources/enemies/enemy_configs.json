@@ -1,0 +1,26 @@
+{
+  "bat_01": {
+    "name": "Lesser Spirit Bat",
+    "hp": 20.0,
+    "damage": 8.0,
+    "speed": 1.5,
+    "size": 18.0,
+    "color": "#8A2BE2"
+  },
+  "zombie_01": {
+    "name": "Corpse Wight",
+    "hp": 60.0,
+    "damage": 15.0,
+    "speed": 0.6,
+    "size": 28.0,
+    "color": "#2F4F4F"
+  },
+  "guard_01": {
+    "name": "Ghostly Sentinel",
+    "hp": 120.0,
+    "damage": 25.0,
+    "speed": 1.1,
+    "size": 32.0,
+    "color": "#CD5C5C"
+  }
+}

@@ -22,9 +22,11 @@ import org.example.item.WorldItem;
 import org.example.item.WeaponRegistry;
 import org.example.item.WeaponConfig;
 import org.example.item.ItemRegistry;
+import org.example.entity.EnemyRegistry;
 import org.example.entity.InteractableEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Game state where the actual gameplay takes place.
@@ -35,8 +37,17 @@ public class PlayState implements GameState {
 
     /** The current level data being played. */
     private Level currentLevel;
+    /** Current level configuration (Spawn rates, dimensions). */
+    private LevelConfig currentLevelConfig;
     /** Spatial manager for the current level. */
     private GameMap gameMap;
+    
+    /** Current state of the game loop. */
+    private enum PlayMode { PLAYING, VICTORY, GAMEOVER }
+    private PlayMode currentMode = PlayMode.PLAYING;
+
+    /** Number of enemies spawned during the current Tribulation phase. */
+    private int tribulationEnemiesSpawned = 0;
     /** The player entity. */
     private Player player;
     /** List of all active enemies in the level. */
@@ -113,17 +124,19 @@ public class PlayState implements GameState {
         // Load configurations from JSON
         WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");
         ItemRegistry.loadData("/items/items.json", "/items/recipes.json");
+        EnemyRegistry.loadConfigs("/enemies/enemy_configs.json");
 
         // Load configuration from JSON (Small level for faster testing)
-        LevelConfig config = LevelLoader.loadConfig("/levels/level_small.json");
-        currentLevel = MapGenerator.generate(config);
+        currentLevelConfig = LevelLoader.loadConfig("/levels/level_small.json");
+        currentLevel = MapGenerator.generate(currentLevelConfig);
 
         gameMap = new GameMap(currentLevel);
 
         // Player starting position (middle of the map)
-        player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
+        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0, 
+                           currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
 
-        maxTime = config.tribulationTime;
+        maxTime = currentLevelConfig.tribulationTime;
         currentTime = maxTime;
 
         enemies = new ArrayList<>();
@@ -179,11 +192,12 @@ public class PlayState implements GameState {
      * Spawns initial enemies at random valid positions away from the player.
      */
     private void spawnInitialEnemies() {
-        int enemyCount = 10; // Reduced for the small test map
-        for (int i = 0; i < enemyCount; i++) {
+        for (int i = 0; i < currentLevelConfig.initialEnemyCount; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(12, player.getX(), player.getY(), 200);
             if (pos != null) {
-                enemies.add(new Enemy(pos[0], pos[1], false));
+                // Pick a random enemy from the pool
+                String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
+                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], false, 1.0));
             }
         }
     }
@@ -193,14 +207,9 @@ public class PlayState implements GameState {
      */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
-            // Automatically add ALL registered weapons for testing
-            for (String weaponId : WeaponRegistry.getAllWeaponIds()) {
-                player.getInventory().addItem(ItemRegistry.createItem(weaponId));
-            }
-            
-            // Add some other useful test items
-            player.getInventory().addItem(ItemRegistry.createItem("pill_spirit_01"));
-            player.getInventory().addItem(ItemRegistry.createItem("realm_token"));
+            // Set up specific crafting test items
+            player.getInventory().addItem(ItemRegistry.createItem("sword_01"));
+            player.getInventory().addItem(ItemRegistry.createItem("fire_essence_01"));
         }
     }
 
@@ -213,6 +222,11 @@ public class PlayState implements GameState {
      */
     @Override
     public void update(double deltaTime) {
+        if (currentMode == PlayMode.VICTORY || currentMode == PlayMode.GAMEOVER) {
+            handleVictoryInputs();
+            return;
+        }
+
         handleToggles();
 
         if (isPaused)
@@ -220,16 +234,22 @@ public class PlayState implements GameState {
 
         if (inventoryOpen) {
             handleInventoryInteraction();
-        } else if (showFullMap) {
-            // Full map interactions could go here
         }
 
-        // --- Live Gameplay Updates ---
         // Even when Inventory or Map is open, the world continues to run!
         handleHotbarSelection();
         handleWorldInteraction();
         handleGameplayLogic(deltaTime);
         updateCamera();
+    }
+
+    /**
+     * Handles keyboard shortcuts while in a victory or game-over state.
+     */
+    private void handleVictoryInputs() {
+        if (Input.isKeyPressed(KeyCode.SPACE)) {
+            nextLevel();
+        }
     }
 
     /**
@@ -304,11 +324,8 @@ public class PlayState implements GameState {
                         Math.pow(currentLevel.gate.getX() - player.getX(), 2)
                                 + Math.pow(currentLevel.gate.getY() - player.getY(), 2));
                 if (distG < 60) {
-                    if (player.getInventory().hasItem("realm_token")) {
-                        nextLevel();
-                    } else {
-                        System.out.println("You lack the required artifact to transcend!");
-                    }
+                    System.out.println("Entering the Gate of Realms...");
+                    currentMode = PlayMode.VICTORY;
                 }
             }
         }
@@ -429,24 +446,27 @@ public class PlayState implements GameState {
         // Reset state
         currentTime = maxTime;
         inTribulation = false;
+        currentMode = PlayMode.PLAYING;
+        tribulationEnemiesSpawned = 0;
+        
         activeStrikes.clear();
         enemies.clear();
         projectiles.clear();
         itemsOnGround.clear();
         
-        // Load configuration and regenerate (Using small level for testing)
-        LevelConfig config = LevelLoader.loadConfig("/levels/level_small.json");
-        currentLevel = MapGenerator.generate(config);
+        // Load configuration and regenerate - Alternate or randomize for variety
+        String levelFile = Math.random() > 0.5 ? "/levels/level_gen.json" : "/levels/level_small.json";
+        currentLevelConfig = LevelLoader.loadConfig(levelFile);
+        currentLevel = MapGenerator.generate(currentLevelConfig);
         gameMap = new GameMap(currentLevel);
         
         // Reposition player
         player.setX(currentLevel.width * currentLevel.tileSize / 2.0);
         player.setY(currentLevel.height * currentLevel.tileSize / 2.0);
         
-        // Re-spawn initial entities and refresh cache
+        generateMapCache();
         spawnInitialEnemies();
         spawnInitialItems();
-        generateMapCache();
     }
 
     /**
@@ -512,6 +532,13 @@ public class PlayState implements GameState {
         // Clean up dead enemies
         enemies.removeIf(Enemy::isDead);
 
+        // --- Victory Check (Survival) ---
+        if (inTribulation && 
+            tribulationEnemiesSpawned >= currentLevelConfig.tribulationSpawnLimit && 
+            countLivingTribulationEnemies() == 0) {
+            currentMode = PlayMode.VICTORY;
+        }
+
         if (!inTribulation) {
             currentTime -= deltaTime;
             if (currentTime <= 0)
@@ -520,7 +547,7 @@ public class PlayState implements GameState {
             tribulationSpawnTimer -= deltaTime;
             if (tribulationSpawnTimer <= 0) {
                 spawnEnemyNearPlayer();
-                tribulationSpawnTimer = 2.0;
+                tribulationSpawnTimer = currentLevelConfig.tribulationSpawnInterval;
             }
 
             lightningTimer -= deltaTime;
@@ -565,9 +592,16 @@ public class PlayState implements GameState {
      * Used during the Tribulation phase.
      */
     private void spawnEnemyNearPlayer() {
+        if (tribulationEnemiesSpawned >= currentLevelConfig.tribulationSpawnLimit) {
+            return;
+        }
+        
         double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
-        if (pos != null)
-            enemies.add(new Enemy(pos[0], pos[1], true));
+        if (pos != null) {
+            String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
+            enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true, currentLevelConfig.tribulationScalingFactor));
+            tribulationEnemiesSpawned++;
+        }
     }
 
     /**
@@ -576,12 +610,16 @@ public class PlayState implements GameState {
      */
     private void triggerTribulation() {
         inTribulation = true;
-        for (int i = 0; i < 2; i++) {
+        tribulationEnemiesSpawned = 0;
+        for (int i = 0; i < currentLevelConfig.tribulationInitialSpawnCount; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 250);
-            if (pos != null)
-                enemies.add(new Enemy(pos[0], pos[1], true));
+            if (pos != null) {
+                String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
+                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true, currentLevelConfig.tribulationScalingFactor));
+                tribulationEnemiesSpawned++;
+            }
         }
-        tribulationSpawnTimer = 3.0;
+        tribulationSpawnTimer = currentLevelConfig.tribulationSpawnInterval;
     }
 
     /**
@@ -638,6 +676,20 @@ public class PlayState implements GameState {
                 pw.setColor(x, y, c);
             }
         }
+    }
+
+    /**
+     * Counts how many "Tribulation" enemies are currently active in the world.
+     * Used for the victory condition check and the HUD counter.
+     * 
+     * @return Number of living enemies with isTribulation == true.
+     */
+    private int countLivingTribulationEnemies() {
+        int count = 0;
+        for (Enemy e : enemies) {
+            if (e.isTribulation()) count++;
+        }
+        return count;
     }
 
     /**
@@ -719,6 +771,35 @@ public class PlayState implements GameState {
             gc.setFont(new Font("Arial", 48));
             gc.fillText("PAUSED", w / 2 - 100, h / 2);
         }
+
+        // Victory Overlay
+        if (currentMode == PlayMode.VICTORY) {
+            renderVictoryScreen(gc);
+        }
+    }
+
+    /**
+     * Renders a full-screen victory overlay.
+     * Displays completion text and instructions for level transition.
+     * 
+     * @param gc The GraphicsContext used for drawing.
+     */
+    private void renderVictoryScreen(GraphicsContext gc) {
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
+
+        // Dim background
+        gc.setFill(new Color(0, 0, 0, 0.7));
+        gc.fillRect(0, 0, w, h);
+
+        gc.setFill(Color.GOLD);
+        gc.setFont(new Font("System", 60));
+        gc.fillText("LEVEL COMPLETE!", w / 2.0 - 220, h / 2.0 - 50);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(new Font("System", 24));
+        gc.fillText("You have survived the Heavenly Punishment", w / 2.0 - 210, h / 2.0 + 20);
+        gc.fillText("Press SPACE to transcend to the next realm.", w / 2.0 - 215, h / 2.0 + 60);
     }
 
     /**
@@ -914,6 +995,14 @@ public class PlayState implements GameState {
         // Qi Counter
         gc.setFill(Color.CYAN);
         gc.fillText((int) player.getQi() + " / " + (int) player.getMaxQi(), 180, 57);
+
+        // Enemies Left (Survival Path)
+        if (inTribulation) {
+            int total = currentLevelConfig.tribulationSpawnLimit;
+            int remaining = Math.max(0, (total - tribulationEnemiesSpawned) + countLivingTribulationEnemies());
+            gc.setFill(remaining == 0 ? Color.GOLD : Color.ORANGE);
+            gc.fillText("Enemies Left: " + remaining, w - 150, 35);
+        }
 
         if (!inTribulation) {
             gc.setFill(Color.WHITE);

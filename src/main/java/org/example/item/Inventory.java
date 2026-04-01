@@ -19,8 +19,6 @@ public class Inventory {
 
     /** Current input items for the crafting station. */
     private Item[] craftingInputs;
-    /** The resulting item produced by valid crafting inputs. */
-    private Item craftingResult;
 
     /**
      * Initializes a new inventory with empty slots and no crafting result.
@@ -29,7 +27,6 @@ public class Inventory {
         mainInventory = new Item[MAIN_SLOTS];
         hotbar = new Item[HOTBAR_SLOTS];
         craftingInputs = new Item[2];
-        craftingResult = null;
     }
 
     /**
@@ -105,43 +102,16 @@ public class Inventory {
         Item temp = targetArr[targetIdx];
         targetArr[targetIdx] = sourceArr[sourceIdx];
         sourceArr[sourceIdx] = temp;
-
-        // If swapping involved crafting slots, update result
-        if (sourceArr == craftingInputs || targetArr == craftingInputs) {
-            updateCraftingResult();
-        }
     }
 
-    /**
-     * Updates the crafting result based on current inputs.
-     * TODO: Load these from a configuration file in the future.
-     */
-    private void updateCraftingResult() {
-        Item item1 = craftingInputs[0];
-        Item item2 = craftingInputs[1];
-
-        if (item1 == null || item2 == null) {
-            craftingResult = null;
-            return;
-        }
-
-        // Query the ItemRegistry for a valid recipe result
-        String resultId = ItemRegistry.getRecipeResult(item1.getId(), item2.getId());
-        if (resultId != null) {
-            craftingResult = ItemRegistry.createItem(resultId);
-        } else {
-            craftingResult = null;
-        }
-    }
 
     /**
      * Called when the player clicks on the crafting result.
-     * Consumes inputs and provides the result.
+     * Consumes inputs.
      */
     public void consumeCraftingInputs() {
         craftingInputs[0] = null;
         craftingInputs[1] = null;
-        craftingResult = null;
     }
 
     /** @return The main inventory slot array. */
@@ -161,17 +131,19 @@ public class Inventory {
 
     /** @return The currently crafted item result, if any. */
     public Item getCraftingResult() {
-        return craftingResult;
+        Item item1 = craftingInputs[0];
+        Item item2 = craftingInputs[1];
+
+        if (item1 == null || item2 == null) return null;
+
+        // Re-evaluate on the fly to avoid "ghost results" when materials are removed
+        String resultId = ItemRegistry.getRecipeResult(item1.getId(), item2.getId());
+        if (resultId != null) {
+            return ItemRegistry.createItem(resultId);
+        }
+        return null;
     }
 
-    /**
-     * Programmatically sets the crafting result (primarily for testing purposes).
-     * 
-     * @param item The item to set as the result.
-     */
-    public void setCraftingResult(Item item) {
-        this.craftingResult = item;
-    }
 
     /**
      * Checks if the inventory contains an item with the given ID.

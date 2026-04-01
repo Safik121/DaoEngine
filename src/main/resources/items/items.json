@@ -102,5 +102,18 @@
     "description": "A blade that burns with spiritual fire.",
     "type": "WEAPON",
     "weaponConfigId": "fireball_staff"
+  },
+  {
+    "id": "fire_essence_01",
+    "name": "Fire Essence",
+    "description": "Concentrated heat from a spirit vein.",
+    "type": "CRAFTING"
+  },
+  {
+    "id": "heavenly_flame_sword",
+    "name": "Heavenly Flame Sword",
+    "description": "A mythical blade forged in celestial fire.",
+    "type": "WEAPON",
+    "weaponConfigId": "heavenly_flame_sword"
   }
 ]
