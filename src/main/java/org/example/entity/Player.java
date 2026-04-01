@@ -175,10 +175,14 @@ public class Player {
     public double getHp() { return hp; }
     /** @return Player's maximum Health Points. */
     public double getMaxHp() { return maxHp; }
+    /** Sets the player's maximum HP. */
+    public void setMaxHp(double val) { this.maxHp = val; }
     /** @return Player's current Spiritual Energy (Qi). */
     public double getQi() { return qi; }
     /** @return Player's maximum Spiritual Energy capacity. */
     public double getMaxQi() { return maxQi; }
+    /** Sets the player's maximum Qi. */
+    public void setMaxQi(double val) { this.maxQi = val; }
     /** @return true if the player is currently in a meditation state. */
     public boolean isMeditating() { return isMeditating; }
     /** @return The player's inventory system. */
@@ -240,5 +244,21 @@ public class Player {
     public void takeDamage(double amount) {
         this.hp -= amount;
         if (this.hp < 0) this.hp = 0;
+    }
+
+    /**
+     * Heals the player by a specific amount, up to max HP.
+     */
+    public void heal(double amount) {
+        this.hp += amount;
+        if (this.hp > maxHp) this.hp = maxHp;
+    }
+
+    /**
+     * Restores the player's Qi by a specific amount, up to max Qi.
+     */
+    public void restoreQi(double amount) {
+        this.qi += amount;
+        if (this.qi > maxQi) this.qi = maxQi;
     }
 }

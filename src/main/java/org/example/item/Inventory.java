@@ -125,12 +125,10 @@ public class Inventory {
             return;
         }
 
-        // Example hardcoded recipe: Rusty Sword (weapon) + Qi Pill (consumable) =
-        // Improved Qi Sword
-        if ((item1.getId().equals("sword_01") && item2.getId().equals("pill_01")) ||
-                (item1.getId().equals("pill_01") && item2.getId().equals("sword_01"))) {
-            craftingResult = new Item("sword_02", "Improved Qi Sword", "A sword infused with concentrated Qi.",
-                    Item.Type.WEAPON);
+        // Query the ItemRegistry for a valid recipe result
+        String resultId = ItemRegistry.getRecipeResult(item1.getId(), item2.getId());
+        if (resultId != null) {
+            craftingResult = ItemRegistry.createItem(resultId);
         } else {
             craftingResult = null;
         }

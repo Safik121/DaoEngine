@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import org.example.entity.GateOfRealms;
 import org.example.entity.InteractableEntity;
-import org.example.item.Item;
+import org.example.item.ItemRegistry;
 
 /**
  * Generates level data procedurally based on a LevelConfig.
@@ -132,7 +132,7 @@ public class MapGenerator {
             npc.addDialogue("The path ahead is filled with tribulation, the heavens seek to test you.");
             npc.addDialogue("I have items from many realms. Take this pill, and survive the next storm.");
             // Reward: Rare Pill
-            npc.setRewardItem(new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE));
+            npc.setRewardItem(ItemRegistry.createItem("pill_qi_01"));
             level.interactables.add(npc);
         }
     }

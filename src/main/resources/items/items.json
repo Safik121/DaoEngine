@@ -1,0 +1,62 @@
+[
+  {
+    "id": "pill_qi_01",
+    "name": "Spirit Pill",
+    "description": "Ancient Qi recovery pill.",
+    "type": "CONSUMABLE",
+    "qiRestore": 20.0
+  },
+  {
+    "id": "mat_hammer_01",
+    "name": "Rusty Hammer",
+    "description": "A heavy crafting tool.",
+    "type": "CRAFTING"
+  },
+  {
+    "id": "iron_ore_01",
+    "name": "Iron Ore",
+    "description": "Raw material for forging.",
+    "type": "CRAFTING"
+  },
+  {
+    "id": "sword_01",
+    "name": "Flying Sword",
+    "description": "A basic spiritual sword.",
+    "type": "WEAPON",
+    "weaponConfigId": "sword_01"
+  },
+  {
+    "id": "fireball_staff",
+    "name": "Fireball Staff",
+    "description": "Hurl spheres of fire.",
+    "type": "WEAPON",
+    "weaponConfigId": "fireball_staff"
+  },
+  {
+    "id": "divine_eyes",
+    "name": "Divine Eyes",
+    "description": "A beam of concentrated spiritual energy.",
+    "type": "WEAPON",
+    "weaponConfigId": "divine_eyes"
+  },
+  {
+    "id": "realm_token",
+    "name": "Realm Token",
+    "description": "Required to transition between realms.",
+    "type": "MISC"
+  },
+  {
+    "id": "sword_02",
+    "name": "Improved Qi Sword",
+    "description": "A sword infused with concentrated Qi.",
+    "type": "WEAPON",
+    "weaponConfigId": "sword_01"
+  },
+  {
+    "id": "flame_sword_01",
+    "name": "Flame Sword",
+    "description": "A blade that burns with spiritual fire.",
+    "type": "WEAPON",
+    "weaponConfigId": "fireball_staff"
+  }
+]

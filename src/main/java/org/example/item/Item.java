@@ -1,5 +1,7 @@
 package org.example.item;
 
+import org.example.entity.Player;
+
 /**
  * Base class for all items in the game.
  * Items can be held in the inventory and some can be used.
@@ -28,6 +30,13 @@ public class Item {
     /** The general category of the item. */
     private Type type;
 
+    // --- Dynamic Effects (Loaded from JSON) ---
+    private double hpRestore = 0;
+    private double qiRestore = 0;
+    private double maxHpBoost = 0;
+    private double maxQiBoost = 0;
+    private String weaponConfigId;
+
     /**
      * Constructs a new Item.
      * 
@@ -45,9 +54,27 @@ public class Item {
 
     /**
      * Called when the item is used from the inventory or hotbar.
+     * Applies any configured effects to the target player.
+     * 
+     * @param player The player instance to apply effects to.
      */
-    public void use() {
-        System.out.println("Used item: " + name);
+    public void use(Player player) {
+        if (hpRestore > 0) {
+            player.heal(hpRestore);
+            System.out.println("Restored " + hpRestore + " HP.");
+        }
+        if (qiRestore > 0) {
+            player.restoreQi(qiRestore);
+            System.out.println("Restored " + qiRestore + " Qi.");
+        }
+        if (maxHpBoost > 0) {
+            player.setMaxHp(player.getMaxHp() + maxHpBoost);
+            System.out.println("Increased max HP by " + maxHpBoost);
+        }
+        if (maxQiBoost > 0) {
+            player.setMaxQi(player.getMaxQi() + maxQiBoost);
+            System.out.println("Increased max Qi by " + maxQiBoost);
+        }
     }
 
     // Getters and Setters
@@ -67,8 +94,25 @@ public class Item {
      */
     public WeaponConfig getWeaponConfig() {
         if (type == Type.WEAPON) {
-            return WeaponRegistry.getWeaponConfig(id);
+            String configId = (weaponConfigId != null) ? weaponConfigId : id;
+            return WeaponRegistry.getWeaponConfig(configId);
         }
         return null;
     }
+
+    // --- Getters and Setters for Effects ---
+    public double getHpRestore() { return hpRestore; }
+    public void setHpRestore(double val) { this.hpRestore = val; }
+    
+    public double getQiRestore() { return qiRestore; }
+    public void setQiRestore(double val) { this.qiRestore = val; }
+    
+    public double getMaxHpBoost() { return maxHpBoost; }
+    public void setMaxHpBoost(double val) { this.maxHpBoost = val; }
+    
+    public double getMaxQiBoost() { return maxQiBoost; }
+    public void setMaxQiBoost(double val) { this.maxQiBoost = val; }
+
+    public String getWeaponConfigId() { return weaponConfigId; }
+    public void setWeaponConfigId(String id) { this.weaponConfigId = id; }
 }

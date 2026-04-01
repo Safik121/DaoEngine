@@ -6,14 +6,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.input.MouseButton;
 
 import org.example.Input;
 import org.example.entity.Enemy;
 import org.example.entity.Player;
 import org.example.entity.Projectile;
 import org.example.entity.LightningStrike;
-import org.example.entity.GateOfRealms;
 import org.example.level.GameMap;
 import org.example.level.Level;
 import org.example.level.LevelLoader;
@@ -23,6 +21,7 @@ import org.example.item.Item;
 import org.example.item.WorldItem;
 import org.example.item.WeaponRegistry;
 import org.example.item.WeaponConfig;
+import org.example.item.ItemRegistry;
 import org.example.entity.InteractableEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,8 +108,9 @@ public class PlayState implements GameState {
     private List<WorldItem> itemsOnGround;
 
     public PlayState() {
-        // Load weapon configurations
+        // Load configurations from JSON
         WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");
+        ItemRegistry.loadData("/items/items.json", "/items/recipes.json");
 
         // Load configuration from JSON (Small level for faster testing)
         LevelConfig config = LevelLoader.loadConfig("/levels/level_small.json");
@@ -166,15 +166,11 @@ public class PlayState implements GameState {
         // Spawn some items on the ground for testing
         double[] pos1 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 100);
         if (pos1 != null)
-            itemsOnGround.add(new WorldItem(
-                    new Item("pill_qi_01", "Spirit Pill", "Ancient Qi recovery pill.", Item.Type.CONSUMABLE), pos1[0],
-                    pos1[1]));
+            itemsOnGround.add(new WorldItem(ItemRegistry.createItem("pill_qi_01"), pos1[0], pos1[1]));
 
         double[] pos2 = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 150);
         if (pos2 != null)
-            itemsOnGround.add(
-                    new WorldItem(new Item("mat_hammer_01", "Rusty Hammer", "Crafting material.", Item.Type.CRAFTING),
-                            pos2[0], pos2[1]));
+            itemsOnGround.add(new WorldItem(ItemRegistry.createItem("mat_hammer_01"), pos2[0], pos2[1]));
     }
 
     /**
@@ -195,14 +191,10 @@ public class PlayState implements GameState {
      */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
-            player.getInventory()
-                    .addItem(new Item("sword_01", "Flying Sword", "A basic spiritual sword.", Item.Type.WEAPON));
-            player.getInventory()
-                    .addItem(new Item("fireball_staff", "Fireball Staff", "Hurl spheres of fire.", Item.Type.WEAPON));
-            player.getInventory().addItem(new Item("divine_eyes", "Divine Eyes",
-                    "A beam of concentrated spiritual energy.", Item.Type.WEAPON));
-            // Add Realm Token for testing Gate interaction
-            player.getInventory().addItem(new Item("realm_token", "Realm Token", "Required to transition between realms.", Item.Type.MISC));
+            player.getInventory().addItem(ItemRegistry.createItem("sword_01"));
+            player.getInventory().addItem(ItemRegistry.createItem("fireball_staff"));
+            player.getInventory().addItem(ItemRegistry.createItem("divine_eyes"));
+            player.getInventory().addItem(ItemRegistry.createItem("realm_token"));
         }
     }
 
@@ -352,9 +344,17 @@ public class PlayState implements GameState {
             player.setActiveHotbarSlot(4);
 
         if (Input.isKeyPressed(KeyCode.F)) {
-            Item activeItem = player.getInventory().getItemInHotbar(player.getActiveHotbarSlot());
-            if (activeItem != null)
-                activeItem.use();
+            int activeSlot = player.getActiveHotbarSlot();
+            Item activeItem = player.getInventory().getItemInHotbar(activeSlot);
+            if (activeItem != null) {
+                // Apply effects to player
+                activeItem.use(player);
+                
+                // If it's a consumable (like a pill), remove it after use
+                if (activeItem.getType() == Item.Type.CONSUMABLE) {
+                    player.getInventory().getHotbar()[activeSlot] = null;
+                }
+            }
         }
 
         handleCombatInput();

@@ -1,0 +1,12 @@
+[
+  {
+    "input1": "sword_01",
+    "input2": "pill_qi_01",
+    "result": "sword_02"
+  },
+  {
+    "input1": "sword_01",
+    "input2": "iron_ore_01",
+    "result": "flame_sword_01"
+  }
+]
