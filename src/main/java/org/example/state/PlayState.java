@@ -898,6 +898,11 @@ public class PlayState implements GameState {
         gc.setStroke(Color.WHITE);
         gc.strokeRect(20, 20, 300, 20);
 
+        // HP Counter
+        gc.setFill(Color.WHITE);
+        gc.setFont(new javafx.scene.text.Font("Arial Bold", 12));
+        gc.fillText((int) player.getHp() + " / " + (int) player.getMaxHp(), 330, 35);
+
         // Qi
         gc.setFill(Color.rgb(50, 50, 50, 0.7));
         gc.fillRect(20, 45, 150, 15);
@@ -905,6 +910,10 @@ public class PlayState implements GameState {
         gc.fillRect(20, 45, (player.getQi() / player.getMaxQi()) * 150, 15);
         gc.setStroke(Color.WHITE);
         gc.strokeRect(20, 45, 150, 15);
+
+        // Qi Counter
+        gc.setFill(Color.CYAN);
+        gc.fillText((int) player.getQi() + " / " + (int) player.getMaxQi(), 180, 57);
 
         if (!inTribulation) {
             gc.setFill(Color.WHITE);
@@ -994,6 +1003,11 @@ public class PlayState implements GameState {
         gc.setLineWidth(1);
         gc.strokeLine(panelX + 460, panelY + 30, panelX + 460, panelY + panelH - 30);
 
+        // Usage Hint
+        gc.setFill(Color.GRAY);
+        gc.setFont(new javafx.scene.text.Font("Arial Italic", 14));
+        gc.fillText("Right-click consumables to use immediately.", panelX + 40, panelY + panelH - 20);
+
         double slotSize = 70, padding = 12;
         double startX = panelX + 40, startY = panelY + 80;
 
@@ -1066,12 +1080,42 @@ public class PlayState implements GameState {
      * Manages click detection for all UI elements (Grid, Hotbar, Crafting).
      */
     private void handleInventoryInteraction() {
-        double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768; // Hardcoded for logic consistency
+        double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768;
         boolean lmbPressed = Input.isLmbPressed();
+        boolean rmbPressed = Input.isRmbPressed();
 
         double panelW = 800, panelH = 550, panelX = (w - panelW) / 2, panelY = (h - panelH) / 2;
         double slotSize = 70, padding = 12, startX = panelX + 40, startY = panelY + 80;
 
+        // -- Right Click to Use --
+        if (rmbPressed && !rmbWasPressed && draggedItem == null) {
+            // Main slots
+            for (int i = 0; i < 25; i++) {
+                double sx = startX + (i % 5) * (slotSize + padding), sy = startY + (i / 5) * (slotSize + padding);
+                if (isInside(mx, my, sx, sy, slotSize)) {
+                    Item item = player.getInventory().getMainInventory()[i];
+                    if (item != null) {
+                        item.use(player);
+                        if (item.getType() == Item.Type.CONSUMABLE)
+                            player.getInventory().getMainInventory()[i] = null;
+                    }
+                }
+            }
+            // Hotbar Slots
+            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
+            for (int i = 0; i < 5; i++) {
+                if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
+                    Item item = player.getInventory().getHotbar()[i];
+                    if (item != null) {
+                        item.use(player);
+                        if (item.getType() == Item.Type.CONSUMABLE)
+                            player.getInventory().getHotbar()[i] = null;
+                    }
+                }
+            }
+        }
+
+        // -- Left Click to Drag --
         if (lmbPressed && !lmbWasPressed && draggedItem == null) {
             // Main slots
             for (int i = 0; i < 25; i++) {
@@ -1088,8 +1132,8 @@ public class PlayState implements GameState {
             }
             // Crafting
             if (draggedItem == null) {
-                double cX = panelX + 30 + 500, cYs[] = { panelY + 120, panelY + 320 }; // Adjusted
-                cX = panelX + 530;
+                double cX = panelX + 530;
+                double[] cYs = { panelY + 120, panelY + 320 };
                 for (int i = 0; i < 2; i++) {
                     if (isInside(mx, my, cX, cYs[i], slotSize)) {
                         draggedItem = player.getInventory().getCraftingInputs()[i];
@@ -1113,7 +1157,7 @@ public class PlayState implements GameState {
                     }
                 }
             }
-            // Hotbar (HUD only)
+            // Hotbar
             if (draggedItem == null) {
                 double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
                 for (int i = 0; i < 5; i++) {
@@ -1134,6 +1178,7 @@ public class PlayState implements GameState {
             handleDrop(mx, my, w, h, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
         }
         lmbWasPressed = lmbPressed;
+        rmbWasPressed = rmbPressed;
     }
 
     /**

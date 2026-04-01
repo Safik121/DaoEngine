@@ -7,11 +7,27 @@
     "qiRestore": 20.0
   },
   {
+    "id": "pill_hp_01",
+    "name": "Healing Pill",
+    "description": "Restores 40 Health Points.",
+    "type": "CONSUMABLE",
+    "hpRestore": 40.0
+  },
+  {
     "id": "pill_spirit_01",
     "name": "Grand Spirit Pill",
-    "description": "A refined pill that restores vast amounts of Qi.",
+    "description": "Refined pill. Permanently increases Max Qi and restores vast amounts.",
     "type": "CONSUMABLE",
-    "qiRestore": 100.0
+    "qiRestore": 100.0,
+    "maxQiBoost": 25.0
+  },
+  {
+    "id": "pill_maxhp_01",
+    "name": "Vitality Pill",
+    "description": "Rare medicine. Permanently increases Max HP.",
+    "type": "CONSUMABLE",
+    "maxHpBoost": 20.0,
+    "hpRestore": 20.0
   },
   {
     "id": "mat_hammer_01",
