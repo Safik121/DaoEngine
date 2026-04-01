@@ -5,7 +5,6 @@ import javafx.scene.paint.Color;
 import org.example.level.GameMap;
 import org.example.level.Pathfinder;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -26,11 +25,11 @@ public class Enemy {
     /** Movement speed of the enemy. */
     private double speed;
     /** Health points of the enemy. */
-    private int hp;
+    private double hp;
     /** The maximum health points the enemy can have. */
-    private int maxHp;
+    private double maxHp;
     /** Damage dealt to the player on contact. */
-    private int damage;
+    private double damage;
 
     /** The range in pixels within which a regular enemy detects the player. */
     private double detectionRange = 150.0;
@@ -56,14 +55,14 @@ public class Enemy {
         this.isTribulation = isTribulation;
 
         if (isTribulation) {
-            this.hp = 100;
-            this.maxHp = 100;
-            this.damage = 25;
+            this.hp = 100.0;
+            this.maxHp = 100.0;
+            this.damage = 25.0;
             this.speed = 2.0;
         } else {
-            this.hp = 40;
-            this.maxHp = 40;
-            this.damage = 10;
+            this.hp = 40.0;
+            this.maxHp = 40.0;
+            this.damage = 10.0;
             this.speed = 1.0;
         }
     }
@@ -234,10 +233,9 @@ public class Enemy {
     /** @return Enemy's hitbox size in pixels. */
     public double getSize() { return size; }
     /** @return Current HP of the enemy. */
-    /** @return Current HP of the enemy. */
-    public int getHP() { return hp; }
+    public double getHP() { return hp; }
     /** @return Maximum HP of the enemy. */
-    public int getMaxHP() { return maxHp; }
+    public double getMaxHP() { return maxHp; }
     /** @return true if the enemy is dead (HP <= 0). */
     public boolean isDead() { return hp <= 0; }
 
@@ -245,7 +243,7 @@ public class Enemy {
      * Reduces the enemy's HP by the specified amount.
      * @param amount The damage amount.
      */
-    public void takeDamage(int amount) {
+    public void takeDamage(double amount) {
         this.hp -= amount;
         if (hp < 0) hp = 0;
     }

@@ -106,6 +106,8 @@ public class PlayState implements GameState {
     private List<Projectile> projectiles;
     /** List of items dropped on the ground in the game world. */
     private List<WorldItem> itemsOnGround;
+    /** Tracks active fire bursts that spawn projectiles over time. */
+    private List<BurstTracker> pendingBursts = new ArrayList<>();
 
     public PlayState() {
         // Load configurations from JSON
@@ -191,9 +193,13 @@ public class PlayState implements GameState {
      */
     private void addTestItems() {
         if (player != null && player.getInventory() != null) {
-            player.getInventory().addItem(ItemRegistry.createItem("sword_01"));
-            player.getInventory().addItem(ItemRegistry.createItem("fireball_staff"));
-            player.getInventory().addItem(ItemRegistry.createItem("divine_eyes"));
+            // Automatically add ALL registered weapons for testing
+            for (String weaponId : WeaponRegistry.getAllWeaponIds()) {
+                player.getInventory().addItem(ItemRegistry.createItem(weaponId));
+            }
+            
+            // Add some other useful test items
+            player.getInventory().addItem(ItemRegistry.createItem("pill_spirit_01"));
             player.getInventory().addItem(ItemRegistry.createItem("realm_token"));
         }
     }
@@ -362,6 +368,7 @@ public class PlayState implements GameState {
 
     /**
      * Handles player combat input (Left Mouse Button to fire active weapon).
+     * Now supports spread and burst firing patterns.
      */
     private void handleCombatInput() {
         if (inventoryOpen || showFullMap || isPaused || activeDialogue != null)
@@ -372,17 +379,42 @@ public class PlayState implements GameState {
             if (activeItem != null && activeItem.getType() == Item.Type.WEAPON) {
                 WeaponConfig wConfig = activeItem.getWeaponConfig();
                 if (wConfig != null) {
-                    // Check Qi cost
+                    // Check Qi cost (Full burst cost upfront for simplicity)
                     if (player.spendQi(wConfig.qiCost)) {
-                        // Calculate angle to mouse
+                        // Calculate base angle to mouse
                         double mx = Input.getMouseX() + cameraX;
                         double my = Input.getMouseY() + cameraY;
-                        double angle = Math.atan2(my - (player.getY() + 6), mx - (player.getX() + 6));
+                        double baseAngle = Math.atan2(my - (player.getY() + 6), mx - (player.getX() + 6));
 
-                        projectiles.add(new Projectile(player.getX() + 6, player.getY() + 6, angle, wConfig));
+                        if (wConfig.burstCount > 1) {
+                            // Start a burst sequence
+                            pendingBursts.add(new BurstTracker(wConfig, baseAngle));
+                        } else {
+                            // Handle single/spread shot
+                            fireShot(wConfig, baseAngle);
+                        }
                         player.setAttackCooldown(wConfig.cooldown);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Creates and adds projectiles to the world based on weapon configuration.
+     * Handles spread-shot patterns.
+     */
+    private void fireShot(WeaponConfig config, double baseAngle) {
+        if (config.projectileCount <= 1) {
+            projectiles.add(new Projectile(player.getX() + 6, player.getY() + 6, baseAngle, config, player));
+        } else {
+            // Spread shot logic
+            double startAngle = baseAngle - Math.toRadians(config.spreadAngle / 2.0);
+            double angleStep = (config.projectileCount > 1) ? Math.toRadians(config.spreadAngle) / (config.projectileCount - 1) : 0;
+
+            for (int i = 0; i < config.projectileCount; i++) {
+                double currentAngle = startAngle + (angleStep * i);
+                projectiles.add(new Projectile(player.getX() + 6, player.getY() + 6, currentAngle, config, player));
             }
         }
     }
@@ -429,6 +461,20 @@ public class PlayState implements GameState {
             return;
         }
 
+        // Update active bursts
+        for (int i = pendingBursts.size() - 1; i >= 0; i--) {
+            BurstTracker burst = pendingBursts.get(i);
+            burst.timer -= deltaTime;
+            if (burst.timer <= 0) {
+                fireShot(burst.config, burst.angle);
+                burst.shotsFired++;
+                burst.timer = burst.config.burstDelay;
+                if (burst.shotsFired >= burst.config.burstCount) {
+                    pendingBursts.remove(i);
+                }
+            }
+        }
+
         player.update(currentLevel, deltaTime);
         for (Enemy enemy : enemies)
             enemy.update(gameMap, player, enemies, deltaTime);
@@ -441,8 +487,17 @@ public class PlayState implements GameState {
             // Collision with enemies
             for (Enemy enemy : enemies) {
                 if (p.checkCollision(enemy)) {
-                    enemy.takeDamage(p.getDamage());
-                    if (p.getType() != WeaponConfig.ProjectileType.BEAM) {
+                    double finalDamage = p.getDamage();
+                    // Scale continuous damage types by deltaTime for frame-rate independence
+                    if (p.getType() == WeaponConfig.ProjectileType.BEAM || 
+                        p.getType() == WeaponConfig.ProjectileType.AOE_ZONE) {
+                        finalDamage *= deltaTime;
+                    }
+                    
+                    enemy.takeDamage(finalDamage);
+                    
+                    if (p.getType() != WeaponConfig.ProjectileType.BEAM &&
+                        p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
                         p.deactivate();
                         break;
                     }
@@ -1088,44 +1143,58 @@ public class PlayState implements GameState {
     private void handleDrop(double mx, double my, double w, double h, double px, double py, double pw, double ph,
             double ss, double pd, double sx, double sy) {
         boolean dropped = false;
-        // Main
+        Item[] wrapper = new Item[] { draggedItem };
+
+        // Main Inventory Slots
         for (int i = 0; i < 25; i++) {
             if (isInside(mx, my, sx + (i % 5) * (ss + pd), sy + (i / 5) * (ss + pd), ss)) {
-                player.getInventory().swapSlots(new Item[] { draggedItem }, 0, player.getInventory().getMainInventory(),
-                        i);
+                player.getInventory().swapSlots(wrapper, 0, player.getInventory().getMainInventory(), i);
                 dropped = true;
                 break;
             }
         }
-        // Crafting
+        // Crafting Input Slots
         if (!dropped) {
             double cX = px + 530, cYs[] = { py + 120, py + 320 };
             for (int i = 0; i < 2; i++) {
                 if (isInside(mx, my, cX, cYs[i], ss)) {
-                    player.getInventory().swapSlots(new Item[] { draggedItem }, 0,
-                            player.getInventory().getCraftingInputs(), i);
+                    player.getInventory().swapSlots(wrapper, 0, player.getInventory().getCraftingInputs(), i);
                     dropped = true;
                     break;
                 }
             }
         }
-        // HUD Hotbar
+        // HUD Hotbar Slots
         if (!dropped) {
             double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
             for (int i = 0; i < 5; i++) {
                 if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
-                    player.getInventory().swapSlots(new Item[] { draggedItem }, 0, player.getInventory().getHotbar(),
-                            i);
+                    player.getInventory().swapSlots(wrapper, 0, player.getInventory().getHotbar(), i);
                     dropped = true;
                     break;
                 }
             }
         }
 
-        if (!dropped && sourceArr != null)
-            sourceArr[sourceIdx] = draggedItem;
-        else if (!dropped && sourceArr == null)
-            player.getInventory().addItem(draggedItem);
+        if (dropped) {
+            Item swappedOut = wrapper[0];
+            if (swappedOut != null) {
+                // If there was an item in the target slot, move it back to the source or backpack
+                if (sourceArr != null) {
+                    sourceArr[sourceIdx] = swappedOut;
+                } else {
+                    player.getInventory().addItem(swappedOut); // From crafting result back to inventory
+                }
+            }
+        } else {
+            // Not dropped into any slot, return to original position
+            if (sourceArr != null) {
+                sourceArr[sourceIdx] = draggedItem;
+            } else {
+                player.getInventory().addItem(draggedItem);
+            }
+        }
+
         draggedItem = null;
         sourceArr = null;
         sourceIdx = -1;
@@ -1199,5 +1268,20 @@ public class PlayState implements GameState {
         gc.setFill(Color.GRAY);
         gc.setFont(new Font("Inter", 12));
         gc.fillText("[E] Continue", x + width - 100, y + height - 20);
+    }
+
+    /**
+     * Helper class to track successive shots in a rapid-fire burst.
+     */
+    private static class BurstTracker {
+        final WeaponConfig config;
+        final double angle;
+        int shotsFired = 0;
+        double timer = 0;
+
+        BurstTracker(WeaponConfig config, double angle) {
+            this.config = config;
+            this.angle = angle;
+        }
     }
 }

@@ -26,32 +26,36 @@ public class Projectile {
     /** Hitbox diameter or beam width in pixels. */
     protected double size;
     /** Damage power to apply to targets on impact. */
-    protected int damage;
+    protected double damage;
     /** Remaining time (in seconds) before the projectile expires. */
     protected double lifeSpan;
     /** The specific behavior type of this projectile. */
     protected WeaponConfig.ProjectileType type;
     /** Whether the projectile is currently active and should be updated/rendered. */
     protected boolean active = true;
+    /** The player instance that fired this projectile, used for following in AOE. */
+    protected Player owner;
 
     /**
      * Constructs a new Projectile based on a weapon configuration.
      * 
-     * @param x The starting X coordinate.
-     * @param y The starting Y coordinate.
-     * @param angle The direction of travel or orientation in radians.
+     * @param x      The starting X coordinate.
+     * @param y      The starting Y coordinate.
+     * @param angle  The direction of travel or orientation in radians.
      * @param config The weapon configuration defining speed, damage, and type.
+     * @param owner  The player entity (used for following in AOE_ZONE).
      */
-    public Projectile(double x, double y, double angle, WeaponConfig config) {
+    public Projectile(double x, double y, double angle, WeaponConfig config, Player owner) {
         this.x = x;
         this.y = y;
         this.angle = angle;
+        this.owner = owner;
         this.size = config.size;
         this.damage = config.damage;
         this.lifeSpan = config.lifeSpan;
         this.type = config.projectileType;
         this.length = config.length;
-        
+
         this.vx = Math.cos(angle) * config.speed;
         this.vy = Math.sin(angle) * config.speed;
     }
@@ -65,15 +69,21 @@ public class Projectile {
      */
     public void update(GameMap gameMap, double deltaTime) {
         double dtFactor = deltaTime * 60.0;
-        if (type != WeaponConfig.ProjectileType.BEAM) {
+        
+        if (type == WeaponConfig.ProjectileType.AOE_ZONE && owner != null) {
+            // Follow player and keep it centered
+            this.x = owner.getX() + 6;
+            this.y = owner.getY() + 6;
+        } else if (type != WeaponConfig.ProjectileType.BEAM) {
             x += vx * dtFactor;
             y += vy * dtFactor;
         }
+        
         lifeSpan -= deltaTime;
         if (lifeSpan <= 0) active = false;
 
-        // Wall collision (beams ignore walls for now for simplicity)
-        if (type != WeaponConfig.ProjectileType.BEAM && 
+        // Wall collision (beams and AOE zones ignore walls)
+        if (active && type != WeaponConfig.ProjectileType.BEAM && type != WeaponConfig.ProjectileType.AOE_ZONE &&
             gameMap.isSolid((int)(x / gameMap.getTileSize()), (int)(y / gameMap.getTileSize()))) {
             active = false;
         }
@@ -107,10 +117,19 @@ public class Projectile {
             case BEAM:
                 gc.setStroke(Color.CYAN);
                 gc.setLineWidth(size);
-                gc.setGlobalAlpha(lifeSpan * 5); // Gradual fade-out
+                gc.setGlobalAlpha(Math.min(1.0, lifeSpan * 5)); // Gradual fade-out
                 double bx2 = x + Math.cos(angle) * length;
                 double by2 = y + Math.sin(angle) * length;
                 gc.strokeLine(x - camX, y - camY, bx2 - camX, by2 - camY);
+                gc.setGlobalAlpha(1.0);
+                break;
+            case AOE_ZONE:
+                gc.setGlobalAlpha(0.3);
+                gc.setFill(Color.MEDIUMPURPLE);
+                gc.setStroke(Color.PURPLE);
+                gc.setLineWidth(3);
+                gc.fillOval(x - camX - size / 2, y - camY - size / 2, size, size);
+                gc.strokeOval(x - camX - size / 2, y - camY - size / 2, size, size);
                 gc.setGlobalAlpha(1.0);
                 break;
         }
@@ -133,6 +152,11 @@ public class Projectile {
             double x2 = x + Math.cos(angle) * length;
             double y2 = y + Math.sin(angle) * length;
             return distToSegment(ex, ey, x, y, x2, y2) < eRadius + size/2;
+        } else if (type == WeaponConfig.ProjectileType.AOE_ZONE) {
+            // Circle-to-circle collision
+            double distSq = (ex - x) * (ex - x) + (ey - y) * (ey - y);
+            double radSum = eRadius + size / 2;
+            return distSq < radSum * radSum;
         } else {
             return x > enemy.getX() && x < enemy.getX() + enemy.getSize() && 
                    y > enemy.getY() && y < enemy.getY() + enemy.getSize();
@@ -158,7 +182,7 @@ public class Projectile {
     /** Disables the projectile, causing it to be removed on the next update. */
     public void deactivate() { this.active = false; }
     /** @return The damage value this projectile carries. */
-    public int getDamage() { return damage; }
+    public double getDamage() { return damage; }
     /** @return The behavior type of this projectile. */
     public WeaponConfig.ProjectileType getType() { return type; }
     /** @return The current X coordinate. */

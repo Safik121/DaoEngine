@@ -1,30 +1,61 @@
 {
   "sword_01": {
     "projectileType": "FLYING_SWORD",
-    "damage": 15,
-    "cooldown": 0.5,
-    "speed": 8.0,
-    "size": 24.0,
-    "qiCost": 5.0,
+    "damage": 12.0,
+    "cooldown": 0.4,
+    "speed": 7.0,
+    "size": 10.0,
+    "qiCost": 3.0,
     "lifeSpan": 2.0
   },
   "fireball_staff": {
     "projectileType": "FIREBALL",
-    "damage": 40,
-    "cooldown": 1.5,
-    "speed": 6.0,
-    "size": 12.0,
-    "qiCost": 15.0,
-    "lifeSpan": 5.0
+    "damage": 20.0,
+    "cooldown": 0.8,
+    "speed": 5.0,
+    "size": 15.0,
+    "qiCost": 10.0,
+    "lifeSpan": 4.0
   },
   "divine_eyes": {
     "projectileType": "BEAM",
-    "damage": 5,
-    "cooldown": 0.1,
+    "damage": 40.0,
+    "cooldown": 0.5,
     "speed": 0.0,
-    "size": 4.0,
-    "length": 500.0,
-    "qiCost": 2.0,
+    "size": 10.0,
+    "length": 400.0,
+    "qiCost": 15.0,
     "lifeSpan": 0.2
+  },
+  "triple_fireball": {
+    "projectileType": "FIREBALL",
+    "damage": 15.0,
+    "cooldown": 1.0,
+    "speed": 5.0,
+    "size": 12.0,
+    "qiCost": 20.0,
+    "lifeSpan": 3.0,
+    "projectileCount": 3,
+    "spreadAngle": 30.0
+  },
+  "spirit_burst": {
+    "projectileType": "FLYING_SWORD",
+    "damage": 8.0,
+    "cooldown": 1.5,
+    "speed": 9.0,
+    "size": 8.0,
+    "qiCost": 25.0,
+    "lifeSpan": 2.0,
+    "burstCount": 5,
+    "burstDelay": 0.08
+  },
+  "spiritual_aura": {
+    "projectileType": "AOE_ZONE",
+    "damage": 15.0,
+    "cooldown": 2.0,
+    "speed": 0.0,
+    "size": 160.0,
+    "qiCost": 30.0,
+    "lifeSpan": 6.0
   }
 }

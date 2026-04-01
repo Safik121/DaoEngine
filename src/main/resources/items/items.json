@@ -7,6 +7,13 @@
     "qiRestore": 20.0
   },
   {
+    "id": "pill_spirit_01",
+    "name": "Grand Spirit Pill",
+    "description": "A refined pill that restores vast amounts of Qi.",
+    "type": "CONSUMABLE",
+    "qiRestore": 100.0
+  },
+  {
     "id": "mat_hammer_01",
     "name": "Rusty Hammer",
     "description": "A heavy crafting tool.",
@@ -38,6 +45,27 @@
     "description": "A beam of concentrated spiritual energy.",
     "type": "WEAPON",
     "weaponConfigId": "divine_eyes"
+  },
+  {
+    "id": "triple_fireball",
+    "name": "Triple Fireball Staff",
+    "description": "Fires three fireballs in a fan pattern.",
+    "type": "WEAPON",
+    "weaponConfigId": "triple_fireball"
+  },
+  {
+    "id": "spirit_burst",
+    "name": "Spirit Burst Sword",
+    "description": "Unleashes a rapid sequence of flying swords.",
+    "type": "WEAPON",
+    "weaponConfigId": "spirit_burst"
+  },
+  {
+    "id": "spiritual_aura",
+    "name": "Spiritual Aura",
+    "description": "Creates a protective zone of spiritual energy.",
+    "type": "WEAPON",
+    "weaponConfigId": "spiritual_aura"
   },
   {
     "id": "realm_token",

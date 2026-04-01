@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Global registry and management system for weapon configurations.
@@ -47,5 +48,12 @@ public class WeaponRegistry {
      */
     public static WeaponConfig getWeaponConfig(String id) {
         return weapons.get(id);
+    }
+
+    /**
+     * @return A set of all weapon identifiers currently registered in the system.
+     */
+    public static Set<String> getAllWeaponIds() {
+        return weapons.keySet();
     }
 }
