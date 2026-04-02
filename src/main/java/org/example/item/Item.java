@@ -36,6 +36,8 @@ public class Item {
     private double maxHpBoost = 0;
     private double maxQiBoost = 0;
     private String weaponConfigId;
+    /** Unique ID of the sprite for this item from assets.json. */
+    private String spriteId;
 
     /**
      * Constructs a new Item.
@@ -115,4 +117,7 @@ public class Item {
 
     public String getWeaponConfigId() { return weaponConfigId; }
     public void setWeaponConfigId(String id) { this.weaponConfigId = id; }
+    
+    public String getSpriteId() { return spriteId; }
+    public void setSpriteId(String spriteId) { this.spriteId = spriteId; }
 }

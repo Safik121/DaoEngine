@@ -2,6 +2,7 @@ package org.example.entity;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.example.AssetRegistry;
 import org.example.item.WeaponConfig;
 import org.example.level.GameMap;
 
@@ -35,6 +36,8 @@ public class Projectile {
     protected boolean active = true;
     /** The player instance that fired this projectile, used for following in AOE. */
     protected Player owner;
+    /** Timer (seconds) used for cycling through animation frames defined in AssetRegistry. */
+    protected double animationTimer = 0;
 
     /**
      * Constructs a new Projectile based on a weapon configuration.
@@ -68,6 +71,7 @@ public class Projectile {
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     public void update(GameMap gameMap, double deltaTime) {
+        animationTimer += deltaTime;
         double dtFactor = deltaTime * 60.0;
         
         if (type == WeaponConfig.ProjectileType.AOE_ZONE && owner != null) {
@@ -100,24 +104,38 @@ public class Projectile {
     public void render(GraphicsContext gc, double camX, double camY) {
         if (!active) return;
         
+        javafx.scene.image.Image sprite = null;
+        int frameIndex = 0;
+
         switch (type) {
             case FIREBALL:
-                gc.setFill(Color.ORANGERED);
-                gc.fillOval(x - camX - size/2, y - camY - size/2, size, size);
+                frameIndex = (int) (animationTimer / 0.08) % 4;
+                sprite = AssetRegistry.getSprite("fireball", frameIndex);
+                if (sprite != null) {
+                    gc.drawImage(sprite, x - camX - size/2, y - camY - size/2, size, size);
+                } else {
+                    gc.setFill(Color.ORANGERED);
+                    gc.fillOval(x - camX - size/2, y - camY - size/2, size, size);
+                }
                 break;
             case FLYING_SWORD:
-                gc.setFill(Color.SILVER);
-                gc.setStroke(Color.WHITE);
-                gc.setLineWidth(2);
-                // Draw a simple "sword" line pointing in movement direction
-                double endX = x - vx * 2;
-                double endY = y - vy * 2;
-                gc.strokeLine(x - camX, y - camY, endX - camX, endY - camY);
+                sprite = AssetRegistry.getSprite("flying_sword", 0);
+                if (sprite != null) {
+                    // Rotate and draw sword (simplified or just draw icon)
+                    gc.drawImage(sprite, x - camX - size/2, y - camY - size/2, size, size);
+                } else {
+                    gc.setFill(Color.SILVER);
+                    gc.setStroke(Color.WHITE);
+                    gc.setLineWidth(2);
+                    double endX = x - vx * 2;
+                    double endY = y - vy * 2;
+                    gc.strokeLine(x - camX, y - camY, endX - camX, endY - camY);
+                }
                 break;
             case BEAM:
                 gc.setStroke(Color.CYAN);
                 gc.setLineWidth(size);
-                gc.setGlobalAlpha(Math.min(1.0, lifeSpan * 5)); // Gradual fade-out
+                gc.setGlobalAlpha(Math.min(1.0, lifeSpan * 5));
                 double bx2 = x + Math.cos(angle) * length;
                 double by2 = y + Math.sin(angle) * length;
                 gc.strokeLine(x - camX, y - camY, bx2 - camX, by2 - camY);

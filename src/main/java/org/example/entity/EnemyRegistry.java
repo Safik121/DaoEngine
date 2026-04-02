@@ -58,7 +58,7 @@ public class EnemyRegistry {
         double finalSpeed = config.speed * (isTribulation ? 1.2 : 1.0); // Slight speed boost for elites
 
         Enemy enemy = new Enemy(x, y, isTribulation);
-        enemy.setStats(config.name, finalHp, finalDamage, finalSpeed, config.size, config.color);
+        enemy.setStats(config.id, config.name, finalHp, finalDamage, finalSpeed, config.size, config.color);
         return enemy;
     }
 

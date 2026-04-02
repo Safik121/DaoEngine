@@ -30,22 +30,26 @@ public class WorldItem {
     }
 
     /**
-     * Renders the item in the world with a golden border and orange fill.
+     * Renders the item in the world using its sprite if available.
      * 
      * @param gc The GraphicsContext to draw on.
      * @param camX Camera X offset.
      * @param camY Camera Y offset.
      */
     public void render(GraphicsContext gc, double camX, double camY) {
-        // Draw a small crate-like icon with an indicator color
-        gc.setFill(Color.web("#d4af37")); // Golden border
-        gc.fillRect(x - camX - 2, y - camY - 2, size + 4, size + 4);
-        
-        gc.setFill(Color.ORANGE);
-        gc.fillRect(x - camX, y - camY, size, size);
-        
-        gc.setFill(Color.WHITE);
-        gc.setFont(new javafx.scene.text.Font("Arial", 8));
+        String spriteId = item.getSpriteId();
+        javafx.scene.image.Image sprite = (spriteId != null) ? org.example.AssetRegistry.getSprite(spriteId, 0) : null;
+
+        if (sprite != null) {
+            gc.drawImage(sprite, x - camX, y - camY, size, size);
+        } else {
+            // Fallback: Draw a small crate-like icon with an indicator color
+            gc.setFill(Color.web("#d4af37")); // Golden border
+            gc.fillRect(x - camX - 2, y - camY - 2, size + 4, size + 4);
+            
+            gc.setFill(Color.ORANGE);
+            gc.fillRect(x - camX, y - camY, size, size);
+        }
     }
 
     /**

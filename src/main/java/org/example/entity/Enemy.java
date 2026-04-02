@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.example.level.GameMap;
 import org.example.level.Pathfinder;
+import org.example.AssetRegistry;
 import java.util.List;
 import java.util.Random;
 
@@ -33,8 +34,12 @@ public class Enemy {
 
     /** Name of the enemy type. */
     private String name;
+    /** ID of the enemy type for registry lookups. */
+    private String id;
     /** Current hex color code for rendering. */
     private String colorHex = "#0000FF";
+    /** Timer (seconds) for cycling through animation frames. */
+    private double animationTimer = 0;
 
     /** The range in pixels within which a regular enemy detects the player. */
     private double detectionRange = 150.0;
@@ -64,6 +69,7 @@ public class Enemy {
     /**
      * Initializes the enemy statistics and appearance from a configuration.
      * 
+     * @param id Unique identifier.
      * @param name Name of the monster.
      * @param hp Initial and max health.
      * @param damage Attack damage.
@@ -71,7 +77,8 @@ public class Enemy {
      * @param size Hitbox size.
      * @param colorHex Rendering color.
      */
-    public void setStats(String name, double hp, double damage, double speed, double size, String colorHex) {
+    public void setStats(String id, String name, double hp, double damage, double speed, double size, String colorHex) {
+        this.id = id;
         this.name = name;
         this.hp = hp;
         this.maxHp = hp;
@@ -90,6 +97,8 @@ public class Enemy {
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     public void update(GameMap gameMap, Player player, List<Enemy> allEnemies, double deltaTime) {
+        animationTimer += deltaTime;
+        if (animationTimer > 10.0) animationTimer -= 10.0;
         // 1. Calculate distance to player
         double distX = player.getX() + 6 - (this.x + size / 2);
         double distY = player.getY() + 6 - (this.y + size / 2);
@@ -212,9 +221,18 @@ public class Enemy {
      * @param camY Camera Y offset.
      */
     public void render(GraphicsContext gc, double camX, double camY) {
-        // Draw body using configured hex color
-        gc.setFill(Color.web(colorHex));
-        gc.fillRect(x - camX, y - camY, size, size);
+        // --- 1. Draw Sprite ---
+        int frameCount = 4; // Assuming 4 frames for basic enemies
+        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+
+        javafx.scene.image.Image sprite = AssetRegistry.getSprite(id, frameIndex);
+        if (sprite != null) {
+            gc.drawImage(sprite, x - camX, y - camY, size, size);
+        } else {
+            // Draw body using configured hex color
+            gc.setFill(Color.web(colorHex));
+            gc.fillRect(x - camX, y - camY, size, size);
+        }
 
         // --- HP Bar ---
         double barW = size;

@@ -24,6 +24,7 @@ import org.example.item.WeaponConfig;
 import org.example.item.ItemRegistry;
 import org.example.entity.EnemyRegistry;
 import org.example.entity.InteractableEntity;
+import org.example.AssetRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -57,6 +58,8 @@ public class PlayState implements GameState {
     private double maxTime = 60.0;
     /** Remaining time before the next Tribulation phase. */
     private double currentTime = maxTime;
+    /** Timer for map animations (e.g., water). */
+    private double mapAnimationTimer = 0;
     /** Flag indicating if a Tribulation event is currently active. */
     private boolean inTribulation = false;
     /** Timer for periodic enemy spawning during Tribulation. */
@@ -125,6 +128,7 @@ public class PlayState implements GameState {
         WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");
         ItemRegistry.loadData("/items/items.json", "/items/recipes.json");
         EnemyRegistry.loadConfigs("/enemies/enemy_configs.json");
+        AssetRegistry.loadAssets("/assets.json");
 
         // Load configuration from JSON (Small level for faster testing)
         currentLevelConfig = LevelLoader.loadConfig("/levels/level_small.json");
@@ -241,6 +245,9 @@ public class PlayState implements GameState {
         handleWorldInteraction();
         handleGameplayLogic(deltaTime);
         updateCamera();
+        
+        mapAnimationTimer += deltaTime;
+        if (mapAnimationTimer > 10.0) mapAnimationTimer -= 10.0;
     }
 
     /**
@@ -940,20 +947,29 @@ public class PlayState implements GameState {
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
                 int tileType = currentLevel.data.get(y).get(x);
-                if (tileType == 1)
-                    gc.setFill(Color.DARKGRAY);
-                else if (tileType == 2)
-                    gc.setFill(Color.BLUE);
-                else if (tileType == 3)
-                    gc.setFill(Color.MEDIUMPURPLE);
-                else if (tileType == 4)
-                    gc.setFill(Color.DARKGREEN.deriveColor(0, 1, 0.8, 1)); // Lighter green for variety
-                else if (tileType == 5)
-                    gc.setFill(Color.SADDLEBROWN); // Bridge
-                else
-                    gc.setFill(Color.DARKGREEN);
+                String spriteId = "tile_grass";
+                int frameIndex = 0;
 
-                gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                if (tileType == 1) spriteId = "tile_wall";
+                else if (tileType == 2) {
+                    spriteId = "tile_water";
+                    frameIndex = (int) (mapAnimationTimer / 0.5) % 2;
+                }
+                else if (tileType == 3) spriteId = "tile_vein";
+                else if (tileType == 5) spriteId = "tile_bridge";
+
+                javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
+                if (sprite != null) {
+                    gc.drawImage(sprite, x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                } else {
+                    // Fallback to colors
+                    if (tileType == 1) gc.setFill(Color.DARKGRAY);
+                    else if (tileType == 2) gc.setFill(Color.BLUE);
+                    else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
+                    else if (tileType == 5) gc.setFill(Color.SADDLEBROWN);
+                    else gc.setFill(Color.DARKGREEN);
+                    gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                }
                 // Optional: Grid lines for debugging (too heavy for 400x400?)
                 // gc.setStroke(Color.BLACK);
                 // gc.strokeRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize,

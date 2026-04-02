@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import org.example.Input;
 import org.example.item.Inventory;
 import org.example.level.Level;
+import org.example.AssetRegistry;
 import java.util.List;
 
 /**
@@ -37,6 +38,8 @@ public class Player {
     private int activeHotbarSlot = 0;
     /** Current attack cooldown in frames. */
     private double attackCooldown = 0;
+    /** Timer (seconds) for cycling through animation frames. */
+    private double animationTimer = 0;
 
     /**
      * Constructs a new Player at the specified starting position.
@@ -60,6 +63,9 @@ public class Player {
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     public void update(Level level, double deltaTime) {
+        animationTimer += deltaTime;
+        if (animationTimer > 10.0) animationTimer -= 10.0;
+
         // --- 1. Meditation Logic ---
         isMeditating = Input.isKeyPressed(KeyCode.SPACE);
         
@@ -145,22 +151,43 @@ public class Player {
 
     /**
      * Renders the player entity using the provided GraphicsContext.
+     * Selects the correct sprite from AssetRegistry based on player state.
      * 
      * @param gc The GraphicsContext used for drawing.
      * @param camX Camera X offset.
      * @param camY Camera Y offset.
      */
     public void render(GraphicsContext gc, double camX, double camY) {
-        // Change color and add aura when meditating
+        // --- 1. Draw Sprite ---
+        String spriteId = "player_idle";
+        
+        if (isMeditating) {
+            spriteId = "player_meditate";
+        } else if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.S) || 
+                   Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.D)) {
+            spriteId = "player_walk";
+        }
+
+        // Calculate frame index
+        int frameCount = spriteId.equals("player_walk") ? 4 : 1;
+        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+        
+        javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
+        if (sprite != null) {
+            gc.drawImage(sprite, x - camX, y - camY, size, size);
+        } else {
+            // Fallback to blue square
+            gc.setFill(Color.BLUE);
+            gc.fillRect(x - camX, y - camY, size, size);
+        }
+
+        // --- 2. Meditation Aura ---
         if (isMeditating) {
             gc.setGlobalAlpha(0.3);
             gc.setFill(Color.LIGHTBLUE);
             gc.fillOval(x - camX - 5, y - camY - 5, size + 10, size + 10);
             gc.setGlobalAlpha(1.0);
         }
-
-        gc.setFill(Color.BLUE);
-        gc.fillRect(x - camX, y - camY, size, size);
     }
 
     /** @return Player's current X coordinate in pixels. */

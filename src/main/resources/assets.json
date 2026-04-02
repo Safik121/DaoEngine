@@ -1,0 +1,17 @@
+{
+  "player_idle": { "path": "/textures/player.png", "frames": 1, "width": 32, "height": 32 },
+  "player_walk": { "path": "/textures/player_walk.png", "frames": 4, "width": 32, "height": 32, "frameDuration": 0.12 },
+  "player_meditate": { "path": "/textures/player_meditate.png", "frames": 1, "width": 32, "height": 32 },
+  
+  "bat_01": { "path": "/textures/bat.png", "frames": 4, "width": 24, "height": 24, "frameDuration": 0.1 },
+  "zombie_01": { "path": "/textures/zombie.png", "frames": 4, "width": 32, "height": 32, "frameDuration": 0.2 },
+  
+  "tile_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_water": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
+  "tile_vein": { "path": "/textures/vein.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_bridge": { "path": "/textures/bridge.png", "frames": 1, "width": 32, "height": 32 },
+  
+  "fireball": { "path": "/textures/fireball.png", "frames": 4, "width": 16, "height": 16, "frameDuration": 0.08 },
+  "flying_sword": { "path": "/textures/sword.png", "frames": 1, "width": 24, "height": 24 }
+}

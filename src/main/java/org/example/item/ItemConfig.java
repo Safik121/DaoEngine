@@ -26,4 +26,6 @@ public class ItemConfig {
 
     /** Optional ID pointing to a specialized entry in weapon_configs.json. */
     public String weaponConfigId;
+    /** Unique mapping ID in assets.json for the item's texture. */
+    public String spriteId;
 }

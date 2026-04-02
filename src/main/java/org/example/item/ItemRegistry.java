@@ -67,6 +67,7 @@ public class ItemRegistry {
         item.setMaxHpBoost(config.maxHpBoost);
         item.setMaxQiBoost(config.maxQiBoost);
         item.setWeaponConfigId(config.weaponConfigId);
+        item.setSpriteId(config.spriteId);
         
         return item;
     }
