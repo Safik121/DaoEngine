@@ -36,6 +36,8 @@ public class Enemy {
     private String name;
     /** ID of the enemy type for registry lookups. */
     private String id;
+    /** The scaling factor applied to stats at spawn. */
+    private double scaling = 1.0;
     /** Current hex color code for rendering. */
     private String colorHex = "#0000FF";
     /** Timer (seconds) for cycling through animation frames. */
@@ -76,8 +78,9 @@ public class Enemy {
      * @param speed Movement speed.
      * @param size Hitbox size.
      * @param colorHex Rendering color.
+     * @param scaling Stats multiplier.
      */
-    public void setStats(String id, String name, double hp, double damage, double speed, double size, String colorHex) {
+    public void setStats(String id, String name, double hp, double damage, double speed, double size, String colorHex, double scaling) {
         this.id = id;
         this.name = name;
         this.hp = hp;
@@ -86,6 +89,7 @@ public class Enemy {
         this.speed = speed;
         this.size = size;
         this.colorHex = colorHex;
+        this.scaling = scaling;
     }
 
     /**
@@ -259,6 +263,10 @@ public class Enemy {
     public double getX() { return x; }
     /** @return Enemy's current Y coordinate in pixels. */
     public double getY() { return y; }
+    /** @return Unique identifier of the enemy type. */
+    public String getId() { return id; }
+    /** @return The scaling factor applied at spawn. */
+    public double getScaling() { return scaling; }
     /** @return Enemy's hitbox size in pixels. */
     public double getSize() { return size; }
     /** @return Current HP of the enemy. */
@@ -272,6 +280,14 @@ public class Enemy {
      * @return true if it is a Tribulation elite enemy. 
      */
     public boolean isTribulation() { return isTribulation; }
+
+    /**
+     * Directly sets the current HP, useful for loading from save.
+     * @param hp The new HP value.
+     */
+    public void setHP(double hp) {
+        this.hp = hp;
+    }
 
     /**
      * Reduces the enemy's HP by the specified amount.

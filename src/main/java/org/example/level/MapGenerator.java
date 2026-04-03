@@ -16,16 +16,27 @@ import org.example.item.ItemRegistry;
  * Generates level data procedurally based on a LevelConfig.
  */
 public class MapGenerator {
-    private static final Random random = new Random();
-
     /**
-     * Generates a new level procedurally based on the provided configuration.
+     * Generates a new level procedurally with a random seed.
      * 
-     * @param config The generation parameters (size, clusters, etc.).
+     * @param config The generation parameters.
      * @return A fully populated Level object.
      */
     public static Level generate(LevelConfig config) {
+        return generate(config, new Random().nextLong());
+    }
+
+    /**
+     * Generates a new level procedurally using a specific seed.
+     * 
+     * @param config The generation parameters.
+     * @param seed   The specific seed for reproduction.
+     * @return A fully populated Level object.
+     */
+    public static Level generate(LevelConfig config, long seed) {
+        Random random = new Random(seed);
         Level level = new Level();
+        level.seed = seed;
         level.name = config.name;
         level.width = config.width;
         level.height = config.height;
@@ -56,7 +67,7 @@ public class MapGenerator {
             int cx = random.nextInt(level.width - 20) + 10;
             int cy = random.nextInt(level.height - 20) + 10;
             int size = random.nextInt(config.veinMaxSize - config.veinMinSize + 1) + config.veinMinSize;
-            drawBlob(level, cx, cy, size, 3);
+            drawBlob(level, cx, cy, size, 3, random);
         }
 
         // 4. Generate Lakes (2)
@@ -64,13 +75,13 @@ public class MapGenerator {
             for (int i = 0; i < config.lakeCount; i++) {
                 int cx = random.nextInt(level.width - 30) + 15;
                 int cy = random.nextInt(level.height - 30) + 15;
-                drawBlob(level, cx, cy, config.lakeSize, 2);
+                drawBlob(level, cx, cy, config.lakeSize, 2, random);
             }
         }
 
         // 4.5 Generate Rivers (2)
         if (config.hasRivers) {
-            generateRivers(level, config);
+            generateRivers(level, config, random);
         }
 
         // 5. Scatter Terrain Variety (4) - Small rocks/grass tufts for visual feedback
@@ -103,18 +114,18 @@ public class MapGenerator {
         }
 
         // 7. Spawn NPCs and Steles
-        spawnInteractables(level);
+        spawnInteractables(level, random);
 
         return level;
     }
 
     /**
-     * Spawns a few NPCs and Steles at random grass positions.
+     * Spawns NPCs and Steles at random grass positions.
      */
-    private static void spawnInteractables(Level level) {
+    private static void spawnInteractables(Level level, Random random) {
         // Spawn 2 Steles
         for (int i = 0; i < 2; i++) {
-            double[] pos = findRandomGrass(level);
+            double[] pos = findRandomGrass(level, random);
             if (pos != null) {
                 InteractableEntity stele = new InteractableEntity(pos[0], pos[1], "Ancient Stele", InteractableEntity.Type.STELE);
                 stele.addDialogue("The writing on this stone is ancient...");
@@ -125,22 +136,18 @@ public class MapGenerator {
         }
 
         // Spawn 1 NPC (The Mysterious Traveler)
-        double[] npos = findRandomGrass(level);
+        double[] npos = findRandomGrass(level, random);
         if (npos != null) {
             InteractableEntity npc = new InteractableEntity(npos[0], npos[1], "Mysterious Traveler", InteractableEntity.Type.NPC);
             npc.addDialogue("Greetings, young cultivator.");
             npc.addDialogue("The path ahead is filled with tribulation, the heavens seek to test you.");
             npc.addDialogue("I have items from many realms. Take this pill, and survive the next storm.");
-            // Reward: Rare Pill
             npc.setRewardItem(ItemRegistry.createItem("pill_qi_01"));
             level.interactables.add(npc);
         }
     }
 
-    /**
-     * Helper to find a random grass tile position.
-     */
-    private static double[] findRandomGrass(Level level) {
+    private static double[] findRandomGrass(Level level, Random random) {
         for (int attempt = 0; attempt < 100; attempt++) {
             int rx = random.nextInt(level.width);
             int ry = random.nextInt(level.height);
@@ -151,16 +158,7 @@ public class MapGenerator {
         return null;
     }
 
-    /**
-     * Draws a randomized "blob" of a certain tile type (used for lakes/veins).
-     * 
-     * @param level The level to draw into.
-     * @param cx Center X coordinate.
-     * @param cy Center Y coordinate.
-     * @param size Maximum radius of the blob.
-     * @param type The tile ID to use.
-     */
-    private static void drawBlob(Level level, int cx, int cy, int size, int type) {
+    private static void drawBlob(Level level, int cx, int cy, int size, int type, Random random) {
         if (size <= 0) {
             if (cx >= 0 && cx < level.width && cy >= 0 && cy < level.height) {
                 level.data.get(cy).set(cx, type);
@@ -179,17 +177,11 @@ public class MapGenerator {
         }
     }
 
-    /**
-     * Generates curved rivers using a randomized A* pathfinding algorithm.
-     * 
-     * @param level The level to draw into.
-     * @param config The level configuration containing river and bridge parameters.
-     */
-    private static void generateRivers(Level level, LevelConfig config) {
+    private static void generateRivers(Level level, LevelConfig config, Random random) {
         List<List<int[]>> allPaths = new ArrayList<>();
         List<Boolean> verticalFlags = new ArrayList<>();
         List<boolean[]> inLakes = new ArrayList<>();
-        java.util.Set<String> bridgeCenters = new java.util.HashSet<>();
+        Set<String> bridgeCenters = new HashSet<>();
 
         for (int i = 0; i < config.riverCount; i++) {
             int startX, startY, endX, endY;
@@ -208,7 +200,7 @@ public class MapGenerator {
                 isOverallVertical = false;
             }
 
-            List<int[]> path = findRiverPath(level, startX, startY, endX, endY);
+            List<int[]> path = findRiverPath(level, startX, startY, endX, endY, random);
             if (path != null) {
                 allPaths.add(path);
                 verticalFlags.add(isOverallVertical);
@@ -224,14 +216,12 @@ public class MapGenerator {
             }
         }
 
-        // 1. Draw all rivers using a temporary tile type (6) to distinguish from lakes (2)
         for (List<int[]> path : allPaths) {
             for (int[] p : path) {
                 drawRiverBlob(level, p[0], p[1], 1 + random.nextInt(2), 6);
             }
         }
 
-        // 2. Draw all bridges
         for (int i = 0; i < allPaths.size(); i++) {
             List<int[]> path = allPaths.get(i);
             boolean isOverallVertical = verticalFlags.get(i);
@@ -244,10 +234,8 @@ public class MapGenerator {
                 attempts++;
                 if (path.size() < 40) break;
                 int idx = 20 + random.nextInt(path.size() - 40);
-                
                 if (idx < 0 || idx >= path.size() || inLake[idx]) continue;
                 
-                // Safe distance from lakes (check a window around idx along the path)
                 boolean nearLake = false;
                 for (int win = -10; win <= 10; win++) {
                     int wIdx = idx + win;
@@ -259,8 +247,6 @@ public class MapGenerator {
                 if (nearLake) continue;
                 
                 int[] p = path.get(idx);
-                
-                // Prevent bridges from being too close together (on any river)
                 boolean tooClose = false;
                 for (String center : bridgeCenters) {
                     String[] parts = center.split(",");
@@ -274,10 +260,7 @@ public class MapGenerator {
                 if (tooClose) continue;
 
                 int bThickness = config.bridgeMinWidth + random.nextInt(config.bridgeMaxWidth - config.bridgeMinWidth + 1);
-                int estRiverWidth = 5; 
-                int span = (3 * estRiverWidth + 2) / 2;
-                
-                // If river is overall vertical, bridge is horizontal. If horizontal, bridge is vertical.
+                int span = 8;
                 if (drawBridgeSafe(level, p[0], p[1], bThickness, span, !isOverallVertical)) {
                     bridgeCenters.add(p[0] + "," + p[1]);
                     bridgesPlaced++;
@@ -285,7 +268,6 @@ public class MapGenerator {
             }
         }
 
-        // 3. Convert all temporary river tiles (6) back to water (2)
         for (int y = 0; y < level.height; y++) {
             List<Integer> row = level.data.get(y);
             for (int x = 0; x < level.width; x++) {
@@ -296,19 +278,7 @@ public class MapGenerator {
         }
     }
 
-    /**
-     * Draws a solid bridge ONLY if it doesn't overlap with a lake (type 2).
-     * 
-     * @param level The level to draw into.
-     * @param x Center X coordinate of the bridge.
-     * @param y Center Y coordinate of the bridge.
-     * @param thickness Thickness of the bridge in tiles.
-     * @param span Half-length of the bridge span.
-     * @param orientationVertical True for North-South orientation, false for East-West.
-     * @return True if the bridge was successfully drawn, false if it was skipped due to lake overlap.
-     */
     private static boolean drawBridgeSafe(Level level, int x, int y, int thickness, int span, boolean orientationVertical) {
-        // First check for lakes with a 1-pixel safety margin to account for jagged boundaries
         int margin = 1;
         if (orientationVertical) {
             for (int ty = y - span - margin; ty <= y + span + margin; ty++) {
@@ -328,7 +298,6 @@ public class MapGenerator {
             }
         }
 
-        // No lakes found, draw the bridge
         if (orientationVertical) {
             for (int ty = y - span; ty <= y + span; ty++) {
                 for (int tx = x - (thickness - 1) / 2; tx <= x + thickness / 2; tx++) {
@@ -349,22 +318,12 @@ public class MapGenerator {
         return true;
     }
 
-    /**
-     * Specialized blob drawer for rivers that does not overwrite lake tiles (2).
-     * 
-     * @param level The level to draw into.
-     * @param cx Center X coordinate.
-     * @param cy Center Y coordinate.
-     * @param size Radius of the blob.
-     * @param type The tile ID to use.
-     */
     private static void drawRiverBlob(Level level, int cx, int cy, int size, int type) {
         for (int ty = cy - size; ty <= cy + size; ty++) {
             for (int tx = cx - size; tx <= cx + size; tx++) {
                 if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
                     double distSq = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
                     if (distSq <= size * size) {
-                        // Only set if not already a lake (2)
                         if (level.data.get(ty).get(tx) != 2) {
                             level.data.get(ty).set(tx, type);
                         }
@@ -374,17 +333,7 @@ public class MapGenerator {
         }
     }
 
-    /**
-     * Finds a curved path for a river using randomized A* pathfinding.
-     * 
-     * @param level The level for bounds checking.
-     * @param startX Starting X coordinate.
-     * @param startY Starting Y coordinate.
-     * @param endX Ending X coordinate.
-     * @param endY Ending Y coordinate.
-     * @return A list of [x, y] coordinates forming the path, or null if no path found.
-     */
-    private static List<int[]> findRiverPath(Level level, int startX, int startY, int endX, int endY) {
+    private static List<int[]> findRiverPath(Level level, int startX, int startY, int endX, int endY, Random random) {
         PriorityQueue<RiverNode> openSet = new PriorityQueue<>();
         Map<String, RiverNode> allNodes = new HashMap<>();
 
@@ -411,7 +360,6 @@ public class MapGenerator {
                 String key = nx + "," + ny;
                 if (closedSet.contains(key)) continue;
 
-                // Random jitter cost to force curves
                 double jitter = random.nextDouble() * 15.0; 
                 double moveCost = (Math.abs(offset[0]) + Math.abs(offset[1]) == 2 ? 1.414 : 1.0) + jitter;
                 
@@ -427,7 +375,6 @@ public class MapGenerator {
                         neighbor.g = tentativeG;
                         neighbor.f = tentativeG + neighbor.h;
                         neighbor.parent = current;
-                        // Reprioritize by re-adding to PriorityQueue
                         openSet.remove(neighbor);
                         openSet.add(neighbor);
                     }
@@ -437,25 +384,10 @@ public class MapGenerator {
         return null;
     }
 
-    /**
-     * Calculates the Euclidean heuristic for river pathfinding.
-     * 
-     * @param x1 Start X.
-     * @param y1 Start Y.
-     * @param x2 End X.
-     * @param y2 End Y.
-     * @return The distance between points.
-     */
     private static double riverHeuristic(int x1, int y1, int x2, int y2) {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
-    /**
-     * Reconstructs the path from the end node back to the start.
-     * 
-     * @param node The end node of the path.
-     * @return A list of coordinates from start to end.
-     */
     private static List<int[]> reconstructRiverPath(RiverNode node) {
         List<int[]> path = new ArrayList<>();
         RiverNode current = node;
@@ -466,32 +398,11 @@ public class MapGenerator {
         return path;
     }
 
-    /**
-     * Internal node class for the A* river pathfinding algorithm.
-     */
     private static class RiverNode implements Comparable<RiverNode> {
-        /** X coordinate on the grid. */
-        int x;
-        /** Y coordinate on the grid. */
-        int y;
-        /** G-cost: actual cost from the start node. */
-        double g;
-        /** H-cost: estimated cost to the end node. */
-        double h;
-        /** F-cost: total estimated cost (G + H). */
-        double f;
-        /** Reference to the parent node for path reconstruction. */
+        int x, y;
+        double g, h, f;
         RiverNode parent;
 
-        /**
-         * Creates a new river node.
-         * 
-         * @param x X coordinate.
-         * @param y Y coordinate.
-         * @param g Start cost.
-         * @param h Heuristic cost.
-         * @param parent Parent node.
-         */
         RiverNode(int x, int y, double g, double h, RiverNode parent) {
             this.x = x;
             this.y = y;

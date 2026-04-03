@@ -48,12 +48,8 @@ public class LevelConfig {
     // --- Enemy Spawning Configuration ---
     /** The number of enemies to spawn at the start of the level. */
     public int initialEnemyCount = 10;
-    /** The number of enemies to spawn immediately when Tribulation triggers. */
-    public int tribulationInitialSpawnCount = 2;
-    /** Time interval in seconds between enemy spawns during Tribulation. */
-    public double tribulationSpawnInterval = 3.0;
-    /** Total number of enemies that will spawn during the Tribulation phase. */
-    public int tribulationSpawnLimit = 20;
+    /** Total number of enemies that will spawn in one wave when the Tribulation phase begins. */
+    public int tribulationTotalEnemies = 20;
     /** Multiplier for enemy HP and Damage during Tribulation. */
     public double tribulationScalingFactor = 2.0;
     /** List of enemy IDs that are allowed to spawn in this level. */

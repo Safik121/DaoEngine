@@ -29,7 +29,14 @@ public class EnemyRegistry {
                 return;
             }
             // Load a map of EnemyConfigs (ID -> Config)
-            configs = mapper.readValue(is, new TypeReference<Map<String, EnemyConfig>>() {});
+            Map<String, EnemyConfig> loaded = mapper.readValue(is, new TypeReference<Map<String, EnemyConfig>>() {});
+            
+            // Manually populate the 'id' field of each config from its map key
+            for (Map.Entry<String, EnemyConfig> entry : loaded.entrySet()) {
+                entry.getValue().id = entry.getKey();
+            }
+            
+            configs = loaded;
             System.out.println("Loaded " + configs.size() + " enemy configurations.");
         } catch (Exception e) {
             System.err.println("Fatal error loading EnemyRegistry data!");
@@ -58,7 +65,7 @@ public class EnemyRegistry {
         double finalSpeed = config.speed * (isTribulation ? 1.2 : 1.0); // Slight speed boost for elites
 
         Enemy enemy = new Enemy(x, y, isTribulation);
-        enemy.setStats(config.id, config.name, finalHp, finalDamage, finalSpeed, config.size, config.color);
+        enemy.setStats(config.id, config.name, finalHp, finalDamage, finalSpeed, config.size, config.color, scaling);
         return enemy;
     }
 

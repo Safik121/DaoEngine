@@ -17,6 +17,7 @@ public class LevelLoader {
      */
     public static Level loadLevel(String filePath) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             // Access the resources folder for the JSON file
             InputStream is = LevelLoader.class.getResourceAsStream(filePath);
@@ -40,6 +41,7 @@ public class LevelLoader {
      */
     public static LevelConfig loadConfig(String filePath) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             InputStream is = LevelLoader.class.getResourceAsStream(filePath);
             if (is == null) {

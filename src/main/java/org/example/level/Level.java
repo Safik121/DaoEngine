@@ -24,4 +24,6 @@ public class Level {
     public GateOfRealms gate;
     /** List of interactive entities (NPCs, Steles). */
     public List<InteractableEntity> interactables = new ArrayList<>();
+    /** The random seed used to generate this level. */
+    public long seed;
 }

@@ -17,9 +17,7 @@
   "bridgeMaxWidth": 3,
   "tribulationTime": 8.0,
   "initialEnemyCount": 10,
-  "tribulationInitialSpawnCount": 3,
-  "tribulationSpawnInterval": 2.5,
-  "tribulationSpawnLimit": 3,
+  "tribulationTotalEnemies": 3,
   "tribulationScalingFactor": 1.2,
   "enemyPool": [
     "bat_01",

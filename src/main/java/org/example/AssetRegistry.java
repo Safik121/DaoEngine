@@ -11,7 +11,8 @@ import java.util.Map;
 
 /**
  * Registry for loading and managing textures and animations.
- * Provides a unified way to retrieve sprites for characters, tiles, and effects.
+ * Provides a unified way to retrieve sprites for characters, tiles, and
+ * effects.
  */
 public class AssetRegistry {
     private static final Map<String, SpriteMetadata> spriteMap = new HashMap<>();
@@ -20,6 +21,7 @@ public class AssetRegistry {
 
     /**
      * Loads the asset manifest from JSON.
+     * 
      * @param manifestPath Path to the assets.json file.
      */
     public static void loadAssets(String manifestPath) {
@@ -29,7 +31,8 @@ public class AssetRegistry {
                 System.err.println("Asset manifest not found: " + manifestPath);
                 return;
             }
-            Map<String, SpriteMetadata> loaded = mapper.readValue(is, new TypeReference<Map<String, SpriteMetadata>>() {});
+            Map<String, SpriteMetadata> loaded = mapper.readValue(is, new TypeReference<Map<String, SpriteMetadata>>() {
+            });
             spriteMap.putAll(loaded);
             System.out.println("Loaded " + spriteMap.size() + " sprite definitions.");
         } catch (Exception e) {
@@ -40,13 +43,15 @@ public class AssetRegistry {
 
     /**
      * Gets a specific image or frame. Caches images on first load.
-     * @param spriteId Unique ID from assets.json (e.g. "player_walk").
+     * 
+     * @param spriteId   Unique ID from assets.json (e.g. "player_walk").
      * @param frameIndex The index of the frame in the sprite sheet.
      * @return The Image object (or a sub-image for clipping).
      */
     public static Image getSprite(String spriteId, int frameIndex) {
         SpriteMetadata meta = spriteMap.get(spriteId);
-        if (meta == null) return null;
+        if (meta == null)
+            return null;
 
         Image sheet = imageCache.computeIfAbsent(meta.path, path -> {
             InputStream is = AssetRegistry.class.getResourceAsStream(path);
@@ -57,8 +62,10 @@ public class AssetRegistry {
             return new Image(is);
         });
 
-        if (sheet == null) return null;
-        if (meta.frames <= 1) return sheet;
+        if (sheet == null)
+            return null;
+        if (meta.frames <= 1)
+            return sheet;
 
         // Clip frame from horizontal sheet
         int frameW = meta.width;

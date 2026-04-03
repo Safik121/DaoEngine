@@ -57,6 +57,20 @@ public class Player {
     }
 
     /**
+     * Updates player statistics from external data (e.g. during a Game Load).
+     * @param hp Current health.
+     * @param maxHp Maximum health capacity.
+     * @param qi Current spiritual energy.
+     * @param maxQi Maximum spiritual energy capacity.
+     */
+    public void setStats(double hp, double maxHp, double qi, double maxQi) {
+        this.hp = hp;
+        this.maxHp = maxHp;
+        this.qi = qi;
+        this.maxQi = maxQi;
+    }
+
+    /**
      * Updates the player's movement and cooldowns based on input.
      * 
      * @param level The current level data for collision checks.

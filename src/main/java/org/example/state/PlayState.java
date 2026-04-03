@@ -28,6 +28,8 @@ import org.example.AssetRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.example.SaveData;
+import org.example.SaveManager;
 
 /**
  * Game state where the actual gameplay takes place.
@@ -47,8 +49,10 @@ public class PlayState implements GameState {
     private enum PlayMode { PLAYING, VICTORY, GAMEOVER }
     private PlayMode currentMode = PlayMode.PLAYING;
 
-    /** Number of enemies spawned during the current Tribulation phase. */
-    private int tribulationEnemiesSpawned = 0;
+    /** Current state of the Pause Menu. */
+    private enum PauseMenuState { MAIN, SAVE_SELECT, LOAD_SELECT }
+    private PauseMenuState currentPauseState = PauseMenuState.MAIN;
+
     /** The player entity. */
     private Player player;
     /** List of all active enemies in the level. */
@@ -58,12 +62,12 @@ public class PlayState implements GameState {
     private double maxTime = 60.0;
     /** Remaining time before the next Tribulation phase. */
     private double currentTime = maxTime;
+    /** The random seed used to generate the current level. */
+    private long currentMapSeed;
     /** Timer for map animations (e.g., water). */
     private double mapAnimationTimer = 0;
     /** Flag indicating if a Tribulation event is currently active. */
     private boolean inTribulation = false;
-    /** Timer for periodic enemy spawning during Tribulation. */
-    private double tribulationSpawnTimer = 0;
     /** Timer for periodic lightning strikes during Tribulation. */
     private double lightningTimer = 0;
     /** List of all active lightning strikes during Tribulation. */
@@ -90,6 +94,10 @@ public class PlayState implements GameState {
     private int dialogueIndex = 0;
     /** Flag to prevent combat input while in dialogue. */
     private boolean inDialogue = false;
+    /** Whether the ultimate goal of the current level (e.g. survive Tribulation) was met. */
+    private boolean levelVictoryAchieved = false;
+    /** Tracks the path of the last loaded level configuration. */
+    private String lastConfigPath;
 
     /** Cached image of the map background for performance. */
     private WritableImage mapCache;
@@ -130,10 +138,12 @@ public class PlayState implements GameState {
         EnemyRegistry.loadConfigs("/enemies/enemy_configs.json");
         AssetRegistry.loadAssets("/assets.json");
 
-        // Load configuration from JSON (Small level for faster testing)
-        currentLevelConfig = LevelLoader.loadConfig("/levels/level_small.json");
+        // Load configuration from JSON
+        lastConfigPath = "/levels/level_small.json";
+        currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
         currentLevel = MapGenerator.generate(currentLevelConfig);
-
+        this.currentMapSeed = currentLevel.seed;
+ 
         gameMap = new GameMap(currentLevel);
 
         // Player starting position (middle of the map)
@@ -233,8 +243,10 @@ public class PlayState implements GameState {
 
         handleToggles();
 
-        if (isPaused)
+        if (isPaused) {
+            handlePauseMenuInteraction();
             return;
+        }
 
         if (inventoryOpen) {
             handleInventoryInteraction();
@@ -248,6 +260,11 @@ public class PlayState implements GameState {
         
         mapAnimationTimer += deltaTime;
         if (mapAnimationTimer > 10.0) mapAnimationTimer -= 10.0;
+        
+        // --- Centralized Input State Update ---
+        // Ensuring all handlers see correctly transitioned states for click detection.
+        lmbWasPressed = Input.isLmbPressed();
+        rmbWasPressed = Input.isRmbPressed();
     }
 
     /**
@@ -341,8 +358,12 @@ public class PlayState implements GameState {
 
     private void handleToggles() {
         boolean escIsPressed = Input.isKeyPressed(KeyCode.ESCAPE);
-        if (escIsPressed && !escWasPressed)
+        if (escIsPressed && !escWasPressed) {
             isPaused = !isPaused;
+            if (isPaused) {
+                currentPauseState = PauseMenuState.MAIN;
+            }
+        }
         escWasPressed = escIsPressed;
 
         boolean invIsPressed = Input.isKeyPressed(KeyCode.I);
@@ -359,6 +380,56 @@ public class PlayState implements GameState {
         if (mapIsPressed && !mapWasPressed)
             showFullMap = !showFullMap;
         mapWasPressed = mapIsPressed;
+    }
+ 
+    /**
+     * Processes mouse interactions with the Pause Menu buttons and slots.
+     * This method is the primary input handler when the world is frozen via the Pause (ESC) state.
+     * It manages slot selection for Saving and Loading operations.
+     */
+    private void handlePauseMenuInteraction() {
+        double mx = Input.getMouseX(), my = Input.getMouseY();
+        boolean click = Input.isLmbPressed() && !lmbWasPressed;
+
+        if (!click) return;
+
+        double centerX = screenWidth / 2.0;
+
+        if (currentPauseState == PauseMenuState.MAIN) {
+            if (isInside(mx, my, centerX - 150, 280, 300, 60)) isPaused = false;
+            if (isInside(mx, my, centerX - 150, 360, 300, 60)) currentPauseState = PauseMenuState.SAVE_SELECT;
+            if (isInside(mx, my, centerX - 150, 440, 300, 60)) currentPauseState = PauseMenuState.LOAD_SELECT;
+        } else {
+            // Back button
+            if (isInside(mx, my, centerX - 75, 630, 150, 50)) currentPauseState = PauseMenuState.MAIN;
+
+            // Slot selection
+            for (int i = 1; i <= 5; i++) {
+                double sy = 210 + (i - 1) * 80;
+                if (isInside(mx, my, centerX - 250, sy, 500, 70)) {
+                    if (currentPauseState == PauseMenuState.SAVE_SELECT) {
+                        performSave(i);
+                        isPaused = false; 
+                    } else if (currentPauseState == PauseMenuState.LOAD_SELECT) {
+                        if (SaveManager.exists(i)) {
+                            performLoad(i);
+                            isPaused = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper to check if mouse is within a rectangle.
+     */
+    private boolean isInside(double mx, double my, double x, double y, double w, double h) {
+        return mx >= x && mx <= x + w && my >= y && my <= y + h;
+    }
+
+    private boolean isInside(double mx, double my, double x, double y, double s) {
+        return isInside(mx, my, x, y, s, s);
     }
 
     private void handleHotbarSelection() {
@@ -454,7 +525,6 @@ public class PlayState implements GameState {
         currentTime = maxTime;
         inTribulation = false;
         currentMode = PlayMode.PLAYING;
-        tribulationEnemiesSpawned = 0;
         
         activeStrikes.clear();
         enemies.clear();
@@ -463,9 +533,14 @@ public class PlayState implements GameState {
         
         // Load configuration and regenerate - Alternate or randomize for variety
         String levelFile = Math.random() > 0.5 ? "/levels/level_gen.json" : "/levels/level_small.json";
+        lastConfigPath = levelFile;
         currentLevelConfig = LevelLoader.loadConfig(levelFile);
         currentLevel = MapGenerator.generate(currentLevelConfig);
         gameMap = new GameMap(currentLevel);
+
+        // Sync Timers
+        maxTime = currentLevelConfig.tribulationTime;
+        currentTime = maxTime;
         
         // Reposition player
         player.setX(currentLevel.width * currentLevel.tileSize / 2.0);
@@ -536,14 +611,17 @@ public class PlayState implements GameState {
             }
         }
 
-        // Clean up dead enemies
-        enemies.removeIf(Enemy::isDead);
+        // Clean up dead enemies and track if any died this frame
+        boolean enemyDied = enemies.removeIf(Enemy::isDead);
 
-        // --- Victory Check (Survival) ---
-        if (inTribulation && 
-            tribulationEnemiesSpawned >= currentLevelConfig.tribulationSpawnLimit && 
-            countLivingTribulationEnemies() == 0) {
-            currentMode = PlayMode.VICTORY;
+        // --- Event-Driven Victory Check (Survival) ---
+        // Victory triggers if an enemy died, we are in Tribulation, and no Tribulation enemies remain.
+        if (enemyDied && !levelVictoryAchieved && inTribulation) {
+            if (countLivingTribulationEnemies() == 0) {
+                System.out.println("[EVENT] Final Tribulation enemy defeated! Victory Achieved.");
+                levelVictoryAchieved = true;
+                currentMode = PlayMode.VICTORY;
+            }
         }
 
         if (!inTribulation) {
@@ -551,12 +629,6 @@ public class PlayState implements GameState {
             if (currentTime <= 0)
                 triggerTribulation();
         } else {
-            tribulationSpawnTimer -= deltaTime;
-            if (tribulationSpawnTimer <= 0) {
-                spawnEnemyNearPlayer();
-                tribulationSpawnTimer = currentLevelConfig.tribulationSpawnInterval;
-            }
-
             lightningTimer -= deltaTime;
             if (lightningTimer <= 0) {
                 // Target player's current position to force movement
@@ -594,39 +666,21 @@ public class PlayState implements GameState {
         }
     }
 
-    /**
-     * Spawns a single enemy at a random location away from the player.
-     * Used during the Tribulation phase.
-     */
-    private void spawnEnemyNearPlayer() {
-        if (tribulationEnemiesSpawned >= currentLevelConfig.tribulationSpawnLimit) {
-            return;
-        }
-        
-        double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 150);
-        if (pos != null) {
-            String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
-            enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true, currentLevelConfig.tribulationScalingFactor));
-            tribulationEnemiesSpawned++;
-        }
-    }
 
     /**
-     * Activates the Tribulation phase, increasing difficulty and spawning dangerous
-     * enemies.
+     * Activates the Tribulation phase, spawning the entire wave of enemies at once.
      */
     private void triggerTribulation() {
         inTribulation = true;
-        tribulationEnemiesSpawned = 0;
-        for (int i = 0; i < currentLevelConfig.tribulationInitialSpawnCount; i++) {
+        
+        // Spawn the entire Tribulation wave immediately
+        for (int i = 0; i < currentLevelConfig.tribulationTotalEnemies; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 250);
             if (pos != null) {
                 String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
                 enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true, currentLevelConfig.tribulationScalingFactor));
-                tribulationEnemiesSpawned++;
             }
         }
-        tribulationSpawnTimer = currentLevelConfig.tribulationSpawnInterval;
     }
 
     /**
@@ -639,12 +693,14 @@ public class PlayState implements GameState {
         currentTime = maxTime;
         isPaused = false;
         // Load configuration from JSON
-        LevelConfig config = LevelLoader.loadConfig("/levels/level_gen.json");
-        currentLevel = MapGenerator.generate(config);
+        lastConfigPath = (lastConfigPath != null) ? lastConfigPath : "/levels/level_small.json";
+        currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
+        currentLevel = MapGenerator.generate(currentLevelConfig);
         gameMap = new GameMap(currentLevel);
-        player = new Player(config.width * config.tileSize / 2.0, config.height * config.tileSize / 2.0);
+        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0, 
+                           currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
 
-        maxTime = config.tribulationTime;
+        maxTime = currentLevelConfig.tribulationTime;
         currentTime = maxTime;
 
         enemies.clear();
@@ -772,11 +828,7 @@ public class PlayState implements GameState {
         }
 
         if (isPaused) {
-            gc.setFill(new Color(0, 0, 0, 0.5));
-            gc.fillRect(0, 0, w, h);
-            gc.setFill(Color.WHITE);
-            gc.setFont(new Font("Arial", 48));
-            gc.fillText("PAUSED", w / 2 - 100, h / 2);
+            renderPauseMenu(gc);
         }
 
         // Victory Overlay
@@ -1014,8 +1066,7 @@ public class PlayState implements GameState {
 
         // Enemies Left (Survival Path)
         if (inTribulation) {
-            int total = currentLevelConfig.tribulationSpawnLimit;
-            int remaining = Math.max(0, (total - tribulationEnemiesSpawned) + countLivingTribulationEnemies());
+            int remaining = countLivingTribulationEnemies();
             gc.setFill(remaining == 0 ? Color.GOLD : Color.ORANGE);
             gc.fillText("Enemies Left: " + remaining, w - 150, 35);
         }
@@ -1282,8 +1333,6 @@ public class PlayState implements GameState {
         if (!lmbPressed && lmbWasPressed && draggedItem != null) {
             handleDrop(mx, my, w, h, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
         }
-        lmbWasPressed = lmbPressed;
-        rmbWasPressed = rmbPressed;
     }
 
     /**
@@ -1360,9 +1409,6 @@ public class PlayState implements GameState {
      * @param s  Area size.
      * @return true if (mx, my) is inside the area.
      */
-    private boolean isInside(double mx, double my, double x, double y, double s) {
-        return mx >= x && mx <= x + s && my >= y && my <= y + s;
-    }
 
     /**
      * Renders the item box following the mouse cursor during a drag operation.
@@ -1413,11 +1459,6 @@ public class PlayState implements GameState {
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("Inter", 16));
         gc.fillText(activeDialogue.getDialogueLines().get(dialogueIndex), x + 20, y + 70);
-
-        // Prompt
-        gc.setFill(Color.GRAY);
-        gc.setFont(new Font("Inter", 12));
-        gc.fillText("[E] Continue", x + width - 100, y + height - 20);
     }
 
     /**
@@ -1433,5 +1474,217 @@ public class PlayState implements GameState {
             this.config = config;
             this.angle = angle;
         }
+    }
+
+    /**
+     * Gathers all relevant game state and serializes it to a persistent JSON file.
+     * Captures player stats, full inventory, world timer, and a detailed list of 
+     * all active entities (enemies and items on ground) to ensure 100% restoration.
+     * 
+     * @param slot The save slot to use (1-5).
+     */
+    private void performSave(int slot) {
+        try {
+            SaveData data = new SaveData();
+            data.mapSeed = this.currentMapSeed;
+            data.playerX = player.getX();
+            data.playerY = player.getY();
+            data.hp = player.getHp();
+            data.maxHp = player.getMaxHp();
+            data.qi = player.getQi();
+            data.maxQi = player.getMaxQi();
+            data.activeHotbarSlot = player.getActiveHotbarSlot();
+            data.levelConfigPath = this.lastConfigPath;
+            data.currentTime = this.currentTime;
+            data.inTribulationFlag = this.inTribulation ? 1 : 0;
+            data.victoryAchievedFlag = this.levelVictoryAchieved ? 1 : 0;
+            data.tribulationSpawnLimit = this.currentLevelConfig.tribulationTotalEnemies;
+
+            // Save Inventory
+            java.util.List<String> invIds = new java.util.ArrayList<>();
+            for (Item it : player.getInventory().getMainInventory()) {
+                invIds.add(it != null ? it.getId() : null);
+            }
+            data.inventoryItemIds = invIds;
+
+            java.util.List<String> hotIds = new java.util.ArrayList<>();
+            for (Item it : player.getInventory().getHotbar()) {
+                hotIds.add(it != null ? it.getId() : null);
+            }
+            data.hotbarItemIds = hotIds;
+
+            System.out.println("[SAVE] Serializing " + (enemies != null ? enemies.size() : 0) + " enemies...");
+
+            // Save Enemies
+            if (enemies != null) {
+                System.out.println("[SAVE] Found " + enemies.size() + " active enemies.");
+                for (Enemy e : enemies) {
+                    SaveData.EnemySaveData ed = new SaveData.EnemySaveData();
+                    ed.id = e.getId();
+                    ed.x = e.getX();
+                    ed.y = e.getY();
+                    ed.hp = e.getHP();
+                    ed.tribulationFlag = e.isTribulation() ? 1 : 0;
+                    ed.scaling = e.getScaling();
+                    data.activeEnemies.add(ed);
+                    System.out.println("  -> Saved: " + ed.id + " at (" + (int)ed.x + "," + (int)ed.y + ")");
+                }
+            }
+
+            // Save Items on ground
+            if (itemsOnGround != null) {
+                for (WorldItem wi : itemsOnGround) {
+                    SaveData.ItemSaveData isd = new SaveData.ItemSaveData();
+                    isd.id = wi.getItem().getId();
+                    isd.x = wi.getX();
+                    isd.y = wi.getY();
+                    data.itemsOnGround.add(isd);
+                }
+            }
+
+            org.example.SaveManager.save(data, slot);
+        } catch (java.io.IOException e) {
+            System.err.println("CRITICAL: Save failed for slot " + slot);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Loads game state from a specific slot and reconstructs the entire world.
+     * Uses the saved Seed to regenerate the map, and then restores player stats,
+     * inventory items, world progress timers, and actively reconstructs all 
+     * enemies and dropped items from their stored DTO snapshots.
+     * 
+     * @param slot The save slot to load (1-5).
+     */
+    private void performLoad(int slot) {
+        SaveData data = org.example.SaveManager.load(slot);
+        if (data == null) return;
+
+        this.currentMapSeed = data.mapSeed;
+        
+        // Re-generate the EXACT SAME level using the seed
+        LevelConfig config = LevelLoader.loadConfig(data.levelConfigPath);
+        if (config == null) return;
+        
+        this.currentLevelConfig = config;
+        this.currentLevel = MapGenerator.generate(config, currentMapSeed);
+        this.gameMap = new GameMap(currentLevel);
+        
+        // Restore Player
+        this.player = new Player(data.playerX, data.playerY);
+        player.setStats(data.hp, data.maxHp, data.qi, data.maxQi);
+        player.setActiveHotbarSlot(data.activeHotbarSlot);
+        
+        // Restore Inventory
+        for (int i = 0; i < 25; i++) {
+            String itemId = data.inventoryItemIds.get(i);
+            player.getInventory().getMainInventory()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+        }
+        for (int i = 0; i < 5; i++) {
+            String itemId = data.hotbarItemIds.get(i);
+            player.getInventory().getHotbar()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+        }
+
+        // Restore World Progress
+        this.currentTime = data.currentTime;
+        this.inTribulation = (data.inTribulationFlag == 1);
+        this.levelVictoryAchieved = (data.victoryAchievedFlag == 1);
+        if (data.tribulationSpawnLimit > 0) {
+            this.currentLevelConfig.tribulationTotalEnemies = data.tribulationSpawnLimit;
+        }
+        
+        // Restore Enemies
+        int restoredCount = 0;
+        this.enemies.clear();
+        if (data.activeEnemies != null) {
+            System.out.println("[LOAD] Attempting to restore " + data.activeEnemies.size() + " enemies...");
+            for (SaveData.EnemySaveData ed : data.activeEnemies) {
+                boolean isT = (ed.tribulationFlag == 1);
+                Enemy e = EnemyRegistry.createEnemy(ed.id, ed.x, ed.y, isT, ed.scaling);
+                if (e != null) {
+                    e.setHP(ed.hp);
+                    this.enemies.add(e);
+                    restoredCount++;
+                    System.out.println("  -> Restored: " + e.getId() + " HP:" + (int)e.getHP());
+                } else {
+                    System.err.println("  !! Failed to restore enemy ID: " + ed.id);
+                }
+            }
+        }
+        System.out.println("[LOAD] Successfully restored " + restoredCount + " enemies to the world.");
+
+        // Restore World Items
+        this.itemsOnGround.clear();
+        if (data.itemsOnGround != null) {
+            for (SaveData.ItemSaveData id : data.itemsOnGround) {
+                Item item = ItemRegistry.createItem(id.id);
+                if (item != null) {
+                    this.itemsOnGround.add(new WorldItem(item, id.x, id.y));
+                }
+            }
+        }
+
+        
+        this.currentMode = PlayMode.PLAYING;
+        this.isPaused = false;
+        generateMapCache();
+        System.out.println("Game loaded successfully from slot " + slot);
+    }
+
+    /**
+     * Renders the interactive Pause Menu with main and sub-menu (slot selection) states.
+     */
+    private void renderPauseMenu(GraphicsContext gc) {
+        double w = screenWidth, h = screenHeight;
+        gc.setFill(Color.rgb(0, 0, 0, 0.8));
+        gc.fillRect(0, 0, w, h);
+
+        double centerX = w / 2.0;
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+
+        if (currentPauseState == PauseMenuState.MAIN) {
+            gc.setFill(Color.WHITE);
+            gc.setFont(new Font("Inter Bold", 48));
+            gc.fillText("PAUSED", centerX, 180);
+
+            drawMenuButton(gc, "RESUME", centerX - 150, 280, 300, 60, Color.DARKGREEN);
+            drawMenuButton(gc, "SAVE GAME", centerX - 150, 360, 300, 60, Color.rgb(80, 80, 100));
+            drawMenuButton(gc, "LOAD GAME", centerX - 150, 440, 300, 60, Color.rgb(80, 80, 100));
+        } else {
+            boolean isSave = (currentPauseState == PauseMenuState.SAVE_SELECT);
+            gc.setFill(isSave ? Color.AQUAMARINE : Color.GOLD);
+            gc.setFont(new Font("Inter Bold", 36));
+            gc.fillText(isSave ? "SAVE SESSION" : "LOAD SESSION", centerX, 150);
+
+            for (int i = 1; i <= 5; i++) {
+                boolean exists = SaveManager.exists(i);
+                double sy = 210 + (i - 1) * 80;
+                Color baseColor = exists ? Color.rgb(60, 60, 80) : Color.rgb(40, 40, 40);
+                String label = "SLOT " + i + (exists ? " (DATA FOUND)" : " (EMPTY)");
+                drawMenuButton(gc, label, centerX - 250, sy, 500, 70, baseColor);
+            }
+
+            drawMenuButton(gc, "BACK", centerX - 75, 630, 150, 50, Color.rgb(150, 50, 50));
+        }
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+    }
+
+    /**
+     * Visual utility to draw a button with hover state.
+     */
+    private void drawMenuButton(GraphicsContext gc, String text, double x, double y, double w, double h, Color baseColor) {
+        double mx = Input.getMouseX(), my = Input.getMouseY();
+        boolean hover = isInside(mx, my, x, y, w, h);
+
+        gc.setFill(hover ? baseColor.brighter() : baseColor);
+        gc.setStroke(hover ? Color.WHITE : Color.GRAY);
+        gc.setLineWidth(hover ? 3 : 1);
+        gc.fillRoundRect(x, y, w, h, 12, 12);
+        gc.strokeRoundRect(x, y, w, h, 12, 12);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(new Font("Inter Bold", 18));
+        gc.fillText(text, x + w / 2.0, y + h / 2.0 + 7);
     }
 }
