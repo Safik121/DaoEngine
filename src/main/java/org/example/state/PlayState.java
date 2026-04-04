@@ -14,9 +14,10 @@ import org.example.entity.Projectile;
 import org.example.entity.LightningStrike;
 import org.example.level.GameMap;
 import org.example.level.Level;
-import org.example.level.LevelLoader;
 import org.example.level.LevelConfig;
+import org.example.level.LevelLoader;
 import org.example.level.MapGenerator;
+import org.example.level.Biome;
 import org.example.item.Item;
 import org.example.item.WorldItem;
 import org.example.item.WeaponRegistry;
@@ -92,8 +93,6 @@ public class PlayState implements GameState {
     private InteractableEntity activeDialogue = null;
     /** Current index of the line being displayed in the active dialogue. */
     private int dialogueIndex = 0;
-    /** Flag to prevent combat input while in dialogue. */
-    private boolean inDialogue = false;
     /** Whether the ultimate goal of the current level (e.g. survive Tribulation) was met. */
     private boolean levelVictoryAchieved = false;
     /** Tracks the path of the last loaded level configuration. */
@@ -298,7 +297,6 @@ public class PlayState implements GameState {
                 if (bestInteractable != null) {
                     activeDialogue = bestInteractable;
                     dialogueIndex = 0;
-                    inDialogue = true;
                     eWasPressed = ePressed;
                     return; // Enter dialogue mode
                 }
@@ -316,7 +314,6 @@ public class PlayState implements GameState {
                         }
                     }
                     activeDialogue = null;
-                    inDialogue = false;
                 }
                 eWasPressed = ePressed;
                 return;
@@ -999,16 +996,12 @@ public class PlayState implements GameState {
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
                 int tileType = currentLevel.data.get(y).get(x);
-                String spriteId = "tile_grass";
+                String spriteId = currentLevel.biome.getSpriteId(tileType);
                 int frameIndex = 0;
 
-                if (tileType == 1) spriteId = "tile_wall";
-                else if (tileType == 2) {
-                    spriteId = "tile_water";
+                if (tileType == 2) {
                     frameIndex = (int) (mapAnimationTimer / 0.5) % 2;
                 }
-                else if (tileType == 3) spriteId = "tile_vein";
-                else if (tileType == 5) spriteId = "tile_bridge";
 
                 javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
                 if (sprite != null) {
@@ -1236,11 +1229,11 @@ public class PlayState implements GameState {
      * Manages click detection for all UI elements (Grid, Hotbar, Crafting).
      */
     private void handleInventoryInteraction() {
-        double mx = Input.getMouseX(), my = Input.getMouseY(), w = 1024, h = 768;
+        double mx = Input.getMouseX(), my = Input.getMouseY(), w = screenWidth;
         boolean lmbPressed = Input.isLmbPressed();
         boolean rmbPressed = Input.isRmbPressed();
 
-        double panelW = 800, panelH = 550, panelX = (w - panelW) / 2, panelY = (h - panelH) / 2;
+        double panelW = 800, panelH = 550, panelX = (w - panelW) / 2, panelY = (screenHeight - panelH) / 2;
         double slotSize = 70, padding = 12, startX = panelX + 40, startY = panelY + 80;
 
         // -- Right Click to Use --
@@ -1258,7 +1251,7 @@ public class PlayState implements GameState {
                 }
             }
             // Hotbar Slots
-            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
+            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = screenHeight - 85;
             for (int i = 0; i < 5; i++) {
                 if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
                     Item item = player.getInventory().getHotbar()[i];
@@ -1315,7 +1308,7 @@ public class PlayState implements GameState {
             }
             // Hotbar
             if (draggedItem == null) {
-                double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
+                double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = screenHeight - 85;
                 for (int i = 0; i < 5; i++) {
                     if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
                         draggedItem = player.getInventory().getHotbar()[i];
@@ -1331,7 +1324,7 @@ public class PlayState implements GameState {
         }
 
         if (!lmbPressed && lmbWasPressed && draggedItem != null) {
-            handleDrop(mx, my, w, h, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
+            handleDrop(mx, my, w, screenHeight, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
         }
     }
 
@@ -1365,7 +1358,7 @@ public class PlayState implements GameState {
         }
         // HUD Hotbar Slots
         if (!dropped) {
-            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = h - 85;
+            double hudS = 60, hudP = 10, hX = (w - (5 * hudS + 4 * hudP)) / 2, hY = screenHeight - 85;
             for (int i = 0; i < 5; i++) {
                 if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
                     player.getInventory().swapSlots(wrapper, 0, player.getInventory().getHotbar(), i);
@@ -1487,6 +1480,7 @@ public class PlayState implements GameState {
         try {
             SaveData data = new SaveData();
             data.mapSeed = this.currentMapSeed;
+            data.biome = currentLevel.biome.name();
             data.playerX = player.getX();
             data.playerY = player.getY();
             data.hp = player.getHp();
@@ -1561,14 +1555,17 @@ public class PlayState implements GameState {
         SaveData data = org.example.SaveManager.load(slot);
         if (data == null) return;
 
-        this.currentMapSeed = data.mapSeed;
-        
         // Re-generate the EXACT SAME level using the seed
-        LevelConfig config = LevelLoader.loadConfig(data.levelConfigPath);
-        if (config == null) return;
-        
-        this.currentLevelConfig = config;
-        this.currentLevel = MapGenerator.generate(config, currentMapSeed);
+        if (data != null) {
+            this.currentMapSeed = data.mapSeed;
+            LevelConfig config = LevelLoader.loadConfig(data.levelConfigPath);
+            if (config == null) return;
+            this.currentLevelConfig = config;
+            if (data.biome != null) {
+                this.currentLevelConfig.biome = Biome.valueOf(data.biome);
+            }
+            this.currentLevel = MapGenerator.generate(this.currentLevelConfig, this.currentMapSeed);
+        }
         this.gameMap = new GameMap(currentLevel);
         
         // Restore Player

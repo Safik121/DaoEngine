@@ -11,6 +11,14 @@
   "tile_water": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
   "tile_vein": { "path": "/textures/vein.png", "frames": 1, "width": 32, "height": 32 },
   "tile_bridge": { "path": "/textures/bridge.png", "frames": 1, "width": 32, "height": 32 },
+
+  "tile_ice_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_ice_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_ice_ice": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
+
+  "tile_fire_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_fire_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
+  "tile_fire_lava": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
   
   "fireball": { "path": "/textures/fireball.png", "frames": 4, "width": 16, "height": 16, "frameDuration": 0.08 },
   "flying_sword": { "path": "/textures/sword.png", "frames": 1, "width": 24, "height": 24 }

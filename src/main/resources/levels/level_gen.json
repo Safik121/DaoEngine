@@ -3,6 +3,7 @@
   "width": 400,
   "height": 400,
   "tileSize": 32,
+  "biome": "ICE",
   "veinCount": 10,
   "veinMinSize": 5,
   "veinMaxSize": 15,

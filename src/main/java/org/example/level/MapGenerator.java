@@ -41,6 +41,7 @@ public class MapGenerator {
         level.width = config.width;
         level.height = config.height;
         level.tileSize = config.tileSize;
+        level.biome = config.biome;
         level.data = new ArrayList<>();
 
         // 1. Initialize with Grass (0)
@@ -72,7 +73,8 @@ public class MapGenerator {
 
         // 4. Generate Lakes (2)
         if (config.hasLakes) {
-            for (int i = 0; i < config.lakeCount; i++) {
+            int lakeCount = config.lakeCount * (level.biome == Biome.ICE ? 2 : 1);
+            for (int i = 0; i < lakeCount; i++) {
                 int cx = random.nextInt(level.width - 30) + 15;
                 int cy = random.nextInt(level.height - 30) + 15;
                 drawBlob(level, cx, cy, config.lakeSize, 2, random);
@@ -81,7 +83,11 @@ public class MapGenerator {
 
         // 4.5 Generate Rivers (2)
         if (config.hasRivers) {
-            generateRivers(level, config, random);
+            int riverCount = config.riverCount * (level.biome == Biome.ICE ? 2 : 1);
+            // Temporary adjustment for manual river generation loop
+            for (int i=0; i < riverCount; i++) {
+                 generateRivers(level, config, random);
+            }
         }
 
         // 5. Scatter Terrain Variety (4) - Small rocks/grass tufts for visual feedback

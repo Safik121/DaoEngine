@@ -12,6 +12,8 @@ public class LevelConfig {
     public int height = 400;
     /** The size of each tile in pixels. */
     public int tileSize = 32;
+    /** The environmental theme for generated levels. */
+    public Biome biome = Biome.FOREST;
 
     // Spirit Vein Settings
     /** The number of spirit vein clusters to generate. */

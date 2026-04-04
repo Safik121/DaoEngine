@@ -18,6 +18,8 @@ public class Level {
     public int height;
     /** The size of each tile in pixels. */
     public int tileSize;
+    /** The environmental theme of this level instance. */
+    public Biome biome = Biome.FOREST;
     /** The grid data representing the world layout (0 = grass, 1 = wall, 2 = water, 3 = spirit vein). */
     public List<List<Integer>> data;
     /** The gate to the next realm. */

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SaveData {
     @JsonProperty("mapSeed")
     public long mapSeed;
+    @JsonProperty("biome")
+    public String biome;
     
     // Player Stats
     @JsonProperty("playerX")
