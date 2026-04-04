@@ -17,6 +17,8 @@ import java.util.Map;
 public class AssetRegistry {
     private static final Map<String, SpriteMetadata> spriteMap = new HashMap<>();
     private static final Map<String, Image> imageCache = new HashMap<>();
+    /** Cached arrays of pre-clipped frames for multi-frame sprites. */
+    private static final Map<String, Image[]> frameCache = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -49,10 +51,37 @@ public class AssetRegistry {
      * @return The Image object (or a sub-image for clipping).
      */
     public static Image getSprite(String spriteId, int frameIndex) {
+        // Optimized: Check frame cache first
+        Image[] frames = frameCache.get(spriteId);
+        if (frames != null && frameIndex >= 0 && frameIndex < frames.length) {
+            return frames[frameIndex];
+        }
+
         SpriteMetadata meta = spriteMap.get(spriteId);
         if (meta == null)
             return null;
 
+        // --- Multi-File Mode ---
+        // If 'paths' is provided in JSON, we prioritize loading individual images as frames.
+        if (meta.paths != null && meta.paths.length > 0) {
+            Image[] cachedFrames = new Image[meta.paths.length];
+            for (int i = 0; i < meta.paths.length; i++) {
+                String framePath = meta.paths[i];
+                cachedFrames[i] = imageCache.computeIfAbsent(framePath, p -> {
+                    InputStream is = AssetRegistry.class.getResourceAsStream(p);
+                    if (is == null) {
+                        System.err.println("Frame file not found: " + p);
+                        return null;
+                    }
+                    return new Image(is);
+                });
+            }
+            frameCache.put(spriteId, cachedFrames);
+            return (frameIndex >= 0 && frameIndex < cachedFrames.length) ? cachedFrames[frameIndex] : null;
+        }
+
+        // --- Sprite Sheet Mode ---
+        // Fallback to loading a single large image and cutting it into grid frames.
         Image sheet = imageCache.computeIfAbsent(meta.path, path -> {
             InputStream is = AssetRegistry.class.getResourceAsStream(path);
             if (is == null) {
@@ -64,28 +93,57 @@ public class AssetRegistry {
 
         if (sheet == null)
             return null;
-        if (meta.frames <= 1)
-            return sheet;
 
-        // Clip frame from horizontal sheet
+        // If single frame, return sheet and cache it as a 1-element array
+        if (meta.frames <= 1) {
+            Image single = sheet;
+            frameCache.put(spriteId, new Image[] { single });
+            return single;
+        }
+
+        // Lazy-populate all frames into cache for multi-frame sprites
+        Image[] cachedFrames = new Image[meta.frames];
         int frameW = meta.width;
         int frameH = meta.height;
-        return new WritableImage(sheet.getPixelReader(), frameIndex * frameW, 0, frameW, frameH);
+        PixelReader reader = sheet.getPixelReader();
+
+        // Use explicit column count if provided, otherwise calculate from width
+        int colsInSheet = (meta.cols > 0) ? meta.cols : (int) (sheet.getWidth() / frameW);
+        if (colsInSheet <= 0) colsInSheet = 1;
+
+        for (int i = 0; i < meta.frames; i++) {
+            int row = i / colsInSheet;
+            int col = i % colsInSheet;
+            int startX = col * frameW;
+            int startY = row * frameH;
+            
+            // Boundary checks
+            if (startY + frameH > sheet.getHeight() || startX + frameW > sheet.getWidth()) break;
+            
+            cachedFrames[i] = new WritableImage(reader, startX, startY, frameW, frameH);
+        }
+        frameCache.put(spriteId, cachedFrames);
+
+        return (frameIndex >= 0 && frameIndex < cachedFrames.length) ? cachedFrames[frameIndex] : null;
     }
 
     /**
      * POJO for JSON mapping of sprite metadata.
      */
     public static class SpriteMetadata {
-        /** Path to the image file. */
+        /** Path to a single sprite sheet image (Legacy mode). */
         public String path;
-        /** Total number of frames in the horizontal sheet. */
+        /** Array of paths to individual frame images (Universal mode). */
+        public String[] paths;
+        /** Total number of frames (extracted from sheet or paths list). */
         public int frames = 1;
-        /** Standard width of a single frame. */
+        /** Nominal width of a single frame (used for clipping sheets). */
         public int width = 32;
-        /** Standard height of a single frame. */
+        /** Nominal height of a single frame (used for clipping sheets). */
         public int height = 32;
-        /** Default duration for one frame in seconds. */
+        /** Number of columns in a sprite sheet grid (0 = auto-calculate). */
+        public int cols = 0;
+        /** How long to display each frame during animation (seconds). */
         public double frameDuration = 0.15;
     }
 }

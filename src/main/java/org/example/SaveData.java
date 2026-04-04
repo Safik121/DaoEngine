@@ -13,7 +13,7 @@ public class SaveData {
     public long mapSeed;
     @JsonProperty("biome")
     public String biome;
-    
+
     // Player Stats
     @JsonProperty("playerX")
     public double playerX;
@@ -29,31 +29,34 @@ public class SaveData {
     public double maxQi;
     @JsonProperty("activeHotbarSlot")
     public int activeHotbarSlot;
-    
+
     // Inventory
     @JsonProperty("inventoryItemIds")
     public List<String> inventoryItemIds;
     @JsonProperty("hotbarItemIds")
     public List<String> hotbarItemIds;
-    
+
     // World State
     @JsonProperty("levelConfigPath")
     public String levelConfigPath;
     @JsonProperty("currentTime")
     public double currentTime;
-    
-    /** Flag indicating if the world is currently in a Tribulation state (0=No, 1=Yes). */
+
+    /**
+     * Flag indicating if the world is currently in a Tribulation state (0=No,
+     * 1=Yes).
+     */
     @JsonProperty("inTribulationFlag")
     public int inTribulationFlag;
-    
+
     /** Current level victory status (0=No, 1=Yes). */
     @JsonProperty("victoryAchievedFlag")
     public int victoryAchievedFlag;
-    
+
     /** The difficulty limit for spawning in the current session. */
     @JsonProperty("tribulationSpawnLimit")
     public int tribulationSpawnLimit;
-    
+
     /** Data for individual active enemies in the world. */
     public static class EnemySaveData {
         @JsonProperty("id")
@@ -69,10 +72,11 @@ public class SaveData {
         /** 0=Regular, 1=Tribulation Elite. */
         @JsonProperty("tribulationFlag")
         public int tribulationFlag;
-        
-        public EnemySaveData() {} // Jackson
+
+        public EnemySaveData() {
+        } // Jackson
     }
-    
+
     /** Data for items lying on the ground. */
     public static class ItemSaveData {
         @JsonProperty("id")
@@ -81,16 +85,18 @@ public class SaveData {
         public double x;
         @JsonProperty("y")
         public double y;
-        
-        public ItemSaveData() {} // Jackson
+
+        public ItemSaveData() {
+        } // Jackson
     }
-    
+
     @JsonProperty("activeEnemies")
     public java.util.List<EnemySaveData> activeEnemies = new java.util.ArrayList<>();
-    
+
     @JsonProperty("itemsOnGround")
     public java.util.List<ItemSaveData> itemsOnGround = new java.util.ArrayList<>();
 
     /** No-arg constructor for Jackson serialization. */
-    public SaveData() {}
+    public SaveData() {
+    }
 }

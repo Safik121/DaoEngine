@@ -7,7 +7,6 @@ import org.example.Input;
 import org.example.item.Inventory;
 import org.example.level.Level;
 import org.example.AssetRegistry;
-import java.util.List;
 
 /**
  * Represents the player entity in the game.
@@ -24,13 +23,15 @@ public class Player {
     /** Current Health Points (HP). */
     private double hp;
     /** Maximum Health Points. */
-    private double maxHp = 100.0;
+    private double maxHp = 100;
     /** Current Spiritual Energy (Qi). */
     private double qi;
     /** Maximum Qi capacity. */
-    private double maxQi = 50.0;
-    /** Whether the player is currently meditating. */
+    private double maxQi = 100;
+    /** Whether the player is currently meditating (Qi recovery). */
     private boolean isMeditating = false;
+    /** Tracks horizontal orientation for sprite flipping (True = Looking Left). */
+    private boolean facingLeft = false;
 
     /** Player's inventory system. */
     private Inventory inventory;
@@ -50,7 +51,7 @@ public class Player {
     public Player(double startX, double startY) {
         this.x = startX;
         this.y = startY;
-        this.size = 12;
+        this.size = 24; // Increased from 12 to 24 for side-view visibility
         this.hp = maxHp;
         this.qi = maxQi;
         this.inventory = new Inventory();
@@ -58,35 +59,37 @@ public class Player {
 
     /**
      * Updates player statistics from external data (e.g. during a Game Load).
-     * @param hp Current health.
+     * 
+     * @param hp    Current health.
      * @param maxHp Maximum health capacity.
-     * @param qi Current spiritual energy.
+     * @param qi    Current spiritual energy.
      * @param maxQi Maximum spiritual energy capacity.
      */
     public void setStats(double hp, double maxHp, double qi, double maxQi) {
         this.hp = hp;
-        this.maxHp = maxHp;
         this.qi = qi;
-        this.maxQi = maxQi;
     }
 
     /**
      * Updates the player's movement and cooldowns based on input.
      * 
-     * @param level The current level data for collision checks.
+     * @param level     The current level data for collision checks.
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     public void update(Level level, double deltaTime) {
         animationTimer += deltaTime;
-        if (animationTimer > 10.0) animationTimer -= 10.0;
+        if (animationTimer > 10.0)
+            animationTimer -= 10.0;
 
         // --- 1. Meditation Logic ---
         isMeditating = Input.isKeyPressed(KeyCode.SPACE);
-        
+
         if (isMeditating) {
             // Regenerate stats during meditation (Section 3.2 of the vision doc)
-            if (hp < maxHp) hp += 0.1; // Slow heal
-            if (qi < maxQi) qi += 0.2; // Faster Qi regen
+            if (hp < maxHp)
+                hp += 0.1; // Slow heal
+            if (qi < maxQi)
+                qi += 0.2; // Faster Qi regen
             return; // Cannot move while meditating
         }
 
@@ -99,16 +102,26 @@ public class Player {
         }
 
         double speed = 3.0;
-        if (tileType == 2) speed *= 0.5; // Water slow
-        if (tileType == 3 && qi < maxQi) qi += 0.05 * (deltaTime * 60.0); // Spirit Vein regen
+        if (tileType == 2)
+            speed *= 0.5; // Water slow
+        if (tileType == 3 && qi < maxQi)
+            qi += 0.05 * (deltaTime * 60.0); // Spirit Vein regen
 
         double moveX = 0;
         double moveY = 0;
 
-        if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.UP)) moveY -= 1;
-        if (Input.isKeyPressed(KeyCode.S) || Input.isKeyPressed(KeyCode.DOWN)) moveY += 1;
-        if (Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.LEFT)) moveX -= 1;
-        if (Input.isKeyPressed(KeyCode.D) || Input.isKeyPressed(KeyCode.RIGHT)) moveX += 1;
+        if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.UP))
+            moveY -= 1;
+        if (Input.isKeyPressed(KeyCode.S) || Input.isKeyPressed(KeyCode.DOWN))
+            moveY += 1;
+        if (Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.LEFT)) {
+            moveX -= 1;
+            facingLeft = true;
+        }
+        if (Input.isKeyPressed(KeyCode.D) || Input.isKeyPressed(KeyCode.RIGHT)) {
+            moveX += 1;
+            facingLeft = false;
+        }
 
         if (moveX != 0 || moveY != 0) {
             double length = Math.sqrt(moveX * moveX + moveY * moveY);
@@ -133,12 +146,13 @@ public class Player {
     }
 
     /**
-     * Checks if a specific position is occupied by a solid tile or is out of bounds.
+     * Checks if a specific position is occupied by a solid tile or is out of
+     * bounds.
      * Tests all four corners of the player's bounding box.
      * 
      * @param targetX The target X coordinate to check.
      * @param targetY The target Y coordinate to check.
-     * @param level The current level data.
+     * @param level   The current level data.
      * @return true if the position is solid/blocked, false otherwise.
      */
     private boolean isSolid(double targetX, double targetY, Level level) {
@@ -167,28 +181,60 @@ public class Player {
      * Renders the player entity using the provided GraphicsContext.
      * Selects the correct sprite from AssetRegistry based on player state.
      * 
-     * @param gc The GraphicsContext used for drawing.
+     * @param gc   The GraphicsContext used for drawing.
      * @param camX Camera X offset.
      * @param camY Camera Y offset.
      */
     public void render(GraphicsContext gc, double camX, double camY) {
         // --- 1. Draw Sprite ---
         String spriteId = "player_idle";
-        
+
         if (isMeditating) {
             spriteId = "player_meditate";
-        } else if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.S) || 
-                   Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.D)) {
+        } else if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.S) ||
+                Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.D)) {
             spriteId = "player_walk";
         }
 
         // Calculate frame index
-        int frameCount = spriteId.equals("player_walk") ? 4 : 1;
-        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+        int frameCount = 1;
+        if (spriteId.equals("player_idle")) frameCount = 6;
+        else if (spriteId.equals("player_walk")) frameCount = 6;
+        else if (spriteId.equals("player_meditate")) frameCount = 2;
         
+        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+
         javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
         if (sprite != null) {
-            gc.drawImage(sprite, x - camX, y - camY, size, size);
+            // Calculate dynamic rendering size to maintain aspect ratio
+            double spriteW = sprite.getWidth();
+            double spriteH = sprite.getHeight();
+            double renderW = 32; // Standard hero display width
+            double renderH = 32 * (spriteH / spriteW); // Maintain 1:1 aspect ratio
+            
+            // --- Hero Scaling & Alignment ---
+            // We increase the rendering size to 64px (2 tiles) for the hero sprites
+            // to compensate for high-resolution sources with significant transparent padding.
+            if (spriteId.equals("player_idle") || spriteId.equals("player_walk") || spriteId.equals("player_meditate")) {
+                renderW = 64;
+                renderH = 64 * (spriteH / spriteW); 
+            }
+
+            // Calculations ensure the character's 'feet' are centered at (x, y)
+            double ox = x - camX - (renderW - size) / 2;
+            double oy = y - camY - (renderH - size);
+
+            // --- Horizontal Orientation (Flip) ---
+            // If facing left, we flip the entire rendering context horizontally.
+            if (facingLeft) {
+                gc.save();
+                gc.translate(ox + renderW, oy);
+                gc.scale(-1, 1);
+                gc.drawImage(sprite, 0, 0, renderW, renderH);
+                gc.restore();
+            } else {
+                gc.drawImage(sprite, ox, oy, renderW, renderH);
+            }
         } else {
             // Fallback to blue square
             gc.setFill(Color.BLUE);
@@ -199,39 +245,80 @@ public class Player {
         if (isMeditating) {
             gc.setGlobalAlpha(0.3);
             gc.setFill(Color.LIGHTBLUE);
-            gc.fillOval(x - camX - 5, y - camY - 5, size + 10, size + 10);
+            gc.fillOval(x - camX - size/2, y - camY - size/2, size * 2, size * 2);
             gc.setGlobalAlpha(1.0);
         }
     }
 
     /** @return Player's current X coordinate in pixels. */
-    public double getX() { return x; }
+    public double getX() {
+        return x;
+    }
+
     /** Sets the player's X coordinate. */
-    public void setX(double x) { this.x = x; }
+    public void setX(double x) {
+        this.x = x;
+    }
+
     /** @return Player's current Y coordinate in pixels. */
-    public double getY() { return y; }
+    public double getY() {
+        return y;
+    }
+
     /** Sets the player's Y coordinate. */
-    public void setY(double y) { this.y = y; }
+    public void setY(double y) {
+        this.y = y;
+    }
+
     /** @return Player's current Health Points. */
-    public double getHp() { return hp; }
+    public double getHp() {
+        return hp;
+    }
+
     /** @return Player's maximum Health Points. */
-    public double getMaxHp() { return maxHp; }
+    public double getMaxHp() {
+        return maxHp;
+    }
+
     /** Sets the player's maximum HP. */
-    public void setMaxHp(double val) { this.maxHp = val; }
+    public void setMaxHp(double val) {
+        this.maxHp = val;
+    }
+
     /** @return Player's current Spiritual Energy (Qi). */
-    public double getQi() { return qi; }
+    public double getQi() {
+        return qi;
+    }
+
     /** @return Player's maximum Spiritual Energy capacity. */
-    public double getMaxQi() { return maxQi; }
+    public double getMaxQi() {
+        return maxQi;
+    }
+
     /** Sets the player's maximum Qi. */
-    public void setMaxQi(double val) { this.maxQi = val; }
+    public void setMaxQi(double val) {
+        this.maxQi = val;
+    }
+
     /** @return true if the player is currently in a meditation state. */
-    public boolean isMeditating() { return isMeditating; }
+    public boolean isMeditating() {
+        return isMeditating;
+    }
+
     /** @return The player's inventory system. */
-    public Inventory getInventory() { return inventory; }
+    public Inventory getInventory() {
+        return inventory;
+    }
+
     /** @return The index of the currently active hotbar slot. */
-    public int getActiveHotbarSlot() { return activeHotbarSlot; }
+    public int getActiveHotbarSlot() {
+        return activeHotbarSlot;
+    }
+
     /** Sets the index of the currently active hotbar slot. */
-    public void setActiveHotbarSlot(int slot) { this.activeHotbarSlot = slot; }
+    public void setActiveHotbarSlot(int slot) {
+        this.activeHotbarSlot = slot;
+    }
 
     /**
      * Spends Qi to perform an action.
@@ -273,7 +360,8 @@ public class Player {
     private void updateCooldowns(double deltaTime) {
         if (attackCooldown > 0) {
             attackCooldown -= (deltaTime * 60.0);
-            if (attackCooldown < 0) attackCooldown = 0;
+            if (attackCooldown < 0)
+                attackCooldown = 0;
         }
     }
 
@@ -284,7 +372,8 @@ public class Player {
      */
     public void takeDamage(double amount) {
         this.hp -= amount;
-        if (this.hp < 0) this.hp = 0;
+        if (this.hp < 0)
+            this.hp = 0;
     }
 
     /**
@@ -292,7 +381,8 @@ public class Player {
      */
     public void heal(double amount) {
         this.hp += amount;
-        if (this.hp > maxHp) this.hp = maxHp;
+        if (this.hp > maxHp)
+            this.hp = maxHp;
     }
 
     /**
@@ -300,6 +390,7 @@ public class Player {
      */
     public void restoreQi(double amount) {
         this.qi += amount;
-        if (this.qi > maxQi) this.qi = maxQi;
+        if (this.qi > maxQi)
+            this.qi = maxQi;
     }
 }

@@ -85,8 +85,8 @@ public class MapGenerator {
         if (config.hasRivers) {
             int riverCount = config.riverCount * (level.biome == Biome.ICE ? 2 : 1);
             // Temporary adjustment for manual river generation loop
-            for (int i=0; i < riverCount; i++) {
-                 generateRivers(level, config, random);
+            for (int i = 0; i < riverCount; i++) {
+                generateRivers(level, config, random);
             }
         }
 
@@ -108,7 +108,8 @@ public class MapGenerator {
             gx = random.nextInt(level.width - 10) + 5;
             gy = random.nextInt(level.height - 10) + 5;
 
-            double distFromCenter = Math.sqrt(Math.pow(gx - level.width / 2.0, 2) + Math.pow(gy - level.height / 2.0, 2));
+            double distFromCenter = Math
+                    .sqrt(Math.pow(gx - level.width / 2.0, 2) + Math.pow(gy - level.height / 2.0, 2));
             if (level.data.get(gy).get(gx) == 0 && distFromCenter > centerThreshold) {
                 found = true;
                 break;
@@ -133,7 +134,8 @@ public class MapGenerator {
         for (int i = 0; i < 2; i++) {
             double[] pos = findRandomGrass(level, random);
             if (pos != null) {
-                InteractableEntity stele = new InteractableEntity(pos[0], pos[1], "Ancient Stele", InteractableEntity.Type.STELE);
+                InteractableEntity stele = new InteractableEntity(pos[0], pos[1], "Ancient Stele",
+                        InteractableEntity.Type.STELE);
                 stele.addDialogue("The writing on this stone is ancient...");
                 stele.addDialogue("It speaks of a great war between the heavens and the earth.");
                 stele.addDialogue("To transcend, one must prove their worth through the Gate of Realms.");
@@ -144,7 +146,8 @@ public class MapGenerator {
         // Spawn 1 NPC (The Mysterious Traveler)
         double[] npos = findRandomGrass(level, random);
         if (npos != null) {
-            InteractableEntity npc = new InteractableEntity(npos[0], npos[1], "Mysterious Traveler", InteractableEntity.Type.NPC);
+            InteractableEntity npc = new InteractableEntity(npos[0], npos[1], "Mysterious Traveler",
+                    InteractableEntity.Type.NPC);
             npc.addDialogue("Greetings, young cultivator.");
             npc.addDialogue("The path ahead is filled with tribulation, the heavens seek to test you.");
             npc.addDialogue("I have items from many realms. Take this pill, and survive the next storm.");
@@ -210,7 +213,7 @@ public class MapGenerator {
             if (path != null) {
                 allPaths.add(path);
                 verticalFlags.add(isOverallVertical);
-                
+
                 boolean[] inLake = new boolean[path.size()];
                 for (int j = 0; j < path.size(); j++) {
                     int[] p = path.get(j);
@@ -238,10 +241,12 @@ public class MapGenerator {
             int bridgesPlaced = 0;
             while (bridgesPlaced < numBridges && attempts < 50) {
                 attempts++;
-                if (path.size() < 40) break;
+                if (path.size() < 40)
+                    break;
                 int idx = 20 + random.nextInt(path.size() - 40);
-                if (idx < 0 || idx >= path.size() || inLake[idx]) continue;
-                
+                if (idx < 0 || idx >= path.size() || inLake[idx])
+                    continue;
+
                 boolean nearLake = false;
                 for (int win = -10; win <= 10; win++) {
                     int wIdx = idx + win;
@@ -250,8 +255,9 @@ public class MapGenerator {
                         break;
                     }
                 }
-                if (nearLake) continue;
-                
+                if (nearLake)
+                    continue;
+
                 int[] p = path.get(idx);
                 boolean tooClose = false;
                 for (String center : bridgeCenters) {
@@ -263,9 +269,11 @@ public class MapGenerator {
                         break;
                     }
                 }
-                if (tooClose) continue;
+                if (tooClose)
+                    continue;
 
-                int bThickness = config.bridgeMinWidth + random.nextInt(config.bridgeMaxWidth - config.bridgeMinWidth + 1);
+                int bThickness = config.bridgeMinWidth
+                        + random.nextInt(config.bridgeMaxWidth - config.bridgeMinWidth + 1);
                 int span = 8;
                 if (drawBridgeSafe(level, p[0], p[1], bThickness, span, !isOverallVertical)) {
                     bridgeCenters.add(p[0] + "," + p[1]);
@@ -284,13 +292,15 @@ public class MapGenerator {
         }
     }
 
-    private static boolean drawBridgeSafe(Level level, int x, int y, int thickness, int span, boolean orientationVertical) {
+    private static boolean drawBridgeSafe(Level level, int x, int y, int thickness, int span,
+            boolean orientationVertical) {
         int margin = 1;
         if (orientationVertical) {
             for (int ty = y - span - margin; ty <= y + span + margin; ty++) {
                 for (int tx = x - (thickness - 1) / 2 - margin; tx <= x + thickness / 2 + margin; tx++) {
                     if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
-                        if (level.data.get(ty).get(tx) == 2) return false;
+                        if (level.data.get(ty).get(tx) == 2)
+                            return false;
                     }
                 }
             }
@@ -298,7 +308,8 @@ public class MapGenerator {
             for (int tx = x - span - margin; tx <= x + span + margin; tx++) {
                 for (int ty = y - (thickness - 1) / 2 - margin; ty <= y + thickness / 2 + margin; ty++) {
                     if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
-                        if (level.data.get(ty).get(tx) == 2) return false;
+                        if (level.data.get(ty).get(tx) == 2)
+                            return false;
                     }
                 }
             }
@@ -330,7 +341,9 @@ public class MapGenerator {
                 if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
                     double distSq = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
                     if (distSq <= size * size) {
-                        if (level.data.get(ty).get(tx) != 2) {
+                        int current = level.data.get(ty).get(tx);
+                        // Protect Water (2) and Bridges (5) from being overwritten by new rivers
+                        if (current != 2 && current != 5) {
                             level.data.get(ty).set(tx, type);
                         }
                     }
@@ -357,18 +370,21 @@ public class MapGenerator {
 
             closedSet.add(current.x + "," + current.y);
 
-            int[][] neighbors = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            int[][] neighbors = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 }, { 1, 1 }, { 1, -1 }, { -1, 1 },
+                    { -1, -1 } };
             for (int[] offset : neighbors) {
                 int nx = current.x + offset[0];
                 int ny = current.y + offset[1];
 
-                if (nx < 0 || nx >= level.width || ny < 0 || ny >= level.height) continue;
+                if (nx < 0 || nx >= level.width || ny < 0 || ny >= level.height)
+                    continue;
                 String key = nx + "," + ny;
-                if (closedSet.contains(key)) continue;
+                if (closedSet.contains(key))
+                    continue;
 
-                double jitter = random.nextDouble() * 15.0; 
+                double jitter = random.nextDouble() * 15.0;
                 double moveCost = (Math.abs(offset[0]) + Math.abs(offset[1]) == 2 ? 1.414 : 1.0) + jitter;
-                
+
                 double tentativeG = current.g + moveCost;
                 RiverNode neighbor = allNodes.get(key);
 
@@ -398,7 +414,7 @@ public class MapGenerator {
         List<int[]> path = new ArrayList<>();
         RiverNode current = node;
         while (current != null) {
-            path.add(0, new int[]{current.x, current.y});
+            path.add(0, new int[] { current.x, current.y });
             current = current.parent;
         }
         return path;

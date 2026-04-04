@@ -1,25 +1,65 @@
 {
-  "player_idle": { "path": "/textures/player.png", "frames": 1, "width": 32, "height": 32 },
-  "player_walk": { "path": "/textures/player_walk.png", "frames": 4, "width": 32, "height": 32, "frameDuration": 0.12 },
-  "player_meditate": { "path": "/textures/player_meditate.png", "frames": 1, "width": 32, "height": 32 },
-  
-  "bat_01": { "path": "/textures/bat.png", "frames": 4, "width": 24, "height": 24, "frameDuration": 0.1 },
-  "zombie_01": { "path": "/textures/zombie.png", "frames": 4, "width": 32, "height": 32, "frameDuration": 0.2 },
-  
-  "tile_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_water": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
-  "tile_vein": { "path": "/textures/vein.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_bridge": { "path": "/textures/bridge.png", "frames": 1, "width": 32, "height": 32 },
-
-  "tile_ice_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_ice_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_ice_ice": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
-
-  "tile_fire_grass": { "path": "/textures/grass.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_fire_wall": { "path": "/textures/wall.png", "frames": 1, "width": 32, "height": 32 },
-  "tile_fire_lava": { "path": "/textures/water.png", "frames": 2, "width": 32, "height": 32, "frameDuration": 0.5 },
-  
-  "fireball": { "path": "/textures/fireball.png", "frames": 4, "width": 16, "height": 16, "frameDuration": 0.08 },
-  "flying_sword": { "path": "/textures/sword.png", "frames": 1, "width": 24, "height": 24 }
+  "tile_grass": {
+    "path": "/textures/grass.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_water": {
+    "path": "/textures/water.png",
+    "frames": 2,
+    "width": 32,
+    "height": 32,
+    "frameDuration": 0.2
+  },
+  "tile_bridge": {
+    "path": "/textures/bridge.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_vein": {
+    "path": "/textures/vein.png",
+    "frames": 4,
+    "width": 32,
+    "height": 32
+  },
+  "tile_variety": {
+    "path": "/textures/bush.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "player_idle": {
+    "paths": [
+      "/textures/hero/hero_idle_1.png",
+      "/textures/hero/hero_idle_2.png",
+      "/textures/hero/hero_idle_3.png",
+      "/textures/hero/hero_idle_4.png",
+      "/textures/hero/hero_idle_5.png",
+      "/textures/hero/hero_idle_6.png"
+    ],
+    "frames": 6,
+    "frameDuration": 0.15
+  },
+  "player_walk": {
+    "paths": [
+      "/textures/hero/hero_walk_1.png",
+      "/textures/hero/hero_walk_2.png",
+      "/textures/hero/hero_walk_4.png",
+      "/textures/hero/hero_walk_2.png",
+      "/textures/hero/hero_walk_3.png",
+      "/textures/hero/hero_walk_4.png"
+    ],
+    "frames": 6,
+    "frameDuration": 0.15
+  },
+  "player_meditate": {
+    "paths": [
+      "/textures/hero/hero_meditate_1.png",
+      "/textures/hero/hero_meditate_2.png"
+    ],
+    "frames": 2,
+    "frameDuration": 0.5
+  }
 }

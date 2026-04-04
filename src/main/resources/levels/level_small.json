@@ -15,7 +15,7 @@
   "bridgeMax": 1,
   "bridgeMinWidth": 2,
   "bridgeMaxWidth": 3,
-  "tribulationTime": 8.0,
+  "tribulationTime": 8000.0,
   "initialEnemyCount": 10,
   "tribulationTotalEnemies": 3,
   "tribulationScalingFactor": 1.2,

@@ -45,13 +45,19 @@ public class PlayState implements GameState {
     private LevelConfig currentLevelConfig;
     /** Spatial manager for the current level. */
     private GameMap gameMap;
-    
+
     /** Current state of the game loop. */
-    private enum PlayMode { PLAYING, VICTORY, GAMEOVER }
+    private enum PlayMode {
+        PLAYING, VICTORY, GAMEOVER
+    }
+
     private PlayMode currentMode = PlayMode.PLAYING;
 
     /** Current state of the Pause Menu. */
-    private enum PauseMenuState { MAIN, SAVE_SELECT, LOAD_SELECT }
+    private enum PauseMenuState {
+        MAIN, SAVE_SELECT, LOAD_SELECT
+    }
+
     private PauseMenuState currentPauseState = PauseMenuState.MAIN;
 
     /** The player entity. */
@@ -93,7 +99,10 @@ public class PlayState implements GameState {
     private InteractableEntity activeDialogue = null;
     /** Current index of the line being displayed in the active dialogue. */
     private int dialogueIndex = 0;
-    /** Whether the ultimate goal of the current level (e.g. survive Tribulation) was met. */
+    /**
+     * Whether the ultimate goal of the current level (e.g. survive Tribulation) was
+     * met.
+     */
     private boolean levelVictoryAchieved = false;
     /** Tracks the path of the last loaded level configuration. */
     private String lastConfigPath;
@@ -138,16 +147,16 @@ public class PlayState implements GameState {
         AssetRegistry.loadAssets("/assets.json");
 
         // Load configuration from JSON
-        lastConfigPath = "/levels/level_small.json";
+        lastConfigPath = "/levels/level_gen.json";
         currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
         currentLevel = MapGenerator.generate(currentLevelConfig);
         this.currentMapSeed = currentLevel.seed;
- 
+
         gameMap = new GameMap(currentLevel);
 
         // Player starting position (middle of the map)
-        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0, 
-                           currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
+        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0,
+                currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
 
         maxTime = currentLevelConfig.tribulationTime;
         currentTime = maxTime;
@@ -209,7 +218,8 @@ public class PlayState implements GameState {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(12, player.getX(), player.getY(), 200);
             if (pos != null) {
                 // Pick a random enemy from the pool
-                String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
+                String enemyId = currentLevelConfig.enemyPool
+                        .get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
                 enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], false, 1.0));
             }
         }
@@ -256,10 +266,11 @@ public class PlayState implements GameState {
         handleWorldInteraction();
         handleGameplayLogic(deltaTime);
         updateCamera();
-        
+
         mapAnimationTimer += deltaTime;
-        if (mapAnimationTimer > 10.0) mapAnimationTimer -= 10.0;
-        
+        if (mapAnimationTimer > 10.0)
+            mapAnimationTimer -= 10.0;
+
         // --- Centralized Input State Update ---
         // Ensuring all handlers see correctly transitioned states for click detection.
         lmbWasPressed = Input.isLmbPressed();
@@ -323,7 +334,8 @@ public class PlayState implements GameState {
             double minDist = 150.0; // Reach limit
 
             for (WorldItem wi : itemsOnGround) {
-                double dist = Math.sqrt(Math.pow(wi.getX() - player.getX(), 2) + Math.pow(wi.getY() - player.getY(), 2));
+                double dist = Math
+                        .sqrt(Math.pow(wi.getX() - player.getX(), 2) + Math.pow(wi.getY() - player.getY(), 2));
                 if (dist < minDist) {
                     minDist = dist;
                     bestItem = wi;
@@ -378,27 +390,33 @@ public class PlayState implements GameState {
             showFullMap = !showFullMap;
         mapWasPressed = mapIsPressed;
     }
- 
+
     /**
      * Processes mouse interactions with the Pause Menu buttons and slots.
-     * This method is the primary input handler when the world is frozen via the Pause (ESC) state.
+     * This method is the primary input handler when the world is frozen via the
+     * Pause (ESC) state.
      * It manages slot selection for Saving and Loading operations.
      */
     private void handlePauseMenuInteraction() {
         double mx = Input.getMouseX(), my = Input.getMouseY();
         boolean click = Input.isLmbPressed() && !lmbWasPressed;
 
-        if (!click) return;
+        if (!click)
+            return;
 
         double centerX = screenWidth / 2.0;
 
         if (currentPauseState == PauseMenuState.MAIN) {
-            if (isInside(mx, my, centerX - 150, 280, 300, 60)) isPaused = false;
-            if (isInside(mx, my, centerX - 150, 360, 300, 60)) currentPauseState = PauseMenuState.SAVE_SELECT;
-            if (isInside(mx, my, centerX - 150, 440, 300, 60)) currentPauseState = PauseMenuState.LOAD_SELECT;
+            if (isInside(mx, my, centerX - 150, 280, 300, 60))
+                isPaused = false;
+            if (isInside(mx, my, centerX - 150, 360, 300, 60))
+                currentPauseState = PauseMenuState.SAVE_SELECT;
+            if (isInside(mx, my, centerX - 150, 440, 300, 60))
+                currentPauseState = PauseMenuState.LOAD_SELECT;
         } else {
             // Back button
-            if (isInside(mx, my, centerX - 75, 630, 150, 50)) currentPauseState = PauseMenuState.MAIN;
+            if (isInside(mx, my, centerX - 75, 630, 150, 50))
+                currentPauseState = PauseMenuState.MAIN;
 
             // Slot selection
             for (int i = 1; i <= 5; i++) {
@@ -406,7 +424,7 @@ public class PlayState implements GameState {
                 if (isInside(mx, my, centerX - 250, sy, 500, 70)) {
                     if (currentPauseState == PauseMenuState.SAVE_SELECT) {
                         performSave(i);
-                        isPaused = false; 
+                        isPaused = false;
                     } else if (currentPauseState == PauseMenuState.LOAD_SELECT) {
                         if (SaveManager.exists(i)) {
                             performLoad(i);
@@ -447,7 +465,7 @@ public class PlayState implements GameState {
             if (activeItem != null) {
                 // Apply effects to player
                 activeItem.use(player);
-                
+
                 // If it's a consumable (like a pill), remove it after use
                 if (activeItem.getType() == Item.Type.CONSUMABLE) {
                     player.getInventory().getHotbar()[activeSlot] = null;
@@ -502,7 +520,9 @@ public class PlayState implements GameState {
         } else {
             // Spread shot logic
             double startAngle = baseAngle - Math.toRadians(config.spreadAngle / 2.0);
-            double angleStep = (config.projectileCount > 1) ? Math.toRadians(config.spreadAngle) / (config.projectileCount - 1) : 0;
+            double angleStep = (config.projectileCount > 1)
+                    ? Math.toRadians(config.spreadAngle) / (config.projectileCount - 1)
+                    : 0;
 
             for (int i = 0; i < config.projectileCount; i++) {
                 double currentAngle = startAngle + (angleStep * i);
@@ -511,23 +531,22 @@ public class PlayState implements GameState {
         }
     }
 
-
     /**
      * Transitions to the next level by regenerating the world.
      */
     private void nextLevel() {
         System.out.println("Transcending to the next realm...");
-        
+
         // Reset state
         currentTime = maxTime;
         inTribulation = false;
         currentMode = PlayMode.PLAYING;
-        
+
         activeStrikes.clear();
         enemies.clear();
         projectiles.clear();
         itemsOnGround.clear();
-        
+
         // Load configuration and regenerate - Alternate or randomize for variety
         String levelFile = Math.random() > 0.5 ? "/levels/level_gen.json" : "/levels/level_small.json";
         lastConfigPath = levelFile;
@@ -538,11 +557,11 @@ public class PlayState implements GameState {
         // Sync Timers
         maxTime = currentLevelConfig.tribulationTime;
         currentTime = maxTime;
-        
+
         // Reposition player
         player.setX(currentLevel.width * currentLevel.tileSize / 2.0);
         player.setY(currentLevel.height * currentLevel.tileSize / 2.0);
-        
+
         generateMapCache();
         spawnInitialEnemies();
         spawnInitialItems();
@@ -588,15 +607,15 @@ public class PlayState implements GameState {
                 if (p.checkCollision(enemy)) {
                     double finalDamage = p.getDamage();
                     // Scale continuous damage types by deltaTime for frame-rate independence
-                    if (p.getType() == WeaponConfig.ProjectileType.BEAM || 
-                        p.getType() == WeaponConfig.ProjectileType.AOE_ZONE) {
+                    if (p.getType() == WeaponConfig.ProjectileType.BEAM ||
+                            p.getType() == WeaponConfig.ProjectileType.AOE_ZONE) {
                         finalDamage *= deltaTime;
                     }
-                    
+
                     enemy.takeDamage(finalDamage);
-                    
+
                     if (p.getType() != WeaponConfig.ProjectileType.BEAM &&
-                        p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
+                            p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
                         p.deactivate();
                         break;
                     }
@@ -612,7 +631,8 @@ public class PlayState implements GameState {
         boolean enemyDied = enemies.removeIf(Enemy::isDead);
 
         // --- Event-Driven Victory Check (Survival) ---
-        // Victory triggers if an enemy died, we are in Tribulation, and no Tribulation enemies remain.
+        // Victory triggers if an enemy died, we are in Tribulation, and no Tribulation
+        // enemies remain.
         if (enemyDied && !levelVictoryAchieved && inTribulation) {
             if (countLivingTribulationEnemies() == 0) {
                 System.out.println("[EVENT] Final Tribulation enemy defeated! Victory Achieved.");
@@ -630,7 +650,7 @@ public class PlayState implements GameState {
             if (lightningTimer <= 0) {
                 // Target player's current position to force movement
                 double lx = player.getX() + 6; // Center on player
-                double ly = player.getY() + 6; 
+                double ly = player.getY() + 6;
                 activeStrikes.add(new LightningStrike(lx, ly));
                 lightningTimer = 1.0 + Math.random() * 2.0; // Slightly slower: 1.0 - 3.0s
             }
@@ -643,13 +663,15 @@ public class PlayState implements GameState {
 
             if (strike.isDealingDamage()) {
                 // Damage player
-                double distP = Math.sqrt(Math.pow(strike.getX() - player.getX(), 2) + Math.pow(strike.getY() - player.getY(), 2));
+                double distP = Math
+                        .sqrt(Math.pow(strike.getX() - player.getX(), 2) + Math.pow(strike.getY() - player.getY(), 2));
                 if (distP < strike.getRadius()) {
                     player.takeDamage(20);
                 }
                 // Damage enemies
                 for (Enemy e : enemies) {
-                    double distE = Math.sqrt(Math.pow(strike.getX() - e.getX(), 2) + Math.pow(strike.getY() - e.getY(), 2));
+                    double distE = Math
+                            .sqrt(Math.pow(strike.getX() - e.getX(), 2) + Math.pow(strike.getY() - e.getY(), 2));
                     if (distE < strike.getRadius()) {
                         e.takeDamage(40);
                     }
@@ -663,19 +685,20 @@ public class PlayState implements GameState {
         }
     }
 
-
     /**
      * Activates the Tribulation phase, spawning the entire wave of enemies at once.
      */
     private void triggerTribulation() {
         inTribulation = true;
-        
+
         // Spawn the entire Tribulation wave immediately
         for (int i = 0; i < currentLevelConfig.tribulationTotalEnemies; i++) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(24, player.getX(), player.getY(), 250);
             if (pos != null) {
-                String enemyId = currentLevelConfig.enemyPool.get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
-                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true, currentLevelConfig.tribulationScalingFactor));
+                String enemyId = currentLevelConfig.enemyPool
+                        .get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
+                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], true,
+                        currentLevelConfig.tribulationScalingFactor));
             }
         }
     }
@@ -694,8 +717,8 @@ public class PlayState implements GameState {
         currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
         currentLevel = MapGenerator.generate(currentLevelConfig);
         gameMap = new GameMap(currentLevel);
-        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0, 
-                           currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
+        player = new Player(currentLevelConfig.width * currentLevelConfig.tileSize / 2.0,
+                currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
 
         maxTime = currentLevelConfig.tribulationTime;
         currentTime = maxTime;
@@ -747,7 +770,8 @@ public class PlayState implements GameState {
     private int countLivingTribulationEnemies() {
         int count = 0;
         for (Enemy e : enemies) {
-            if (e.isTribulation()) count++;
+            if (e.isTribulation())
+                count++;
         }
         return count;
     }
@@ -792,7 +816,7 @@ public class PlayState implements GameState {
         // Interactables (NPCs/Steles)
         for (InteractableEntity ie : currentLevel.interactables) {
             ie.render(gc, cameraX, cameraY);
-            
+
             // Interaction visual prompt
             double dist = Math.sqrt(Math.pow(ie.getX() - player.getX(), 2) + Math.pow(ie.getY() - player.getY(), 2));
             if (activeDialogue == null && dist < 70) {
@@ -1001,6 +1025,55 @@ public class PlayState implements GameState {
 
                 if (tileType == 2) {
                     frameIndex = (int) (mapAnimationTimer / 0.5) % 2;
+                } else if (tileType == 3) {
+                    // Pulsing animation for spirit veins
+                    frameIndex = (int) (mapAnimationTimer / 0.2) % 4;
+                }
+
+                // Draw base grass first for decorative tiles (Variety) to avoid black
+                // backgrounds
+                if (tileType == 4 || tileType == 5) {
+                    int baseType = 0; // Default to grass
+
+                    if (tileType == 5) {
+                        // For bridges, check neighbors (and further) to see if we are over water
+                        // We check horizontally and vertically for the first non-bridge tile
+                        int bx = x, by = y;
+                        // Search left
+                        while (bx > 0 && currentLevel.data.get(y).get(bx) == 5)
+                            bx--;
+                        if (currentLevel.data.get(y).get(bx) == 2)
+                            baseType = 2;
+                        if (baseType == 0) { // Search right
+                            bx = x;
+                            while (bx < currentLevel.width - 1 && currentLevel.data.get(y).get(bx) == 5)
+                                bx++;
+                            if (currentLevel.data.get(y).get(bx) == 2)
+                                baseType = 2;
+                        }
+                        if (baseType == 0) { // Search up
+                            bx = x;
+                            by = y;
+                            while (by > 0 && currentLevel.data.get(by).get(x) == 5)
+                                by--;
+                            if (currentLevel.data.get(by).get(x) == 2)
+                                baseType = 2;
+                        }
+                        if (baseType == 0) { // Search down
+                            by = y;
+                            while (by < currentLevel.height - 1 && currentLevel.data.get(by).get(x) == 5)
+                                by++;
+                            if (currentLevel.data.get(by).get(x) == 2)
+                                baseType = 2;
+                        }
+                    }
+
+                    String baseId = currentLevel.biome.getSpriteId(baseType);
+                    int bFrame = (baseType == 2) ? (int) (mapAnimationTimer / 0.5) % 2 : 0;
+                    javafx.scene.image.Image base = AssetRegistry.getSprite(baseId, bFrame);
+                    if (base != null) {
+                        gc.drawImage(base, x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
+                    }
                 }
 
                 javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
@@ -1008,11 +1081,16 @@ public class PlayState implements GameState {
                     gc.drawImage(sprite, x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
                 } else {
                     // Fallback to colors
-                    if (tileType == 1) gc.setFill(Color.DARKGRAY);
-                    else if (tileType == 2) gc.setFill(Color.BLUE);
-                    else if (tileType == 3) gc.setFill(Color.MEDIUMPURPLE);
-                    else if (tileType == 5) gc.setFill(Color.SADDLEBROWN);
-                    else gc.setFill(Color.DARKGREEN);
+                    if (tileType == 1)
+                        gc.setFill(Color.DARKGRAY);
+                    else if (tileType == 2)
+                        gc.setFill(Color.BLUE);
+                    else if (tileType == 3)
+                        gc.setFill(Color.MEDIUMPURPLE);
+                    else if (tileType == 5)
+                        gc.setFill(Color.SADDLEBROWN);
+                    else
+                        gc.setFill(Color.DARKGREEN);
                     gc.fillRect(x * tileSize - cameraX, y * tileSize - cameraY, tileSize, tileSize);
                 }
                 // Optional: Grid lines for debugging (too heavy for 400x400?)
@@ -1097,7 +1175,8 @@ public class PlayState implements GameState {
         // Adaptive Alpha: If player is at the bottom, make UI extra transparent
         double drawAlpha = 0.8;
         double screenY = (player.getY() + 6) - cameraY;
-        if (screenY > h - 160) drawAlpha = 0.35;
+        if (screenY > h - 160)
+            drawAlpha = 0.35;
 
         gc.setGlobalAlpha(drawAlpha / 0.8 * 0.8); // Scale base alpha
         gc.setFill(Color.rgb(30, 30, 30, drawAlpha));
@@ -1371,7 +1450,8 @@ public class PlayState implements GameState {
         if (dropped) {
             Item swappedOut = wrapper[0];
             if (swappedOut != null) {
-                // If there was an item in the target slot, move it back to the source or backpack
+                // If there was an item in the target slot, move it back to the source or
+                // backpack
                 if (sourceArr != null) {
                     sourceArr[sourceIdx] = swappedOut;
                 } else {
@@ -1432,7 +1512,8 @@ public class PlayState implements GameState {
         // Adaptive Alpha for dialogue
         double drawAlpha = 0.85;
         double screenY = (player.getY() + 6) - cameraY;
-        if (screenY > y - 20) drawAlpha = 0.4;
+        if (screenY > y - 20)
+            drawAlpha = 0.4;
 
         // Box
         gc.setGlobalAlpha(drawAlpha);
@@ -1471,7 +1552,7 @@ public class PlayState implements GameState {
 
     /**
      * Gathers all relevant game state and serializes it to a persistent JSON file.
-     * Captures player stats, full inventory, world timer, and a detailed list of 
+     * Captures player stats, full inventory, world timer, and a detailed list of
      * all active entities (enemies and items on ground) to ensure 100% restoration.
      * 
      * @param slot The save slot to use (1-5).
@@ -1521,7 +1602,7 @@ public class PlayState implements GameState {
                     ed.tribulationFlag = e.isTribulation() ? 1 : 0;
                     ed.scaling = e.getScaling();
                     data.activeEnemies.add(ed);
-                    System.out.println("  -> Saved: " + ed.id + " at (" + (int)ed.x + "," + (int)ed.y + ")");
+                    System.out.println("  -> Saved: " + ed.id + " at (" + (int) ed.x + "," + (int) ed.y + ")");
                 }
             }
 
@@ -1546,20 +1627,22 @@ public class PlayState implements GameState {
     /**
      * Loads game state from a specific slot and reconstructs the entire world.
      * Uses the saved Seed to regenerate the map, and then restores player stats,
-     * inventory items, world progress timers, and actively reconstructs all 
+     * inventory items, world progress timers, and actively reconstructs all
      * enemies and dropped items from their stored DTO snapshots.
      * 
      * @param slot The save slot to load (1-5).
      */
     private void performLoad(int slot) {
         SaveData data = org.example.SaveManager.load(slot);
-        if (data == null) return;
+        if (data == null)
+            return;
 
         // Re-generate the EXACT SAME level using the seed
         if (data != null) {
             this.currentMapSeed = data.mapSeed;
             LevelConfig config = LevelLoader.loadConfig(data.levelConfigPath);
-            if (config == null) return;
+            if (config == null)
+                return;
             this.currentLevelConfig = config;
             if (data.biome != null) {
                 this.currentLevelConfig.biome = Biome.valueOf(data.biome);
@@ -1567,12 +1650,12 @@ public class PlayState implements GameState {
             this.currentLevel = MapGenerator.generate(this.currentLevelConfig, this.currentMapSeed);
         }
         this.gameMap = new GameMap(currentLevel);
-        
+
         // Restore Player
         this.player = new Player(data.playerX, data.playerY);
         player.setStats(data.hp, data.maxHp, data.qi, data.maxQi);
         player.setActiveHotbarSlot(data.activeHotbarSlot);
-        
+
         // Restore Inventory
         for (int i = 0; i < 25; i++) {
             String itemId = data.inventoryItemIds.get(i);
@@ -1590,7 +1673,7 @@ public class PlayState implements GameState {
         if (data.tribulationSpawnLimit > 0) {
             this.currentLevelConfig.tribulationTotalEnemies = data.tribulationSpawnLimit;
         }
-        
+
         // Restore Enemies
         int restoredCount = 0;
         this.enemies.clear();
@@ -1603,7 +1686,7 @@ public class PlayState implements GameState {
                     e.setHP(ed.hp);
                     this.enemies.add(e);
                     restoredCount++;
-                    System.out.println("  -> Restored: " + e.getId() + " HP:" + (int)e.getHP());
+                    System.out.println("  -> Restored: " + e.getId() + " HP:" + (int) e.getHP());
                 } else {
                     System.err.println("  !! Failed to restore enemy ID: " + ed.id);
                 }
@@ -1622,7 +1705,6 @@ public class PlayState implements GameState {
             }
         }
 
-        
         this.currentMode = PlayMode.PLAYING;
         this.isPaused = false;
         generateMapCache();
@@ -1630,7 +1712,8 @@ public class PlayState implements GameState {
     }
 
     /**
-     * Renders the interactive Pause Menu with main and sub-menu (slot selection) states.
+     * Renders the interactive Pause Menu with main and sub-menu (slot selection)
+     * states.
      */
     private void renderPauseMenu(GraphicsContext gc) {
         double w = screenWidth, h = screenHeight;
@@ -1670,7 +1753,8 @@ public class PlayState implements GameState {
     /**
      * Visual utility to draw a button with hover state.
      */
-    private void drawMenuButton(GraphicsContext gc, String text, double x, double y, double w, double h, Color baseColor) {
+    private void drawMenuButton(GraphicsContext gc, String text, double x, double y, double w, double h,
+            Color baseColor) {
         double mx = Input.getMouseX(), my = Input.getMouseY();
         boolean hover = isInside(mx, my, x, y, w, h);
 
