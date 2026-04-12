@@ -61,5 +61,14 @@
     ],
     "frames": 2,
     "frameDuration": 0.5
+  },
+  "ui_menu_bg": {
+    "path": "/textures/ui/menu_bg.png"
+  },
+  "ui_button_normal": {
+    "path": "/textures/ui/button_normal.png"
+  },
+  "ui_button_hover": {
+    "path": "/textures/ui/button_hover.png"
   }
 }

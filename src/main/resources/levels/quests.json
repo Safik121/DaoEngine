@@ -1,0 +1,22 @@
+{
+  "kill_bats": {
+    "id": "kill_bats",
+    "name": "Bat Exterminator",
+    "description": "Defeat 3 Lesser Spirit Bats to secure the start of your journey.",
+    "objectiveType": "KILL",
+    "targetId": "bat_01",
+    "requiredAmount": 3,
+    "rewardItemIds": ["pill_qi_01", "realm_token"],
+    "rewardQi": 50.0
+  },
+  "collect_iron": {
+    "id": "collect_iron",
+    "name": "Iron Gathering",
+    "description": "Gather 5 Iron Ores for the blacksmith.",
+    "objectiveType": "COLLECT",
+    "targetId": "iron_ore_01",
+    "requiredAmount": 5,
+    "rewardItemIds": ["mat_hammer_01"],
+    "rewardQi": 20.0
+  }
+}

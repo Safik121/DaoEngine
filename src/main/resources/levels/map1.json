@@ -1,0 +1,33 @@
+{
+  "name": "Emerald Leaf Woods",
+  "width": 100,
+  "height": 100,
+  "tileSize": 32,
+  "biome": "FOREST",
+  "veinCount": 5,
+  "veinMinSize": 3,
+  "veinMaxSize": 8,
+  "hasLakes": true,
+  "lakeCount": 3,
+  "lakeSize": 10,
+  "hasRivers": false,
+  "riverCount": 0,
+  "bridgeMin": 0,
+  "bridgeMax": 0,
+  "bridgeMinWidth": 0,
+  "bridgeMaxWidth": 0,
+  "tribulationTime": 45.0,
+  "initialEnemyCount": 10,
+  "tribulationTotalEnemies": 20,
+  "tribulationScalingFactor": 1.0,
+  "enemyPool": ["bat_01", "zombie_01"],
+  "interactables": [
+    {
+      "name": "Mysterious Traveler",
+      "type": "NPC",
+      "dialogueTreeId": "mysterious_traveler_start",
+      "count": 1
+    }
+  ],
+  "initialWorldItems": ["pill_qi_01"]
+}

@@ -1,26 +1,45 @@
 {
   "bat_01": {
     "name": "Lesser Spirit Bat",
+    "behaviorDescription": "Fast and erratic. They tend to swarm in large numbers, making them difficult to target without area-of-effect spells.",
     "hp": 20.0,
     "damage": 8.0,
     "speed": 1.5,
     "size": 18.0,
-    "color": "#8A2BE2"
+    "color": "#8A2BE2",
+    "spriteId": "tile_variety"
   },
   "zombie_01": {
     "name": "Corpse Wight",
+    "behaviorDescription": "Slow but resilient. These animated corpses possess high health and can deal significant damage if they manage to corner you.",
     "hp": 60.0,
     "damage": 15.0,
     "speed": 0.6,
     "size": 28.0,
-    "color": "#2F4F4F"
+    "color": "#2F4F4F",
+    "spriteId": "tile_vein"
   },
   "guard_01": {
     "name": "Ghostly Sentinel",
+    "behaviorDescription": "A balanced and dangerous guardian. Sentinels are faster than wights and far deadlier, often protecting valuable spirit veins.",
     "hp": 120.0,
     "damage": 25.0,
     "speed": 1.1,
     "size": 32.0,
-    "color": "#CD5C5C"
+    "color": "#CD5C5C",
+    "spriteId": "player_idle"
+  },
+  "archer_01": {
+    "name": "Spectral Archer",
+    "behaviorDescription": "A ranged attacker that keeps its distance and fires spirit arrows.",
+    "hp": 40.0,
+    "damage": 12.0,
+    "speed": 0.9,
+    "size": 24.0,
+    "color": "#FFD700",
+    "spriteId": "projectile_fireball",
+    "isRanged": true,
+    "attackRange": 200.0,
+    "projectileType": "FIREBALL"
   }
 }

@@ -2,45 +2,221 @@ package org.example.state;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.image.Image;
+import org.example.AssetRegistry;
+import org.example.ConfigManager;
+import org.example.Input;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The state representing the main menu of the game.
- * It displays the game title and instructions to start the game.
+ * Supports interactive buttons, skinnable UI, and configurable game title.
  */
 public class MenuState implements GameState {
 
-    /**
-     * Updates the menu logic.
-     * Currently primarily handles waiting for the user to press ENTER.
-     * 
-     * @param deltaTime Time elapsed since the last frame in seconds.
-     */
+    private String gameTitle = "DaoEngine";
+    private final List<MenuButton> buttons = new ArrayList<>();
+    private boolean startGameRequested = false;
+    private boolean loadRequested = false;
+    private boolean lexiconRequested = false;
+
+    // UI Styles
+    private static final Color GOLD = Color.web("#D4AF37");
+    private static final Color DARK_INK = Color.web("#1A1A1A");
+
+    public MenuState() {
+        loadConfig();
+        initButtons();
+    }
+
+    private void loadConfig() {
+        try (InputStream is = getClass().getResourceAsStream("/game_config.json")) {
+            if (is != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(is);
+                if (root.has("gameTitle")) {
+                    gameTitle = root.get("gameTitle").asText();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load game_config.json, using default title.");
+        }
+    }
+
+    private void initButtons() {
+        double startY = 350;
+        double spacing = 60;
+        double btnWidth = 300;
+        double btnHeight = 45;
+        int width = ConfigManager.getInstance().getConfig().engine.width;
+        double centerX = width / 2.0 - btnWidth / 2.0;
+
+        buttons.add(new MenuButton("PLAY", centerX, startY, btnWidth, btnHeight, () -> startGameRequested = true));
+        buttons.add(new MenuButton("LOAD", centerX, startY + spacing, btnWidth, btnHeight, () -> loadRequested = true));
+        buttons.add(new MenuButton("BOOK OF KNOWLEDGE", centerX, startY + spacing * 2, btnWidth, btnHeight,
+                () -> lexiconRequested = true));
+        buttons.add(new MenuButton("EXIT", centerX, startY + spacing * 3, btnWidth, btnHeight, () -> System.exit(0)));
+    }
+
     @Override
     public void update(double deltaTime) {
-        // Menu updates (e.g., animations) could go here
+        double mx = Input.getMouseX();
+        double my = Input.getMouseY();
+        boolean clicked = Input.isLmbPressed();
+
+        for (MenuButton btn : buttons) {
+            btn.update(mx, my, clicked);
+        }
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        drawBackground(gc);
+        drawTitle(gc);
+
+        for (MenuButton btn : buttons) {
+            btn.render(gc);
+        }
+    }
+
+    private void drawBackground(GraphicsContext gc) {
+        int width = ConfigManager.getInstance().getConfig().engine.width;
+        int height = ConfigManager.getInstance().getConfig().engine.height;
+        Image bg = AssetRegistry.getSprite("ui_menu_bg", 0);
+        if (bg != null) {
+            gc.drawImage(bg, 0, 0, width, height);
+        } else {
+            // Procedural "Silk & Ink" Gradient
+            LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, null,
+                    new Stop(0, DARK_INK),
+                    new Stop(1, Color.BLACK));
+            gc.setFill(grad);
+            gc.fillRect(0, 0, width, height);
+
+            // Subtle "Qi" glow effect in center
+            gc.setGlobalAlpha(0.1);
+            gc.setFill(GOLD);
+            gc.fillOval(width / 2.0 - 300, height / 2.0 - 300, 600, 600);
+            gc.setGlobalAlpha(1.0);
+        }
+    }
+
+    private void drawTitle(GraphicsContext gc) {
+        int width = ConfigManager.getInstance().getConfig().engine.width;
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+
+        // Shadow
+        gc.setFill(Color.BLACK);
+        gc.setFont(Font.font("Serif", FontWeight.BOLD, 62));
+        gc.fillText(gameTitle, width / 2.0, 202);
+
+        // Main Title
+        gc.setFill(GOLD);
+        gc.fillText(gameTitle, width / 2.0, 200);
+
+        gc.setFont(Font.font("Serif", FontWeight.LIGHT, 20));
+        gc.setFill(Color.LIGHTGRAY);
+        gc.fillText("Path to Immortality", width / 2.0, 240);
+
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
+    }
+
+    public boolean isStartGameRequested() {
+        return startGameRequested;
+    }
+
+    public void setStartGameRequested(boolean val) {
+        this.startGameRequested = val;
+    }
+
+    public boolean isLoadRequested() {
+        return loadRequested;
+    }
+
+    public void setLoadRequested(boolean val) {
+        this.loadRequested = val;
+    }
+
+    public boolean isLexiconRequested() {
+        return lexiconRequested;
+    }
+
+    public void setLexiconRequested(boolean val) {
+        this.lexiconRequested = val;
     }
 
     /**
-     * Renders the main menu UI.
-     * Draws the background, game title, and start instructions.
-     * 
-     * @param gc The GraphicsContext used for drawing.
+     * Internal class to handle individual menu buttons.
      */
-    @Override
-    public void render(GraphicsContext gc) {
-        // Draw black background
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, 1024, 768);
+    private static class MenuButton {
+        String label;
+        double x, y, w, h;
+        Runnable action;
+        boolean hovered = false;
+        boolean wasClicked = false;
 
-        // Draw game title
-        gc.setFill(Color.ORANGE);
-        gc.setFont(new Font(40));
-        gc.fillText("DaoEngine: Path to Immortality", 150, 200);
+        MenuButton(String label, double x, double y, double w, double h, Runnable action) {
+            this.label = label;
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.action = action;
+        }
 
-        // Draw start instruction
-        gc.setFill(Color.WHITE);
-        gc.setFont(new Font(20));
-        gc.fillText("Press ENTER to start the game", 250, 300);
+        void update(double mx, double my, boolean lmb) {
+            hovered = (mx >= x && mx <= x + w && my >= y && my <= y + h);
+
+            if (hovered && lmb) {
+                wasClicked = true;
+            } else if (!lmb && wasClicked) {
+                // Execute on release while hovered
+                if (hovered)
+                    action.run();
+                wasClicked = false;
+            }
+        }
+
+        void render(GraphicsContext gc) {
+            Image normal = AssetRegistry.getSprite("ui_button_normal", 0);
+            Image hover = AssetRegistry.getSprite("ui_button_hover", 0);
+
+            if (hovered && hover != null) {
+                gc.drawImage(hover, x, y, w, h);
+            } else if (normal != null) {
+                gc.drawImage(normal, x, y, w, h);
+            } else {
+                // Procedural Fallback
+                gc.setStroke(GOLD);
+                gc.setLineWidth(hovered ? 3 : 1);
+                gc.setFill(hovered ? Color.web("#333333") : Color.web("#222222"));
+
+                gc.fillRect(x, y, w, h);
+                gc.strokeRect(x, y, w, h);
+
+                if (hovered) {
+                    gc.setGlobalAlpha(0.2);
+                    gc.setFill(GOLD);
+                    gc.fillRect(x, y, w, h);
+                    gc.setGlobalAlpha(1.0);
+                }
+            }
+
+            // Label
+            gc.setFill(hovered ? Color.WHITE : GOLD);
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 18));
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText(label, x + w / 2, y + h / 2 + 6);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+        }
     }
 }

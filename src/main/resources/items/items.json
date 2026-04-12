@@ -4,14 +4,18 @@
     "name": "Spirit Pill",
     "description": "Ancient Qi recovery pill.",
     "type": "CONSUMABLE",
-    "qiRestore": 20.0
+    "spriteId": "tile_vein",
+    "qiRestore": 20.0,
+    "detailedDescription": "A fundamental pill for any cultivator. It contains a small amount of spiritual essence to jumpstart Qi circulation."
   },
   {
     "id": "pill_hp_01",
     "name": "Healing Pill",
     "description": "Restores 40 Health Points.",
     "type": "CONSUMABLE",
-    "hpRestore": 40.0
+    "spriteId": "tile_variety",
+    "hpRestore": 40.0,
+    "detailedDescription": "Crafted from medicinal herbs, this pill accelerates the body's natural healing process. Essential for survival in harsh realms."
   },
   {
     "id": "pill_spirit_01",
@@ -33,20 +37,24 @@
     "id": "mat_hammer_01",
     "name": "Rusty Hammer",
     "description": "A heavy crafting tool.",
-    "type": "CRAFTING"
+    "type": "CRAFTING",
+    "detailedDescription": "An old, heavy hammer once used by a master blacksmith. It remains remarkably sturdy and is essential for basic crafting."
   },
   {
     "id": "iron_ore_01",
     "name": "Iron Ore",
     "description": "Raw material for forging.",
-    "type": "CRAFTING"
+    "type": "CRAFTING",
+    "detailedDescription": "A chunk of dense iron ore. While common, its high spiritual conductivity makes it a staple in low-level artifact forging."
   },
   {
     "id": "sword_01",
     "name": "Flying Sword",
     "description": "A basic spiritual sword.",
     "type": "WEAPON",
-    "weaponConfigId": "sword_01"
+    "weaponConfigId": "sword_01",
+    "spriteId": "tile_bridge",
+    "detailedDescription": "A standard-issue sword for disciples. It can be psychically controlled to strike enemies from a distance, provided the wielder has sufficient Qi."
   },
   {
     "id": "fireball_staff",

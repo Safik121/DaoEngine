@@ -66,7 +66,24 @@ public class EnemyRegistry {
 
         Enemy enemy = new Enemy(x, y, isTribulation);
         enemy.setStats(config.id, config.name, finalHp, finalDamage, finalSpeed, config.size, config.color, scaling);
+
+        if (config.isRanged) {
+            org.example.item.WeaponConfig pConfig = new org.example.item.WeaponConfig();
+            pConfig.projectileType = org.example.item.WeaponConfig.ProjectileType.valueOf(config.projectileType);
+            pConfig.damage = finalDamage; // Enemy projectile damage scales with base damage
+            pConfig.speed = 10.0;
+            pConfig.lifeSpan = 2.0;
+            pConfig.size = 12.0;
+
+            enemy.setRanged(config.attackRange, pConfig);
+        }
+
         return enemy;
+    }
+
+    /** @return Map of all registered enemy configurations. */
+    public static Map<String, EnemyConfig> getAllConfigs() {
+        return configs;
     }
 
     /** @return Set of all registered enemy IDs. */

@@ -7,7 +7,8 @@ import java.util.Set;
 
 /**
  * A static utility class for tracking keyboard and mouse input.
- * Maintains a set of currently pressed keys and mouse state to be queried by game entities.
+ * Maintains a set of currently pressed keys and mouse state to be queried by
+ * game entities.
  */
 public class Input {
     // --- KEYBOARD ---
@@ -16,6 +17,7 @@ public class Input {
 
     /**
      * Registers a key as being currently pressed.
+     * 
      * @param code The key code to register.
      */
     public static void addKey(KeyCode code) {
@@ -24,6 +26,7 @@ public class Input {
 
     /**
      * Registers a key as being currently released.
+     * 
      * @param code The key code to remove.
      */
     public static void removeKey(KeyCode code) {
@@ -32,6 +35,7 @@ public class Input {
 
     /**
      * Checks if a specific key is currently held down.
+     * 
      * @param code The key code to check.
      * @return true if the key is pressed.
      */
@@ -49,8 +53,12 @@ public class Input {
     /** Whether the Right Mouse Button is currently pressed. */
     private static boolean rmbPressed = false;
 
+    /** Accumulator for mouse wheel movement since the last check. */
+    private static double scrollDelta = 0;
+
     /**
      * Updates the current mouse cursor position.
+     * 
      * @param x The mouse X coordinate.
      * @param y The mouse Y coordinate.
      */
@@ -60,8 +68,29 @@ public class Input {
     }
 
     /**
+     * Adds scroll movement to the accumulator.
+     * 
+     * @param delta The scroll amount.
+     */
+    public static void addScroll(double delta) {
+        scrollDelta += delta;
+    }
+
+    /**
+     * Retrieves the accumulated scroll delta and resets it to zero.
+     * 
+     * @return The accumulated scroll amount.
+     */
+    public static double getScrollAndReset() {
+        double d = scrollDelta;
+        scrollDelta = 0;
+        return d;
+    }
+
+    /**
      * Updates the state of a specific mouse button.
-     * @param button The mouse button (PRIMARY/SECONDARY).
+     * 
+     * @param button  The mouse button (PRIMARY/SECONDARY).
      * @param pressed Whether it is currently pressed.
      */
     public static void setMouseButton(MouseButton button, boolean pressed) {
@@ -73,11 +102,22 @@ public class Input {
     }
 
     /** @return Mouse X coordinate. */
-    public static double getMouseX() { return mouseX; }
+    public static double getMouseX() {
+        return mouseX;
+    }
+
     /** @return Mouse Y coordinate. */
-    public static double getMouseY() { return mouseY; }
+    public static double getMouseY() {
+        return mouseY;
+    }
+
     /** @return true if the Left Mouse Button is pressed. */
-    public static boolean isLmbPressed() { return lmbPressed; }
+    public static boolean isLmbPressed() {
+        return lmbPressed;
+    }
+
     /** @return true if the Right Mouse Button is pressed. */
-    public static boolean isRmbPressed() { return rmbPressed; }
+    public static boolean isRmbPressed() {
+        return rmbPressed;
+    }
 }

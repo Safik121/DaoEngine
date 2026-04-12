@@ -42,6 +42,12 @@ public class SaveData {
     @JsonProperty("currentTime")
     public double currentTime;
 
+    // World Story/Progress Persistence
+    @JsonProperty("worldFlags")
+    public java.util.Map<String, Boolean> worldFlags = new java.util.HashMap<>();
+    @JsonProperty("worldCounters")
+    public java.util.Map<String, Integer> worldCounters = new java.util.HashMap<>();
+
     /**
      * Flag indicating if the world is currently in a Tribulation state (0=No,
      * 1=Yes).

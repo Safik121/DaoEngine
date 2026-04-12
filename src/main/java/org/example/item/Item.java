@@ -6,7 +6,7 @@ import org.example.entity.Player;
  * Base class for all items in the game.
  * Items can be held in the inventory and some can be used.
  */
-public class Item {
+public abstract class Item {
     /**
      * Enum for different item types.
      */
@@ -56,28 +56,11 @@ public class Item {
 
     /**
      * Called when the item is used from the inventory or hotbar.
-     * Applies any configured effects to the target player.
+     * Applies any configured effects to the target player, implemented by subclasses.
      * 
      * @param player The player instance to apply effects to.
      */
-    public void use(Player player) {
-        if (hpRestore > 0) {
-            player.heal(hpRestore);
-            System.out.println("Restored " + hpRestore + " HP.");
-        }
-        if (qiRestore > 0) {
-            player.restoreQi(qiRestore);
-            System.out.println("Restored " + qiRestore + " Qi.");
-        }
-        if (maxHpBoost > 0) {
-            player.setMaxHp(player.getMaxHp() + maxHpBoost);
-            System.out.println("Increased max HP by " + maxHpBoost);
-        }
-        if (maxQiBoost > 0) {
-            player.setMaxQi(player.getMaxQi() + maxQiBoost);
-            System.out.println("Increased max Qi by " + maxQiBoost);
-        }
-    }
+    public abstract void use(Player player);
 
     // Getters and Setters
     /** @return Unique item ID. */

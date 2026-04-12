@@ -1,0 +1,37 @@
+{
+  "engine": {
+    "width": 1024,
+    "height": 768,
+    "title": "DaoEngine: Path to Immortality",
+    "fps": 60,
+    "fullscreen": false,
+    "loggingLevel": "INFO"
+  },
+  "player": {
+    "initialMaxHp": 100.0,
+    "initialMaxQi": 100.0,
+    "baseSpeed": 3.0,
+    "pickupRange": 150.0,
+    "size": 24.0,
+    "startingItems": ["sword_01", "fire_essence_01"]
+  },
+  "ui": {
+    "hpColor": "#FF0000",
+    "qiColor": "#00FFFF",
+    "panelBgColor": "#323232",
+    "panelOpacity": 0.7,
+    "barWidth": 300.0,
+    "barHeight": 20.0,
+    "dialogueBoxColor": "#000000",
+    "activeSlotHighlight": "#FFFF00"
+  },
+  "balance": {
+    "meditationHpRate": 0.1,
+    "meditationQiRate": 0.2,
+    "spiritVeinQiRate": 0.05,
+    "lightningIntervalMin": 2.0,
+    "lightningIntervalMax": 5.0,
+    "lightningPlayerDamage": 20.0,
+    "lightningEnemyDamage": 40.0
+  }
+}

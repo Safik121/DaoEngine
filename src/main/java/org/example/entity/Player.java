@@ -7,31 +7,22 @@ import org.example.Input;
 import org.example.item.Inventory;
 import org.example.level.Level;
 import org.example.AssetRegistry;
+import org.example.ConfigManager;
+import org.example.GameConfig;
 
 /**
  * Represents the player entity in the game.
  * Handles player position, size, movement logic, statistics, and rendering.
  */
-public class Player {
-    /** The X coordinate of the player in pixels. */
-    private double x;
-    /** The Y coordinate of the player in pixels. */
-    private double y;
-    /** The size of the player entity. */
-    private double size;
+public class Player extends LivingEntity {
 
-    /** Current Health Points (HP). */
-    private double hp;
-    /** Maximum Health Points. */
-    private double maxHp = 100;
     /** Current Spiritual Energy (Qi). */
     private double qi;
     /** Maximum Qi capacity. */
-    private double maxQi = 100;
+    private double maxQi = ConfigManager.getInstance().getConfig().player.initialMaxQi;
     /** Whether the player is currently meditating (Qi recovery). */
     private boolean isMeditating = false;
-    /** Tracks horizontal orientation for sprite flipping (True = Looking Left). */
-    private boolean facingLeft = false;
+
 
     /** Player's inventory system. */
     private Inventory inventory;
@@ -41,6 +32,12 @@ public class Player {
     private double attackCooldown = 0;
     /** Timer (seconds) for cycling through animation frames. */
     private double animationTimer = 0;
+    /** The player's currently equipped active technique. */
+    private org.example.logic.Skill activeSkill;
+    /** Manager for temporary status effects. */
+    private org.example.logic.StatusEffectManager statusEffectManager;
+    /** Manager for cultivation progression. */
+    private org.example.logic.CultivationManager cultivationManager;
 
     /**
      * Constructs a new Player at the specified starting position.
@@ -49,12 +46,23 @@ public class Player {
      * @param startY Initial Y coordinate.
      */
     public Player(double startX, double startY) {
-        this.x = startX;
-        this.y = startY;
-        this.size = 24; // Increased from 12 to 24 for side-view visibility
-        this.hp = maxHp;
+        super(startX, startY, 
+            ConfigManager.getInstance().getConfig().player.size, 
+            ConfigManager.getInstance().getConfig().player.initialMaxHp, 
+            ConfigManager.getInstance().getConfig().player.baseSpeed);
         this.qi = maxQi;
         this.inventory = new Inventory();
+        this.statusEffectManager = new org.example.logic.StatusEffectManager(this);
+        this.cultivationManager = new org.example.logic.CultivationManager();
+        this.activeSkill = org.example.logic.SkillRegistry.getSkill("fiery_palm");
+    }
+
+    public org.example.logic.StatusEffectManager getStatusEffectManager() {
+        return statusEffectManager;
+    }
+    
+    public org.example.logic.StatusEffectManager getBuffManager() {
+        return statusEffectManager;
     }
 
     /**
@@ -66,8 +74,10 @@ public class Player {
      * @param maxQi Maximum spiritual energy capacity.
      */
     public void setStats(double hp, double maxHp, double qi, double maxQi) {
-        this.hp = hp;
+        stats.setMaxHp(maxHp);
+        stats.setHp(hp);
         this.qi = qi;
+        this.maxQi = maxQi;
     }
 
     /**
@@ -85,11 +95,12 @@ public class Player {
         isMeditating = Input.isKeyPressed(KeyCode.SPACE);
 
         if (isMeditating) {
+            GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
             // Regenerate stats during meditation (Section 3.2 of the vision doc)
-            if (hp < maxHp)
-                hp += 0.1; // Slow heal
+            if (stats.getHp() < stats.getMaxHp())
+                stats.heal(bal.meditationHpRate); // Slow heal
             if (qi < maxQi)
-                qi += 0.2; // Faster Qi regen
+                qi += bal.meditationQiRate; // Faster Qi regen
             return; // Cannot move while meditating
         }
 
@@ -101,11 +112,12 @@ public class Player {
             tileType = level.data.get(ty).get(tx);
         }
 
-        double speed = 3.0;
+        // Calculate movement speed. Base speed is from LivingEntity.
+        double currentSpeed = stats.getSpeed();
         if (tileType == 2)
-            speed *= 0.5; // Water slow
+            currentSpeed *= 0.5; // Water slow
         if (tileType == 3 && qi < maxQi)
-            qi += 0.05 * (deltaTime * 60.0); // Spirit Vein regen
+            qi += ConfigManager.getInstance().getConfig().balance.spiritVeinQiRate * (deltaTime * 60.0); // Spirit Vein regen
 
         double moveX = 0;
         double moveY = 0;
@@ -129,8 +141,8 @@ public class Player {
             moveY /= length;
         }
 
-        double dx = moveX * speed * (deltaTime * 60.0);
-        double dy = moveY * speed * (deltaTime * 60.0);
+        double dx = moveX * currentSpeed * (deltaTime * 60.0);
+        double dy = moveY * currentSpeed * (deltaTime * 60.0);
 
         // Apply movement on the X axis if no wall is present
         if (!isSolid(x + dx, y, level)) {
@@ -143,6 +155,7 @@ public class Player {
         }
 
         updateCooldowns(deltaTime);
+        statusEffectManager.update(deltaTime);
     }
 
     /**
@@ -182,10 +195,11 @@ public class Player {
      * Selects the correct sprite from AssetRegistry based on player state.
      * 
      * @param gc   The GraphicsContext used for drawing.
-     * @param camX Camera X offset.
-     * @param camY Camera Y offset.
+     * @param cameraX Camera X offset.
+     * @param cameraY Camera Y offset.
      */
-    public void render(GraphicsContext gc, double camX, double camY) {
+    @Override
+    public void render(GraphicsContext gc, double cameraX, double cameraY) {
         // --- 1. Draw Sprite ---
         String spriteId = "player_idle";
 
@@ -221,8 +235,8 @@ public class Player {
             }
 
             // Calculations ensure the character's 'feet' are centered at (x, y)
-            double ox = x - camX - (renderW - size) / 2;
-            double oy = y - camY - (renderH - size);
+            double ox = x - cameraX - (renderW - size) / 2;
+            double oy = y - cameraY - (renderH - size);
 
             // --- Horizontal Orientation (Flip) ---
             // If facing left, we flip the entire rendering context horizontally.
@@ -238,14 +252,14 @@ public class Player {
         } else {
             // Fallback to blue square
             gc.setFill(Color.BLUE);
-            gc.fillRect(x - camX, y - camY, size, size);
+            gc.fillRect(x - cameraX, y - cameraY, size, size);
         }
 
         // --- 2. Meditation Aura ---
         if (isMeditating) {
             gc.setGlobalAlpha(0.3);
             gc.setFill(Color.LIGHTBLUE);
-            gc.fillOval(x - camX - size/2, y - camY - size/2, size * 2, size * 2);
+            gc.fillOval(x - cameraX - size/2, y - cameraY - size/2, size * 2, size * 2);
             gc.setGlobalAlpha(1.0);
         }
     }
@@ -270,29 +284,25 @@ public class Player {
         this.y = y;
     }
 
-    /** @return Player's current Health Points. */
-    public double getHp() {
-        return hp;
-    }
-
-    /** @return Player's maximum Health Points. */
-    public double getMaxHp() {
-        return maxHp;
-    }
-
-    /** Sets the player's maximum HP. */
-    public void setMaxHp(double val) {
-        this.maxHp = val;
-    }
+    // Health methods are now handled by LivingEntity/AttributeSet
 
     /** @return Player's current Spiritual Energy (Qi). */
     public double getQi() {
         return qi;
     }
 
+    /** Sets the player's remaining Qi, clamped between 0 and maxQi. */
+    public void setQi(double qi) {
+        this.qi = Math.max(0, Math.min(qi, maxQi));
+    }
+
     /** @return Player's maximum Spiritual Energy capacity. */
     public double getMaxQi() {
         return maxQi;
+    }
+    
+    public org.example.logic.CultivationManager getCultivationManager() {
+        return cultivationManager;
     }
 
     /** Sets the player's maximum Qi. */
@@ -348,8 +358,16 @@ public class Player {
      * 
      * @param seconds Cooldown time in seconds.
      */
-    public void setAttackCooldown(double seconds) {
-        this.attackCooldown = seconds * 60.0; // Changed to double
+    public void setAttackCooldown(double cooldown) {
+        this.attackCooldown = cooldown * 60.0;
+    }
+    
+    public org.example.logic.Skill getActiveSkill() {
+        return activeSkill;
+    }
+    
+    public void setActiveSkill(org.example.logic.Skill skill) {
+        this.activeSkill = skill;
     }
 
     /**
@@ -366,24 +384,14 @@ public class Player {
     }
 
     /**
-     * Applies damage to the player. HP will not drop below 0.
-     * 
-     * @param amount The amount of damage to take.
+     * Overridden to handle specific player damage logic (currently basic).
      */
+    @Override
     public void takeDamage(double amount) {
-        this.hp -= amount;
-        if (this.hp < 0)
-            this.hp = 0;
+        super.takeDamage(amount);
     }
 
-    /**
-     * Heals the player by a specific amount, up to max HP.
-     */
-    public void heal(double amount) {
-        this.hp += amount;
-        if (this.hp > maxHp)
-            this.hp = maxHp;
-    }
+
 
     /**
      * Restores the player's Qi by a specific amount, up to max Qi.

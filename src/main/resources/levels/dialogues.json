@@ -1,0 +1,31 @@
+{
+  "mysterious_traveler_start": {
+    "id": "mysterious_traveler_start",
+    "text": "Greetings, daoist. You look like someone who can handle themselves. There's a slime infestation nearby. Will you help?",
+    "choices": [
+      {"text": "I will help you.", "nextNodeId": "mysterious_traveler_accept"},
+      {"text": "What's in it for me?", "nextNodeId": "mysterious_traveler_greedy"},
+      {"text": "I have no time for slimes.", "nextNodeId": "exit"}
+    ]
+  },
+  "mysterious_traveler_accept": {
+    "id": "mysterious_traveler_accept",
+    "text": "Excellent! Purge those slimes and I shall reward you with a Realm Token.",
+    "action": "GIVE_QUEST:kill_slimes",
+    "choices": []
+  },
+  "mysterious_traveler_greedy": {
+    "id": "mysterious_traveler_greedy",
+    "text": "Pah! Young cultivators these days... Fine. I'll throw in some extra Spirit Pills.",
+    "action": "GIVE_QUEST:kill_slimes",
+    "choices": [
+      {"text": "Very well.", "nextNodeId": "mysterious_traveler_accept"}
+    ]
+  },
+  "stele_mystic_01": {
+    "id": "stele_mystic_01",
+    "text": "'Breath of the Dragon, Heart of the Sun.' You feel a surge of Qi flowing through your veins as you read these words.",
+    "action": "HEAL:20",
+    "choices": []
+  }
+}

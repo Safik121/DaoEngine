@@ -2,11 +2,14 @@ package org.example.item;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.example.logic.Interactable;
+import org.example.logic.event.GameEvent;
+import org.example.state.PlayState;
 
 /**
  * Represents an item that exists in the game world, waiting to be picked up.
  */
-public class WorldItem {
+public class WorldItem implements Interactable {
     /** The underlying Item data. */
     private Item item;
     /** The world X coordinate of the item in pixels. */
@@ -50,6 +53,29 @@ public class WorldItem {
             gc.setFill(Color.ORANGE);
             gc.fillRect(x - camX, y - camY, size, size);
         }
+    }
+
+    @Override
+    public void onInteract(PlayState state) {
+        if (state.getPlayer().getInventory().addItem(this.item)) {
+            state.getItemsOnGround().remove(this);
+            System.out.println("[Item] Picked up: " + item.getName());
+            
+            // Trigger Pickup Event
+            state.getEventManager().triggerEvent(GameEvent.ITEM_PICKUP, item.getId(), 1, state);
+        } else {
+            System.out.println("[Inventory] Full! Cannot pick up " + item.getName());
+        }
+    }
+
+    @Override
+    public String getPrompt() {
+        return "[E] Pick up " + item.getName();
+    }
+
+    @Override
+    public double getInteractionRange() {
+        return 150.0;
     }
 
     /**

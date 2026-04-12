@@ -5,12 +5,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
+import org.example.logic.Interactable;
+import org.example.state.PlayState;
 
 /**
  * Represents the Gate of Realms, used for level transitions.
  * The player must interact with this while holding a required artifact.
  */
-public class GateOfRealms {
+public class GateOfRealms implements Interactable {
     private double x, y;
     private double animationTimer = 0;
 
@@ -48,6 +50,26 @@ public class GateOfRealms {
         // Label
         gc.setFill(Color.WHITE);
         gc.fillText("Gate of Realms", sx - 20, sy - radius - 5);
+    }
+
+    @Override
+    public void onInteract(PlayState state) {
+        if (state.getPlayer().getInventory().consumeItem("realm_token")) {
+            System.out.println("[Gate] The Realm Token resonates! Entering the Gate of Realms...");
+            state.setVictory();
+        } else {
+            System.out.println("[Gate] The gate remains sealed. You sense it requires a 'Realm Token'.");
+        }
+    }
+
+    @Override
+    public String getPrompt() {
+        return "[E] Enter the Gate of Realms";
+    }
+
+    @Override
+    public double getInteractionRange() {
+        return 60.0;
     }
 
     public double getX() { return x; }

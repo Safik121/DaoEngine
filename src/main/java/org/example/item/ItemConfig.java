@@ -11,6 +11,8 @@ public class ItemConfig {
     public String name;
     /** Lore or functional text describing the item. */
     public String description;
+    /** Extended lore and usage details for the Book of Knowledge. */
+    public String detailedDescription;
     /** Categorization (WEAPON, CONSUMABLE, MATERIAL, etc.). */
     public Item.Type type;
 

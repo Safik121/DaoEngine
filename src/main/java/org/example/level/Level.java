@@ -20,6 +20,8 @@ public class Level {
     public int tileSize;
     /** The environmental theme of this level instance. */
     public Biome biome = Biome.FOREST;
+    /** The configuration used to generate this level. */
+    public LevelConfig config;
     /**
      * The grid data representing the world layout (0 = grass, 1 = wall, 2 = water,
      * 3 = spirit vein).

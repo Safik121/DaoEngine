@@ -162,4 +162,25 @@ public class Inventory {
         }
         return false;
     }
+
+    /**
+     * Consumes one instance of the given item ID if present.
+     * @param id The item ID.
+     * @return true if consumed, false if not found.
+     */
+    public boolean consumeItem(String id) {
+        for (int i = 0; i < HOTBAR_SLOTS; i++) {
+            if (hotbar[i] != null && hotbar[i].getId().equals(id)) {
+                hotbar[i] = null;
+                return true;
+            }
+        }
+        for (int i = 0; i < MAIN_SLOTS; i++) {
+            if (mainInventory[i] != null && mainInventory[i].getId().equals(id)) {
+                mainInventory[i] = null;
+                return true;
+            }
+        }
+        return false;
+    }
 }

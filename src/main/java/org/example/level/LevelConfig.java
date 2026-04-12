@@ -56,4 +56,10 @@ public class LevelConfig {
     public double tribulationScalingFactor = 2.0;
     /** List of enemy IDs that are allowed to spawn in this level. */
     public java.util.List<String> enemyPool = java.util.Arrays.asList("bat_01", "zombie_01");
+
+    // --- Data-Driven Spawning ---
+    /** List of interactable entities (NPCs, Steles) to spawn in the world. */
+    public java.util.List<InteractableConfig> interactables = new java.util.ArrayList<>();
+    /** List of item IDs to be spawned on the ground at the start of the level. */
+    public java.util.List<String> initialWorldItems = new java.util.ArrayList<>();
 }

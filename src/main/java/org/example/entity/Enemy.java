@@ -13,22 +13,11 @@ import java.util.Random;
  * Enemies can be regular or part of a "Tribulation" (Heavenly Punishment).
  * They use the A* algorithm for navigation towards the player.
  */
-public class Enemy {
-    /** The X coordinate of the enemy in pixels. */
-    private double x;
-    /** The Y coordinate of the enemy in pixels. */
-    private double y;
-    /** The size of the enemy entity. */
-    private double size = 24;
+public class Enemy extends LivingEntity {
 
     /** Whether the enemy is part of a Tribulation (stronger and more aggressive). */
     private boolean isTribulation;
-    /** Movement speed of the enemy. */
-    private double speed;
-    /** Health points of the enemy. */
-    private double hp;
-    /** The maximum health points the enemy can have. */
-    private double maxHp;
+
     /** Damage dealt to the player on contact. */
     private double damage;
 
@@ -53,6 +42,13 @@ public class Enemy {
 
     /** Cooldown timer between attacks on the player. */
     private double attackCooldown = 0;
+    
+    /** Range at which the enemy prefers to stay and shoot (if ranged). */
+    private double attackRange = 30.0;
+    /** If true, the enemy fires projectiles instead of melee. */
+    private boolean isRanged = false;
+    /** Config for projectiles if ranged. */
+    private org.example.item.WeaponConfig projectileConfig;
 
     /**
      * Constructs a new Enemy at the specified position.
@@ -63,8 +59,7 @@ public class Enemy {
      * @param isTribulation Whether this is an elite Tribulation enemy.
      */
     public Enemy(double startX, double startY, boolean isTribulation) {
-        this.x = startX;
-        this.y = startY;
+        super(startX, startY, 24, 100, 1.0); // Defaults, instantly overridden by setStats
         this.isTribulation = isTribulation;
     }
 
@@ -83,13 +78,22 @@ public class Enemy {
     public void setStats(String id, String name, double hp, double damage, double speed, double size, String colorHex, double scaling) {
         this.id = id;
         this.name = name;
-        this.hp = hp;
-        this.maxHp = hp;
+        super.setMaxHp(hp);
+        super.setHp(hp);
         this.damage = damage;
-        this.speed = speed;
-        this.size = size;
+        super.setSpeed(speed);
+        super.setSize(size);
         this.colorHex = colorHex;
         this.scaling = scaling;
+    }
+
+    /**
+     * Initializes ranged attack parameters.
+     */
+    public void setRanged(double range, org.example.item.WeaponConfig config) {
+        this.isRanged = true;
+        this.attackRange = range;
+        this.projectileConfig = config;
     }
 
     /**
@@ -100,9 +104,13 @@ public class Enemy {
      * @param allEnemies List of all enemies for separation behavior.
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    public void update(GameMap gameMap, Player player, List<Enemy> allEnemies, double deltaTime) {
+    public void update(GameMap gameMap, Player player, List<Enemy> allEnemies, double deltaTime, List<Projectile> projectiles) {
         animationTimer += deltaTime;
         if (animationTimer > 10.0) animationTimer -= 10.0;
+        
+        // Update status effects
+        statusEffectManager.update(deltaTime);
+        
         // 1. Calculate distance to player
         double distX = player.getX() + 6 - (this.x + size / 2);
         double distY = player.getY() + 6 - (this.y + size / 2);
@@ -111,15 +119,22 @@ public class Enemy {
         double moveDirX = 0;
         double moveDirY = 0;
 
-        // 2. Decision: Direct Line-of-Sight vs Pathfinding
+        // 2. Decision: Pathfinding vs Shooting
         if (isTribulation || distance <= detectionRange) {
             boolean hasLoS = gameMap.hasLineOfSight(x + size / 2, y + size / 2, player.getX() + 6, player.getY() + 6);
 
-            if (hasLoS) {
+            // Ranged behavior: stay at range if we have LoS
+            if (isRanged && hasLoS && distance < attackRange) {
+                // Stay put or move slightly away to maintain distance
+                if (distance < attackRange * 0.7) {
+                    moveDirX = -distX / distance;
+                    moveDirY = -distY / distance;
+                }
+            } else if (hasLoS) {
                 // Move directly towards player
                 moveDirX = distX / distance;
                 moveDirY = distY / distance;
-                currentPath = null; // Clear path if we have direct view
+                currentPath = null;
             } else {
                 // Use Pathfinding
                 pathRecalculateTimer--;
@@ -131,7 +146,7 @@ public class Enemy {
                     int targetY = (int) ((player.getY() + 6) / tileSize);
 
                     currentPath = Pathfinder.findPath(gameMap, startX, startY, targetX, targetY);
-                    pathRecalculateTimer = 20 + new Random().nextInt(20); // Jitter recalculation
+                    pathRecalculateTimer = 20 + new Random().nextInt(20);
                 }
 
                 if (currentPath != null && !currentPath.isEmpty()) {
@@ -149,14 +164,13 @@ public class Enemy {
                         moveDirY = diffY / diffDist;
                     }
 
-                    // Remove tile from path if reached or close enough
                     if (diffDist < 5.0) {
                         currentPath.remove(0);
                     }
                 }
             }
 
-            // 3. Separation behavior (don't clump together)
+            // 3. Separation behavior
             double sepX = 0;
             double sepY = 0;
             for (Enemy other : allEnemies) {
@@ -172,7 +186,6 @@ public class Enemy {
             moveDirX += sepX * 0.5;
             moveDirY += sepY * 0.5;
 
-            // Normalize final movement vector if needed
             double mag = Math.sqrt(moveDirX * moveDirX + moveDirY * moveDirY);
             if (mag > 1.0) {
                 moveDirX /= mag;
@@ -182,16 +195,23 @@ public class Enemy {
             // --- 4. Attack Logic ---
             if (attackCooldown > 0) {
                 attackCooldown -= (deltaTime * 60.0);
-            } else if (distance < size + 5) {
-                player.takeDamage(damage);
-                attackCooldown = 60.0;
+            } else {
+                if (isRanged && hasLoS && distance <= attackRange) {
+                    // Fire projectile
+                    double angle = Math.atan2(distY, distX);
+                    projectiles.add(new Projectile(x + size / 2, y + size / 2, angle, projectileConfig, this, false));
+                    attackCooldown = 90.0; // Ranged takes longer
+                } else if (distance < size + 5) {
+                    player.takeDamage(damage);
+                    attackCooldown = 60.0;
+                }
             }
         }
 
         // --- 5. Apply movement with collision checks ---
         double dtFactor = deltaTime * 60.0;
-        double nextX = x + moveDirX * speed * dtFactor;
-        double nextY = y + moveDirY * speed * dtFactor;
+        double nextX = x + moveDirX * stats.getSpeed() * dtFactor;
+        double nextY = y + moveDirY * stats.getSpeed() * dtFactor;
 
         if (moveDirX != 0 && !isSolid(nextX, y, gameMap)) {
             x = nextX;
@@ -221,35 +241,36 @@ public class Enemy {
      * Renders the enemy. Color depends on whether it's a Tribulation enemy.
      * 
      * @param gc GraphicsContext for drawing.
-     * @param camX Camera X offset.
-     * @param camY Camera Y offset.
+     * @param cameraX Camera X offset.
+     * @param cameraY Camera Y offset.
      */
-    public void render(GraphicsContext gc, double camX, double camY) {
+    @Override
+    public void render(GraphicsContext gc, double cameraX, double cameraY) {
         // --- 1. Draw Sprite ---
         int frameCount = 4; // Assuming 4 frames for basic enemies
         int frameIndex = (int) (animationTimer / 0.15) % frameCount;
 
         javafx.scene.image.Image sprite = AssetRegistry.getSprite(id, frameIndex);
         if (sprite != null) {
-            gc.drawImage(sprite, x - camX, y - camY, size, size);
+            gc.drawImage(sprite, x - cameraX, y - cameraY, size, size);
         } else {
             // Draw body using configured hex color
             gc.setFill(Color.web(colorHex));
-            gc.fillRect(x - camX, y - camY, size, size);
+            gc.fillRect(x - cameraX, y - cameraY, size, size);
         }
 
         // --- HP Bar ---
         double barW = size;
         double barH = 4;
-        double barX = x - camX;
-        double barY = y - camY - 8;
+        double barX = x - cameraX;
+        double barY = y - cameraY - 8;
 
         // Background (Red)
         gc.setFill(Color.RED);
         gc.fillRect(barX, barY, barW, barH);
 
         // Foreground (Green)
-        double healthPercent = (double) hp / maxHp;
+        double healthPercent = (double) stats.getHp() / stats.getMaxHp();
         gc.setFill(Color.LIME);
         gc.fillRect(barX, barY, barW * healthPercent, barH);
 
@@ -259,42 +280,13 @@ public class Enemy {
         gc.strokeRect(barX, barY, barW, barH);
     }
 
-    /** @return Enemy's current X coordinate in pixels. */
-    public double getX() { return x; }
-    /** @return Enemy's current Y coordinate in pixels. */
-    public double getY() { return y; }
     /** @return Unique identifier of the enemy type. */
     public String getId() { return id; }
     /** @return The scaling factor applied at spawn. */
     public double getScaling() { return scaling; }
-    /** @return Enemy's hitbox size in pixels. */
-    public double getSize() { return size; }
-    /** @return Current HP of the enemy. */
-    public double getHP() { return hp; }
-    /** @return Maximum HP of the enemy. */
-    public double getMaxHP() { return maxHp; }
-    /** @return true if the enemy is dead (HP <= 0). */
-    public boolean isDead() { return hp <= 0; }
     /** 
      * Checks if this enemy was spawned as part of a Tribulation phase. 
      * @return true if it is a Tribulation elite enemy. 
      */
     public boolean isTribulation() { return isTribulation; }
-
-    /**
-     * Directly sets the current HP, useful for loading from save.
-     * @param hp The new HP value.
-     */
-    public void setHP(double hp) {
-        this.hp = hp;
-    }
-
-    /**
-     * Reduces the enemy's HP by the specified amount.
-     * @param amount The damage amount.
-     */
-    public void takeDamage(double amount) {
-        this.hp -= amount;
-        if (hp < 0) hp = 0;
-    }
 }

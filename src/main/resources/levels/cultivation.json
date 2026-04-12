@@ -1,0 +1,24 @@
+[
+  {
+    "realmName": "Qi Condensation",
+    "stages": [
+      {"tier": 1, "qi": 50, "hpBonus": 20, "strBonus": 2, "defBonus": 1, "spiBonus": 5},
+      {"tier": 2, "qi": 100, "hpBonus": 25, "strBonus": 3, "defBonus": 1, "spiBonus": 5},
+      {"tier": 3, "qi": 200, "hpBonus": 30, "strBonus": 4, "defBonus": 2, "spiBonus": 10},
+      {"tier": 4, "qi": 400, "hpBonus": 40, "strBonus": 5, "defBonus": 2, "spiBonus": 10},
+      {"tier": 5, "qi": 800, "hpBonus": 50, "strBonus": 6, "defBonus": 3, "spiBonus": 15},
+      {"tier": 6, "qi": 1600, "hpBonus": 70, "strBonus": 8, "defBonus": 4, "spiBonus": 20},
+      {"tier": 7, "qi": 3200, "hpBonus": 100, "strBonus": 12, "defBonus": 5, "spiBonus": 30},
+      {"tier": 8, "qi": 6400, "hpBonus": 150, "strBonus": 18, "defBonus": 8, "spiBonus": 45},
+      {"tier": 9, "qi": 12800, "hpBonus": 250, "strBonus": 25, "defBonus": 12, "spiBonus": 70}
+    ]
+  },
+  {
+    "realmName": "Foundation Establishment",
+    "stages": [
+      {"tier": 1, "qi": 50000, "hpBonus": 1000, "strBonus": 100, "defBonus": 50, "spiBonus": 200},
+      {"tier": 2, "qi": 150000, "hpBonus": 2500, "strBonus": 250, "defBonus": 120, "spiBonus": 500},
+      {"tier": 3, "qi": 500000, "hpBonus": 6000, "strBonus": 600, "defBonus": 300, "spiBonus": 1200}
+    ]
+  }
+]

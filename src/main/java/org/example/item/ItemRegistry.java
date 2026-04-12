@@ -3,6 +3,7 @@ package org.example.item;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
  */
 public class ItemRegistry {
     private static Map<String, ItemConfig> items = new HashMap<>();
+    private static List<RecipeConfig> recipesList = new ArrayList<>();
     private static Map<String, String> recipes = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -38,6 +40,7 @@ public class ItemRegistry {
             InputStream isRecipes = ItemRegistry.class.getResourceAsStream(recipesPath);
             if (isRecipes != null) {
                 List<RecipeConfig> recipeList = mapper.readValue(isRecipes, new TypeReference<List<RecipeConfig>>() {});
+                recipesList = recipeList;
                 for (RecipeConfig recipe : recipeList) {
                     // Store as sorted pair string for easy lookup: "itemA+itemB" -> result
                     String key = getRecipeKey(recipe.input1, recipe.input2);
@@ -61,7 +64,20 @@ public class ItemRegistry {
         ItemConfig config = items.get(id);
         if (config == null) return null;
 
-        Item item = new Item(config.id, config.name, config.description, config.type);
+        Item item;
+        switch (config.type) {
+            case WEAPON:
+                item = new WeaponItem(config.id, config.name, config.description);
+                break;
+            case CONSUMABLE:
+                item = new ConsumableItem(config.id, config.name, config.description);
+                break;
+            case CRAFTING:
+            case MISC:
+            default:
+                item = new MaterialItem(config.id, config.name, config.description, config.type);
+                break;
+        }
         item.setHpRestore(config.hpRestore);
         item.setQiRestore(config.qiRestore);
         item.setMaxHpBoost(config.maxHpBoost);
@@ -92,5 +108,15 @@ public class ItemRegistry {
         } else {
             return id2 + "+" + id1;
         }
+    }
+
+    /** @return List of all loaded recipe configurations. */
+    public static List<RecipeConfig> getAllRecipes() {
+        return recipesList;
+    }
+
+    /** @return Map of all loaded item configurations. */
+    public static Map<String, ItemConfig> getAllItems() {
+        return items;
     }
 }

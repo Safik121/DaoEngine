@@ -42,6 +42,7 @@ public class MapGenerator {
         level.height = config.height;
         level.tileSize = config.tileSize;
         level.biome = config.biome;
+        level.config = config;
         level.data = new ArrayList<>();
 
         // 1. Initialize with Grass (0)
@@ -127,32 +128,28 @@ public class MapGenerator {
     }
 
     /**
-     * Spawns NPCs and Steles at random grass positions.
+     * Spawns NPCs and Steles based on the LevelConfig definitions.
      */
     private static void spawnInteractables(Level level, Random random) {
-        // Spawn 2 Steles
-        for (int i = 0; i < 2; i++) {
-            double[] pos = findRandomGrass(level, random);
-            if (pos != null) {
-                InteractableEntity stele = new InteractableEntity(pos[0], pos[1], "Ancient Stele",
-                        InteractableEntity.Type.STELE);
-                stele.addDialogue("The writing on this stone is ancient...");
-                stele.addDialogue("It speaks of a great war between the heavens and the earth.");
-                stele.addDialogue("To transcend, one must prove their worth through the Gate of Realms.");
-                level.interactables.add(stele);
-            }
-        }
+        if (level.config == null || level.config.interactables == null) return;
 
-        // Spawn 1 NPC (The Mysterious Traveler)
-        double[] npos = findRandomGrass(level, random);
-        if (npos != null) {
-            InteractableEntity npc = new InteractableEntity(npos[0], npos[1], "Mysterious Traveler",
-                    InteractableEntity.Type.NPC);
-            npc.addDialogue("Greetings, young cultivator.");
-            npc.addDialogue("The path ahead is filled with tribulation, the heavens seek to test you.");
-            npc.addDialogue("I have items from many realms. Take this pill, and survive the next storm.");
-            npc.setRewardItem(ItemRegistry.createItem("pill_qi_01"));
-            level.interactables.add(npc);
+        for (InteractableConfig ic : level.config.interactables) {
+            for (int i = 0; i < ic.count; i++) {
+                double[] pos = findRandomGrass(level, random);
+                if (pos != null) {
+                    InteractableEntity entity = new InteractableEntity(pos[0], pos[1], ic.name, ic.type);
+                    if (ic.dialogueTreeId != null) {
+                        entity.setDialogueTreeId(ic.dialogueTreeId);
+                    }
+                    if (ic.rewardItemId != null && !ic.rewardItemId.isEmpty()) {
+                        entity.setRewardItem(ItemRegistry.createItem(ic.rewardItemId));
+                    }
+                    if (ic.giveQuestId != null && !ic.giveQuestId.isEmpty()) {
+                        entity.setGiveQuestId(ic.giveQuestId);
+                    }
+                    level.interactables.add(entity);
+                }
+            }
         }
     }
 

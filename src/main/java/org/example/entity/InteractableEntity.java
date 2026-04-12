@@ -2,22 +2,23 @@ package org.example.entity;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import java.util.ArrayList;
-import java.util.List;
 import org.example.item.Item;
+import org.example.logic.Interactable;
+import org.example.state.PlayState;
 
 /**
  * Represents an interactive entity in the game world, such as an NPC or a Stele.
  * Provides dialogue lines and optional rewards upon interaction.
  */
-public class InteractableEntity {
+public class InteractableEntity implements Interactable {
     public enum Type { NPC, STELE }
 
     private double x, y;
     private String name;
     private Type type;
-    private List<String> dialogueLines;
+    private String dialogueTreeId;
     private Item rewardItem;
+    private String giveQuestId;
     private boolean hasGivenReward = false;
 
     public InteractableEntity(double x, double y, String name, Type type) {
@@ -25,16 +26,14 @@ public class InteractableEntity {
         this.y = y;
         this.name = name;
         this.type = type;
-        this.dialogueLines = new ArrayList<>();
     }
 
-    /**
-     * Adds a line of text to be displayed sequentially during interaction.
-     * 
-     * @param line The text line to be added.
-     */
-    public void addDialogue(String line) {
-        dialogueLines.add(line);
+    public void setDialogueTreeId(String dialogueTreeId) {
+        this.dialogueTreeId = dialogueTreeId;
+    }
+
+    public String getDialogueTreeId() {
+        return dialogueTreeId;
     }
 
     /**
@@ -44,6 +43,21 @@ public class InteractableEntity {
      */
     public void setRewardItem(Item item) {
         this.rewardItem = item;
+    }
+
+    @Override
+    public void onInteract(PlayState state) {
+        state.getDialogManager().startDialogue(this, state);
+    }
+
+    @Override
+    public String getPrompt() {
+        return (type == Type.NPC) ? "[E] Talk" : "[E] Inspect";
+    }
+
+    @Override
+    public double getInteractionRange() {
+        return 70.0;
     }
 
     /**
@@ -74,8 +88,9 @@ public class InteractableEntity {
     public double getY() { return y; }
     public String getName() { return name; }
     public Type getType() { return type; }
-    public List<String> getDialogueLines() { return dialogueLines; }
     public Item getRewardItem() { return rewardItem; }
+    public String getGiveQuestId() { return giveQuestId; }
+    public void setGiveQuestId(String id) { this.giveQuestId = id; }
     public boolean hasGivenReward() { return hasGivenReward; }
     public void setHasGivenReward(boolean val) { this.hasGivenReward = val; }
 }

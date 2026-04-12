@@ -1,0 +1,33 @@
+{
+  "name": "Glacial Peak Path",
+  "width": 150,
+  "height": 150,
+  "tileSize": 32,
+  "biome": "ICE",
+  "veinCount": 8,
+  "veinMinSize": 5,
+  "veinMaxSize": 10,
+  "hasLakes": true,
+  "lakeCount": 5,
+  "lakeSize": 15,
+  "hasRivers": true,
+  "riverCount": 1,
+  "bridgeMin": 1,
+  "bridgeMax": 2,
+  "bridgeMinWidth": 3,
+  "bridgeMaxWidth": 4,
+  "tribulationTime": 60.0,
+  "initialEnemyCount": 15,
+  "tribulationTotalEnemies": 30,
+  "tribulationScalingFactor": 1.3,
+  "enemyPool": ["zombie_01", "archer_01"],
+  "interactables": [
+    {
+      "name": "Ancient Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_mystic_01",
+      "count": 2
+    }
+  ],
+  "initialWorldItems": ["pill_qi_01", "mat_hammer_01", "realm_token"]
+}
