@@ -101,15 +101,15 @@ public class PlayState implements GameState {
     private boolean eWasPressed = false;
     /** Input buffer to detect 'B' key releases. */
     private boolean bWasPressed = false;
+    /** Input buffer to detect 'C' key releases. */
+    private boolean cWasPressed = false;
 
     /** The currently active NPC/Stele dialogue, if any. */
     private DialogManager dialogManager;
-    /**
-     * Whether the ultimate goal of the current level (e.g. survive Tribulation) was
-     * Whether the ultimate goal of the current level (e.g. survive Tribulation) was
-     * met.
-     */
+    /** Whether the ultimate goal of the current level was met. */
     private boolean levelVictoryAchieved = false;
+    /** Whether the cultivation/meditation menu is currently open. */
+    private boolean cultivationMenuOpen = false;
     /** Tracks the path of the last loaded level configuration. */
     private String lastConfigPath = "/levels/map1.json";
 
@@ -147,7 +147,12 @@ public class PlayState implements GameState {
     /** Input buffer for the Right Mouse Button. */
     private boolean rmbWasPressed = false;
 
-    /** List of active projectiles in the world. */
+    /** @return true if the cultivation menu is active. */
+    public boolean isCultivationMenuOpen() {
+        return cultivationMenuOpen;
+    }
+
+    /** @return List of projectiles in the air. */
     private List<Projectile> projectiles;
     /** List of items dropped on the ground in the game world. */
     private List<WorldItem> itemsOnGround;
@@ -382,6 +387,14 @@ public class PlayState implements GameState {
             handleDialogueInteraction();
         }
 
+        if (cultivationMenuOpen) {
+            handleCultivationInteraction();
+            player.setMeditating(true); // Force meditation animation
+            // When concentrating on Dao, the world still pulses but character stays still.
+        } else {
+            player.setMeditating(false);
+        }
+
         // Even when Inventory or Map is open, the world continues to run!
         handleHotbarSelection();
         handleWorldInteraction();
@@ -493,6 +506,19 @@ public class PlayState implements GameState {
             showFullMap = !showFullMap;
         mapWasPressed = mapIsPressed;
 
+        // --- CULTIVATION MENU TOGGLE ---
+        if (Input.isKeyPressed(KeyCode.C)) {
+            if (!cWasPressed) {
+                cultivationMenuOpen = !cultivationMenuOpen;
+                // Game should pause while cultivating? Usually yes in solo RPGs.
+                // We'll keep it simple for now and just show the menu.
+            }
+            cWasPressed = true;
+        } else {
+            cWasPressed = false;
+        }
+
+        // --- PAUSE MENU TOGGLE ---
         boolean bIsPressed = Input.isKeyPressed(KeyCode.B);
         if (bIsPressed && !bWasPressed) {
             org.example.logic.CultivationManager cm = player.getCultivationManager();
@@ -618,7 +644,6 @@ public class PlayState implements GameState {
             if (enemy.isDead()) {
                 enemyDied = true;
                 
-                // --- Event Based Logic ---
                 eventManager.triggerEvent(org.example.logic.event.GameEvent.ENTITY_DEATH, enemy.getId(), 1, this);
                 
                 // Roll for loot
@@ -822,6 +847,31 @@ public class PlayState implements GameState {
 
         if (!lmbPressed && lmbWasPressed && draggedItem != null) {
             handleDrop(mx, my, w, screenHeight, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
+        }
+    }
+
+    private void handleCultivationInteraction() {
+        double mx = Input.getMouseX(), my = Input.getMouseY(), w = screenWidth;
+        boolean lmbPressed = Input.isLmbPressed();
+
+        double panelW = 600, panelH = 450;
+        double x = (w - panelW) / 2, y = (screenHeight - panelH) / 2;
+
+        if (lmbPressed && !lmbWasPressed) {
+            org.example.logic.CultivationManager cm = player.getCultivationManager();
+            if (cm.getNextRank() != null) {
+                // Button position: x + panelW/2 - 150, y + panelH - 80, 300, 50
+                if (isInside(mx, my, x + panelW / 2 - 150, y + panelH - 80, 300, 50)) {
+                    boolean success = cm.attemptBreakthrough(player);
+                    if (success) {
+                        System.out.println("突破! Breakthrough successful!");
+                        soundManager.playSfx("level_up");
+                        // Spawn golden particles around player
+                        particleManager.spawnBreakthroughEffect(player.getX() + player.getSize() / 2,
+                                player.getY() + player.getSize() / 2);
+                    }
+                }
+            }
         }
     }
 

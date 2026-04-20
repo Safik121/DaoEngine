@@ -34,6 +34,8 @@ public class PlayUIManager {
             drawInventory(gc, state);
         if (state.isQuestLogOpen())
             renderQuestLog(gc, state);
+        if (state.isCultivationMenuOpen())
+            renderCultivationMenu(gc, state);
         if (state.getDialogManager().isActive())
             renderDialogue(gc, state);
 
@@ -540,6 +542,76 @@ public class PlayUIManager {
 
         gc.setFont(Font.font("Inter", 18));
         gc.fillText("Press 'ESC' for Main Menu", w / 2.0, h / 2.0 + 120);
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+    }
+
+    public void renderCultivationMenu(GraphicsContext gc, PlayState state) {
+        double w = state.getScreenWidth();
+        double h = state.getScreenHeight();
+
+        // Dark focus background
+        gc.setFill(Color.rgb(10, 10, 15, 0.7));
+        gc.fillRect(0, 0, w, h);
+
+        double panelW = 600, panelH = 450;
+        double x = (w - panelW) / 2, y = (h - panelH) / 2;
+
+        // Silk Scroll / Paper Background
+        gc.setFill(Color.rgb(30, 30, 40, 0.95));
+        gc.setStroke(GOLD);
+        gc.setLineWidth(4);
+        gc.fillRoundRect(x, y, panelW, panelH, 30, 30);
+        gc.strokeRoundRect(x, y, panelW, panelH, 30, 30);
+
+        // Header
+        gc.setFill(GOLD);
+        gc.setFont(Font.font("Serif", FontWeight.BOLD, 36));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        gc.fillText("PATH OF ASCENSION", w / 2.0, y + 60);
+
+        Player player = state.getPlayer();
+        org.example.logic.CultivationRank current = player.getCultivationManager().getCurrentRank();
+        org.example.logic.CultivationRank next = player.getCultivationManager().getNextRank();
+
+        // Current Status
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+        gc.setFont(Font.font("Serif", 20));
+        gc.setFill(Color.AQUAMARINE);
+        gc.fillText("Current Rank: " + current.getFullName(), x + 50, y + 110);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Serif", 16));
+        gc.fillText("Spiritual Qi: " + (int)player.getQi() + " / " + (int)player.getMaxQi(), x + 50, y + 140);
+
+        // Future Rank Preview
+        if (next != null) {
+            gc.setFill(GOLD);
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 22));
+            gc.fillText("NEXT BREAKTHROUGH: " + next.getFullName(), x + 50, y + 190);
+            
+            gc.setFill(Color.LIGHTGRAY);
+            gc.setFont(Font.font("Serif", 18));
+            gc.fillText("Required Qi: " + (int)next.getRequiredQiToBreakthrough(), x + 50, y + 220);
+            
+            gc.fillText("Anticipated Prowess Growth:", x + 50, y + 260);
+            gc.setFont(Font.font("Serif", 16));
+            gc.setFill(Color.web("#2ecc71"));
+            gc.fillText("+ " + (int)next.getHpBonus() + " Vitality (HP)", x + 70, y + 290);
+            gc.fillText("+ " + (int)next.getStrengthBonus() + " Internal Strength", x + 70, y + 315);
+            gc.fillText("+ " + (int)next.getDefenseBonus() + " Fortitude", x + 70, y + 340);
+        } else {
+            gc.setFill(Color.AQUAMARINE);
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 24));
+            gc.fillText("YOU HAVE REACHED THE APEX", x + 50, y + 230);
+        }
+
+        // Breakthrough Button
+        if (next != null) {
+            boolean canAfford = player.getQi() >= next.getRequiredQiToBreakthrough();
+            Color btnColor = canAfford ? Color.DARKGREEN : Color.rgb(80, 40, 40);
+            drawMenuButton(gc, "BREAKTHROUGH", x + panelW/2 - 150, y + panelH - 80, 300, 50, btnColor);
+        }
+        
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 

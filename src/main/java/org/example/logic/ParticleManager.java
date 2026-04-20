@@ -73,4 +73,12 @@ public class ParticleManager {
             particles.add(new Particle(x, y, Math.cos(angle)*speed, Math.sin(angle)*speed, 6, 0.6, Color.CYAN));
         }
     }
+
+    public void spawnBreakthroughEffect(double x, double y) {
+        for (int i = 0; i < 25; i++) {
+            double angle = Math.random() * Math.PI * 2;
+            double speed = Math.random() * 6 + 1;
+            particles.add(new Particle(x, y, Math.cos(angle)*speed, Math.sin(angle)*speed, 5, 1.2, Color.GOLD));
+        }
+    }
 }

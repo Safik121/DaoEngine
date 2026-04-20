@@ -80,6 +80,10 @@ public class Player extends LivingEntity {
         this.maxQi = maxQi;
     }
 
+    public void setMeditating(boolean meditating) {
+        this.isMeditating = meditating;
+    }
+
     /**
      * Updates the player's movement and cooldowns based on input.
      * 
@@ -92,9 +96,11 @@ public class Player extends LivingEntity {
             animationTimer -= 10.0;
 
         // --- 1. Meditation Logic ---
-        isMeditating = Input.isKeyPressed(KeyCode.SPACE);
-
-        if (isMeditating) {
+        // Preserve external state (like the menu) or check for manual intervention
+        boolean manualMeditation = Input.isKeyPressed(KeyCode.SPACE);
+        boolean activelyMeditating = isMeditating || manualMeditation;
+ 
+        if (activelyMeditating) {
             GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
             // Regenerate stats during meditation (Section 3.2 of the vision doc)
             if (stats.getHp() < stats.getMaxHp())
