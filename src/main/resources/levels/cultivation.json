@@ -1,6 +1,7 @@
 [
   {
     "realmName": "Ning Qi",
+    "description": "Qi Condensation (\u51dd\u6c14) | Divided into 15 layers. Progress by absorbing spiritual energy. The purpose of this step is building foundation for grasping natural law in the Second Step.",
     "stages": [
       {
         "tier": 1,
@@ -126,6 +127,7 @@
   },
   {
     "realmName": "Zhu Ji",
+    "description": "Foundation Establishment (\u7b51\u57fa) | Divided into Early, Middle, Late. Spiritual energy refines the body so the body would be more suited for cultivation.",
     "stages": [
       {
         "tier": 1,
@@ -155,6 +157,7 @@
   },
   {
     "realmName": "Jie Dan",
+    "description": "Core Formation (\u7ed3\u4e39) | Divided into Early, Middle, Late, Peak. Form Spiritual Energy into a Core inside the Dantian.",
     "stages": [
       {
         "tier": 1,
@@ -192,6 +195,7 @@
   },
   {
     "realmName": "Yuan Ying",
+    "description": "Nascent Soul (\u5143\u5a74) | Divided into Early, Middle, Late, Peak. Break the Core to produce a Nascent Soul.",
     "stages": [
       {
         "tier": 1,
@@ -229,6 +233,7 @@
   },
   {
     "realmName": "Hua Shen",
+    "description": "Soul Formation / Deity Transformation (\u5316\u795e) | Divided into Early, Mid, Late, Great Cycle. Comprehend the heavens and obtain a Domain. Then form an Origin Soul by fusing that domain with the Nascent Soul.",
     "stages": [
       {
         "tier": 1,
@@ -266,6 +271,7 @@
   },
   {
     "realmName": "Ying Bian",
+    "description": "Soul Transformation / Infant Transformation (\u5a74\u53d8) | Divided into Early, Mid, Late, Great Cycle. Celestial spiritual energy to completely refine the body and allow the Origin Soul to go from non-corporeal to corporeal.",
     "stages": [
       {
         "tier": 1,
@@ -303,6 +309,7 @@
   },
   {
     "realmName": "Wen Ding",
+    "description": "Ascendant (\u95ee\u9f0e) | Divided into Early, Mid, Late, Great Cycle. Fusing domain and celestial spiritual energy with the origin soul.",
     "stages": [
       {
         "tier": 1,
@@ -340,6 +347,7 @@
   },
   {
     "realmName": "Yin Xu",
+    "description": "Illusory Yin (\u9634\u865a) | Change in the origin soul. A real origin soul can devour origin energy and gain new life from origin energy.",
     "stages": [
       {
         "tier": 1,
@@ -353,6 +361,7 @@
   },
   {
     "realmName": "Yang Shi",
+    "description": "Corporeal Yang (\u9633\u5b9e) | All the celestial spiritual energy dissipating and being replaced by origin energy.",
     "stages": [
       {
         "tier": 1,
@@ -366,6 +375,7 @@
   },
   {
     "realmName": "Kui Nie",
+    "description": "Nirvana Scryer (\u7aa5\u6d85) | Divided into Early, Mid, Late, Peak. Able to start comprehending natural law.",
     "stages": [
       {
         "tier": 1,
@@ -403,6 +413,7 @@
   },
   {
     "realmName": "Jing Nie",
+    "description": "Nirvana Cleanser (\u51c0\u6d85) | Divided into Early, Mid, Late, Peak. In this realm, one will be able to control natural law.",
     "stages": [
       {
         "tier": 1,
@@ -440,6 +451,7 @@
   },
   {
     "realmName": "Sui Nie",
+    "description": "Nirvana Shatterer (\u788e\u6d85) | Divided into Early, Mid, Late, Peak. At this stage, one's comprehension of Natural law can form an Essence.",
     "stages": [
       {
         "tier": 1,
@@ -477,6 +489,7 @@
   },
   {
     "realmName": "Heaven's Blight",
+    "description": "Tribulations of the Heavens | There are 5 desolation/tribulation in this level. With each passing of desolation, your power will increase.",
     "stages": [
       {
         "tier": 1,
@@ -522,6 +535,7 @@
   },
   {
     "realmName": "Kong Nie",
+    "description": "Nirvana Void (\u7a7a\u6d85) | The Essence of the Cultivator undergoes a qualitative change by absorbing the energy from the Great Void Gate.",
     "stages": [
       {
         "tier": 1,
@@ -535,6 +549,7 @@
   },
   {
     "realmName": "Kong Ling",
+    "description": "Spirit Void (\u7a7a\u7075) | At this realm, assuming the Cultivator uses Joss Flames, they will fuse with their Joss Flame Realm.",
     "stages": [
       {
         "tier": 1,
@@ -548,6 +563,7 @@
   },
   {
     "realmName": "Kong Xuan",
+    "description": "Arcane Void (\u7a7a\u7384) | Divided into Early, Mid, Late, Great Circle, Arcane Tribulant. Survivor of the nine tribulations.",
     "stages": [
       {
         "tier": 1,
@@ -593,6 +609,7 @@
   },
   {
     "realmName": "Kong Jie",
+    "description": "Void Tribulant (\u7a7a\u52ab) | Divided into Early, Mid, Late (Grand Exalt), Peak (Empyrean Exalt, Ascendant Empyrean, Grand Empyrean).",
     "stages": [
       {
         "tier": 1,
@@ -662,6 +679,7 @@
   },
   {
     "realmName": "Half Heaven Trampling",
+    "description": "The Nine Bridges | At this stage the practitioner must cross the Nine Heaven Trampling Bridges to completely enter Fourth Step.",
     "stages": [
       {
         "tier": 1,
@@ -674,7 +692,8 @@
     ]
   },
   {
-    "realmName": "Ta Tian - Heaven Trampling",
+    "realmName": "Ta Tian",
+    "description": "Heaven Trampling (\u8e0f\u5929) | Achieving the peak of the fourth step upon crossing the 9th bridge.",
     "stages": [
       {
         "tier": 1,

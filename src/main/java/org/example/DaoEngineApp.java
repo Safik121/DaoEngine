@@ -19,6 +19,8 @@ import org.example.item.WeaponRegistry;
 import org.example.entity.EnemyRegistry;
 import org.example.state.PauseState;
 import org.example.state.LoadingState;
+import org.example.logic.CultivationRegistry;
+import org.example.logic.CultivationRank;
 
 /**
  * The main application class for DaoEngine: Path to Immortality.
@@ -245,7 +247,7 @@ public class DaoEngineApp extends Application {
         org.example.logic.LootRegistry.loadConfigs("/levels/loot_tables.json");
         org.example.logic.QuestRegistry.loadQuests("/levels/quests.json");
         org.example.logic.DialogueRegistry.loadDialogues("/levels/dialogues.json");
-        org.example.logic.CultivationRegistry.loadConfigs("/levels/cultivation.json");
+        CultivationRegistry.loadConfigs("/levels/cultivation.json");
     }
 
     /**

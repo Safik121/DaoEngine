@@ -17,7 +17,7 @@ public class CultivationManager {
         
         // Safety check if registry is empty
         if (this.progressionPath.isEmpty()) {
-            this.progressionPath.add(new CultivationRank("Mortal", 0, 0, 0, 0, 0, 0));
+            this.progressionPath.add(new CultivationRank("Mortal", 0, 0, 0, 0, 0, 0, "A mere mortal with no cultivation."));
         }
     }
 

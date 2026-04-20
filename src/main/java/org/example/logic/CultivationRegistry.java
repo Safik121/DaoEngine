@@ -16,6 +16,7 @@ public class CultivationRegistry {
 
     public static class RealmTemplate {
         public String realmName;
+        public String description;
         public List<StageTemplate> stages;
     }
 
@@ -48,7 +49,8 @@ public class CultivationRegistry {
                         stage.hpBonus,
                         stage.strBonus,
                         stage.defBonus,
-                        stage.spiBonus
+                        stage.spiBonus,
+                        realm.description
                     ));
                 }
             }

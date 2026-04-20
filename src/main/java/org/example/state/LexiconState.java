@@ -14,6 +14,8 @@ import org.example.entity.EnemyRegistry;
 import org.example.item.ItemConfig;
 import org.example.item.ItemRegistry;
 import org.example.item.RecipeConfig;
+import org.example.logic.CultivationRank;
+import org.example.logic.CultivationRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class LexiconState implements GameState {
 
-    private enum Tab { ITEMS, ENEMIES, RECIPES }
+    private enum Tab { ITEMS, ENEMIES, RECIPES, CULTIVATION }
     private Tab currentTab = Tab.ITEMS;
 
     private boolean returnRequested = false;
@@ -66,7 +68,20 @@ public class LexiconState implements GameState {
             case RECIPES:
                 selectedRecipe = ItemRegistry.getAllRecipes().stream().findFirst().orElse(null);
                 break;
+            case CULTIVATION:
+                selectedId = getUniqueRealms().stream().findFirst().orElse(null);
+                break;
         }
+    }
+
+    private List<String> getUniqueRealms() {
+        List<String> realms = new ArrayList<>();
+        for (CultivationRank rank : CultivationRegistry.getFullProgressionPath()) {
+            if (!realms.contains(rank.getTitle())) {
+                realms.add(rank.getTitle());
+            }
+        }
+        return realms;
     }
 
     private void calculateMaxScroll() {
@@ -76,6 +91,7 @@ public class LexiconState implements GameState {
             case ITEMS: count = ItemRegistry.getAllItems().size(); break;
             case ENEMIES: count = EnemyRegistry.getAllIds().size(); break;
             case RECIPES: count = ItemRegistry.getAllRecipes().size(); break;
+            case CULTIVATION: count = getUniqueRealms().size(); break;
         }
         
         double totalContentHeight = count * itemHeight + 40; // padding
@@ -96,7 +112,7 @@ public class LexiconState implements GameState {
 
         // Check Tabs
         for (int i = 0; i < Tab.values().length; i++) {
-            double tx = width / 2.0 - 225 + i * 155;
+            double tx = width / 2.0 - 310 + i * 155;
             if (click && mx >= tx && mx <= tx + 140 && my >= 10 && my <= tabHeight) {
                 currentTab = Tab.values()[i];
                 autoSelectFirst();
@@ -138,6 +154,10 @@ public class LexiconState implements GameState {
                 List<RecipeConfig> rList = ItemRegistry.getAllRecipes();
                 if (index >= 0 && index < rList.size()) selectedRecipe = rList.get(index);
                 break;
+            case CULTIVATION:
+                List<String> realmIds = getUniqueRealms();
+                if (index >= 0 && index < realmIds.size()) selectedId = realmIds.get(index);
+                break;
         }
     }
 
@@ -167,7 +187,7 @@ public class LexiconState implements GameState {
     private void drawTabs(GraphicsContext gc) {
         for (int i = 0; i < Tab.values().length; i++) {
             Tab t = Tab.values()[i];
-            double tx = width / 2.0 - 225 + i * 155;
+            double tx = width / 2.0 - 310 + i * 155;
             boolean active = (currentTab == t);
 
             gc.setFill(active ? GOLD : Color.web("#444444"));
@@ -210,6 +230,9 @@ public class LexiconState implements GameState {
             case RECIPES:
                 renderRecipeList(gc, startY, itemHeight);
                 break;
+            case CULTIVATION:
+                renderIdList(gc, getUniqueRealms(), startY, itemHeight);
+                break;
         }
 
         gc.restore();
@@ -246,6 +269,7 @@ public class LexiconState implements GameState {
             String label = id;
             if (currentTab == Tab.ITEMS) label = ItemRegistry.getAllItems().get(id).name;
             if (currentTab == Tab.ENEMIES) label = EnemyRegistry.getAllConfigs().get(id).name;
+            if (currentTab == Tab.CULTIVATION) label = id;
             
             gc.fillText(label, 40, y);
         }
@@ -289,6 +313,7 @@ public class LexiconState implements GameState {
             case ITEMS: renderItemDetails(gc, x, y, w); break;
             case ENEMIES: renderEnemyDetails(gc, x, y, w); break;
             case RECIPES: renderRecipeDetails(gc, x, y, w); break;
+            case CULTIVATION: renderCultivationDetails(gc, x, y, w); break;
         }
     }
 
@@ -382,6 +407,66 @@ public class LexiconState implements GameState {
         drawSprite(gc, i2 != null ? i2.spriteId : null, x + 140, y + 80, 54);
         gc.fillText("=", x + 210, y + 120);
         drawSprite(gc, res != null ? res.spriteId : null, x + 245, y + 75, 70);
+    }
+
+    private void renderCultivationDetails(GraphicsContext gc, double x, double y, double w) {
+        if (selectedId == null) return;
+        
+        // Find the first occurrence of this realm to get its description
+        CultivationRank rankExample = null;
+        int tierCount = 0;
+        for (CultivationRank r : CultivationRegistry.getFullProgressionPath()) {
+            if (r.getTitle().equals(selectedId)) {
+                if (rankExample == null) rankExample = r;
+                tierCount++;
+            }
+        }
+        
+        if (rankExample == null) return;
+
+        gc.setFill(GOLD);
+        gc.setFont(Font.font("Serif", FontWeight.BOLD, 32));
+        gc.fillText(selectedId, x + 30, y + 50);
+
+        gc.setFill(Color.LIGHTGRAY);
+        gc.setFont(Font.font("Serif", 18));
+        gc.fillText("Classification: Celestial Realm", x + 30, y + 80);
+        gc.fillText("Total Tiers: " + tierCount, x + 30, y + 105);
+
+        gc.setStroke(GOLD);
+        gc.strokeLine(x + 30, y + 120, x + w - 30, y + 120);
+
+        String desc = rankExample.getDescription();
+        if (desc == null || desc.isEmpty()) desc = "Mysterious realms that lie beyond mortal understanding.";
+
+        // Split by delimiter '|' for sub-header formatting
+        String[] parts = desc.split("\\|");
+        double nextY = y + 150;
+
+        if (parts.length >= 2) {
+            // Sub-header (Ancient/Alt Name)
+            gc.setFill(GOLD);
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 22));
+            gc.fillText(parts[0].trim(), x + 30, nextY);
+            
+            // Lore Body
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Serif", 18));
+            drawWrappedText(gc, parts[1].trim(), x + 30, nextY + 30, w - 60);
+        } else {
+            // Fallback for non-segmented lore
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Serif", 20));
+            drawWrappedText(gc, desc, x + 30, nextY, w - 60);
+        }
+
+        // Aesthetics
+        gc.setFill(GOLD);
+        gc.setGlobalAlpha(0.1);
+        gc.setFont(Font.font("Serif", FontWeight.BOLD, 120));
+        double detailH = 600 - 160; // Total height - sidebar padding (matches sidebarHeight)
+        gc.fillText("仙", x + w - 160, y + detailH - 40);
+        gc.setGlobalAlpha(1.0);
     }
 
     private void drawSprite(GraphicsContext gc, String spriteId, double x, double y, double size) {
