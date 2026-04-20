@@ -110,6 +110,15 @@ public class PlayState implements GameState {
     private boolean levelVictoryAchieved = false;
     /** Whether the cultivation/meditation menu is currently open. */
     private boolean cultivationMenuOpen = false;
+    
+    /** Simple notification tracking. */
+    public static class Notification {
+        public String message;
+        public double timer;
+        public Notification(String m, double t) { this.message = m; this.timer = t; }
+    }
+    private List<Notification> notifications = new ArrayList<>();
+
     /** Tracks the path of the last loaded level configuration. */
     private String lastConfigPath = "/levels/map1.json";
 
@@ -404,6 +413,12 @@ public class PlayState implements GameState {
         mapAnimationTimer += deltaTime;
         if (mapAnimationTimer > 10.0)
             mapAnimationTimer -= 10.0;
+
+        // --- Update Notifications ---
+        for (int i = notifications.size() - 1; i >= 0; i--) {
+            notifications.get(i).timer -= deltaTime;
+            if (notifications.get(i).timer <= 0) notifications.remove(i);
+        }
 
         // --- Centralized Input State Update ---
         // Ensuring all handlers see correctly transitioned states for click detection.
@@ -848,6 +863,15 @@ public class PlayState implements GameState {
         if (!lmbPressed && lmbWasPressed && draggedItem != null) {
             handleDrop(mx, my, w, screenHeight, panelX, panelY, panelW, panelH, slotSize, padding, startX, startY);
         }
+    }
+
+    public void addNotification(String message) {
+        notifications.add(new Notification(message, 3.5)); // Display for 3.5 seconds
+        if (notifications.size() > 5) notifications.remove(0); // Max 5 at once
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
     }
 
     private void handleCultivationInteraction() {

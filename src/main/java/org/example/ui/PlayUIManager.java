@@ -42,6 +42,8 @@ public class PlayUIManager {
         if (state.isPaused())
             renderPauseMenu(gc, state);
 
+        renderNotifications(gc, state);
+
         if (state.getCurrentMode() == PlayState.PlayMode.VICTORY)
             renderVictoryScreen(gc, state);
         if (state.getCurrentMode() == PlayState.PlayMode.GAMEOVER)
@@ -612,6 +614,34 @@ public class PlayUIManager {
             drawMenuButton(gc, "BREAKTHROUGH", x + panelW/2 - 150, y + panelH - 80, 300, 50, btnColor);
         }
         
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+    }
+
+    private void renderNotifications(GraphicsContext gc, PlayState state) {
+        java.util.List<PlayState.Notification> notes = state.getNotifications();
+        if (notes.isEmpty()) return;
+
+        double w = state.getScreenWidth();
+        double startY = 80;
+        double spacing = 35;
+
+        gc.setFont(Font.font("Serif", FontWeight.BOLD, 18));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+
+        for (int i = 0; i < notes.size(); i++) {
+            PlayState.Notification n = notes.get(i);
+            double alpha = Math.min(1.0, n.timer * 2.0); // Fade out in last 0.5s
+            
+            gc.setGlobalAlpha(alpha * 0.7);
+            gc.setFill(Color.BLACK);
+            double msgW = n.message.length() * 10 + 40;
+            gc.fillRoundRect(w/2 - msgW/2, startY + i * spacing - 20, msgW, 30, 10, 10);
+            
+            gc.setGlobalAlpha(alpha);
+            gc.setFill(GOLD);
+            gc.fillText(n.message, w / 2, startY + i * spacing);
+        }
+        gc.setGlobalAlpha(1.0);
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 

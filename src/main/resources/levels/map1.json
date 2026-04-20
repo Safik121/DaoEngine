@@ -27,6 +27,12 @@
       "type": "NPC",
       "dialogueTreeId": "mysterious_traveler_start",
       "count": 1
+    },
+    {
+      "name": "Elder Wei",
+      "type": "NPC",
+      "dialogueTreeId": "elder_wei_start",
+      "count": 1
     }
   ],
   "initialWorldItems": ["pill_qi_01"]

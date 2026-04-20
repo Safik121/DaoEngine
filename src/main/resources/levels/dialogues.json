@@ -27,5 +27,19 @@
     "text": "'Breath of the Dragon, Heart of the Sun.' You feel a surge of Qi flowing through your veins as you read these words.",
     "action": "HEAL:20",
     "choices": []
+  },
+  "elder_wei_start": {
+    "id": "elder_wei_start",
+    "text": "Greetings, traveler. The bats in these woods have become aggressive due to the shifting Qi. Could you help clear them out?",
+    "choices": [
+      {"text": "I will handle the bats.", "nextNodeId": "elder_wei_accept"},
+      {"text": "I'm not interested.", "nextNodeId": "exit"}
+    ]
+  },
+  "elder_wei_accept": {
+    "id": "elder_wei_accept",
+    "text": "Thank you. Come back when you've dealt with 3 of them. Take these Spirit Pills as an advance.",
+    "action": "GIVE_QUEST:kill_bats",
+    "choices": []
   }
 }

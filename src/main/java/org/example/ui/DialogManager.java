@@ -92,7 +92,7 @@ public class DialogManager {
             if (!state.getQuestManager().hasQuest(qId)) {
                 Quest q = QuestRegistry.createQuest(qId);
                 if (q != null) {
-                    state.getQuestManager().addQuest(q);
+                    state.getQuestManager().addQuest(q, state);
                 }
             }
         } else if (action.startsWith("HEAL:")) {

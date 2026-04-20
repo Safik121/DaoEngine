@@ -17,10 +17,13 @@ public class QuestManager implements GameEventListener {
     private List<Quest> activeQuests = new ArrayList<>();
     private List<Quest> completedQuests = new ArrayList<>();
 
-    public void addQuest(Quest q) {
+    public void addQuest(Quest q, PlayState state) {
         if (!hasQuest(q.getId())) {
             activeQuests.add(q);
             System.out.println("[Quest] Added: " + q.getName());
+            if (state != null) {
+                state.addNotification("New Quest: " + q.getName());
+            }
         }
     }
 
@@ -47,33 +50,43 @@ public class QuestManager implements GameEventListener {
         else if (event == GameEvent.ITEM_PICKUP) mappedType = Quest.ObjectiveType.COLLECT;
 
         if (mappedType != null) {
-            registerProgress(mappedType, targetId, amount, state.getPlayer());
+            registerProgress(mappedType, targetId, amount, state);
         }
     }
 
     /**
      * Internal method to process progress.
      */
-    private void registerProgress(Quest.ObjectiveType type, String targetId, int amount, Player player) {
+    private void registerProgress(Quest.ObjectiveType type, String targetId, int amount, PlayState state) {
         List<Quest> newlyCompleted = new ArrayList<>();
+        Player player = state.getPlayer();
 
         for (Quest q : activeQuests) {
             if (q.getObjectiveType() == type && q.getTargetId().equals(targetId)) {
                 if (q.addProgress(amount)) {
                     newlyCompleted.add(q);
+                } else {
+                    state.addNotification(q.getName() + ": " + q.getCurrentAmount() + "/" + q.getRequiredAmount());
                 }
             }
         }
 
         for (Quest q : newlyCompleted) {
-            completeQuest(q, player);
+            completeQuest(q, state);
         }
     }
 
-    private void completeQuest(Quest q, Player player) {
+    private void completeQuest(Quest q, PlayState state) {
         activeQuests.remove(q);
         completedQuests.add(q);
         System.out.println("[Quest] Completed: " + q.getName() + "!");
+        
+        if (state != null) {
+            state.addNotification("QUEST COMPLETED: " + q.getName());
+            state.getSoundManager().playSfx("quest_complete");
+        }
+
+        Player player = state.getPlayer();
 
         // Give rewards
         if (q.getRewardQi() > 0) {
