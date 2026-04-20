@@ -96,6 +96,16 @@ public class QuestManager implements GameEventListener {
         for (String itemId : q.getRewardItemIds()) {
             player.getInventory().addItem(ItemRegistry.createItem(itemId));
         }
+
+        if (q.getRewardSkillId() != null && !q.getRewardSkillId().isEmpty()) {
+            Skill skill = SkillRegistry.getSkill(q.getRewardSkillId());
+            if (skill != null) {
+                player.setActiveSkill(skill);
+                if (state != null) {
+                    state.addNotification("TECHNIQUE LEARNED: " + skill.getName());
+                }
+            }
+        }
     }
 
     public List<Quest> getActiveQuests() {

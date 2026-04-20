@@ -23,6 +23,7 @@ public class QuestRegistry {
         public int requiredAmount;
         public java.util.List<String> rewardItemIds;
         public double rewardQi;
+        public String rewardSkillId;
     }
 
     public static void loadQuests(String resourcePath) {
@@ -51,6 +52,7 @@ public class QuestRegistry {
                 q.addRewardItem(itemId);
             }
         }
+        q.setRewardSkillId(config.rewardSkillId);
         return q;
     }
 }

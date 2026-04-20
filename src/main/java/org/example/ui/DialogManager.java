@@ -3,12 +3,17 @@ package org.example.ui;
 import org.example.entity.InteractableEntity;
 import org.example.entity.Player;
 import org.example.GameLogger;
+import org.example.item.Item;
 import org.example.logic.DialogueNode;
 import org.example.logic.DialogueChoice;
 import org.example.logic.DialogueRegistry;
 import org.example.logic.Quest;
 import org.example.logic.QuestRegistry;
+import org.example.logic.Skill;
+import org.example.logic.SkillRegistry;
 import org.example.state.PlayState;
+
+import java.util.ArrayList;
 
 /**
  * Manages the progression of dialogue using a node-based tree system.
@@ -18,6 +23,10 @@ public class DialogManager {
 
     private InteractableEntity activeDialogue = null;
     private DialogueNode currentNode = null;
+
+    // Skill Learning Context
+    private Item activeBook = null;
+    private String pendingSkillId = null;
 
     /**
      * Attempts to start a dialogue with an entity using its dialogue tree.
@@ -43,6 +52,30 @@ public class DialogManager {
     }
 
     /**
+     * Specialized dialogue for learning a new technique from a Skill Book.
+     */
+    public void startSkillLearningDialogue(String skillId, Item book, PlayState state) {
+        Skill skill = SkillRegistry.getSkill(skillId);
+        if (skill == null) return;
+
+        this.activeBook = book;
+        this.pendingSkillId = skillId;
+        
+        // Use a dummy entity for skill books
+        this.activeDialogue = new org.example.entity.InteractableEntity(0, 0, "Ancient Manual", 
+            org.example.entity.InteractableEntity.Type.STELE);
+            
+        DialogueNode node = new DialogueNode("skill_learning", 
+            "The ancient text hums with power as you read: '" + skill.getName() + "'. " +
+            "Do you wish to internalize this technique? (Warning: This will replace your current technique)");
+        
+        node.getChoices().add(new DialogueChoice("Yes, Master the Dao", "confirm_learn"));
+        node.getChoices().add(new DialogueChoice("No, Not Yet", "exit"));
+        
+        this.currentNode = node;
+    }
+
+    /**
      * Advances to the next logical step in the dialogue.
      * If choices are present, this does nothing (waiting for choice selection).
      * @param state Reference to the PlayState.
@@ -51,14 +84,10 @@ public class DialogManager {
     public boolean advance(PlayState state) {
         if (activeDialogue == null || currentNode == null) return false;
 
-        // If there are choices, we cannot 'advance' with just E/Click.
-        // Hitting E while choices are active should maybe select the first one?
-        // For now, we wait for a specific choice selection.
         if (!currentNode.getChoices().isEmpty()) {
             return true; 
         }
 
-        // Single path dialogue or end of node
         handleCompletion(state);
         close();
         return false;
@@ -72,6 +101,9 @@ public class DialogManager {
 
         if (nextId == null || nextId.equalsIgnoreCase("exit")) {
             handleCompletion(state);
+            close();
+        } else if (nextId.equals("confirm_learn")) {
+            handleSkillReplacement(state);
             close();
         } else {
             currentNode = DialogueRegistry.getNode(nextId);
@@ -103,9 +135,23 @@ public class DialogManager {
         }
     }
 
+    private void handleSkillReplacement(PlayState state) {
+        if (pendingSkillId == null || activeBook == null) return;
+        
+        Skill skill = SkillRegistry.getSkill(pendingSkillId);
+        if (skill != null) {
+            state.getPlayer().setActiveSkill(skill);
+            state.addNotification("TECHNIQUE MASTERED: " + skill.getName());
+            
+            // Consume the book
+            state.getPlayer().getInventory().removeItem(activeBook.getId(), 1);
+            GameLogger.info("Mastered " + skill.getName() + " and consumed " + activeBook.getName());
+        }
+    }
+
     private void handleCompletion(PlayState state) {
         Player player = state.getPlayer();
-        if (activeDialogue.getRewardItem() != null && !activeDialogue.hasGivenReward()) {
+        if (activeDialogue != null && activeDialogue.getRewardItem() != null && !activeDialogue.hasGivenReward()) {
             if (player.getInventory().addItem(activeDialogue.getRewardItem())) {
                 GameLogger.info("Received reward: " + activeDialogue.getRewardItem().getName());
                 activeDialogue.setHasGivenReward(true);
@@ -116,6 +162,8 @@ public class DialogManager {
     public void close() {
         this.activeDialogue = null;
         this.currentNode = null;
+        this.activeBook = null;
+        this.pendingSkillId = null;
     }
 
     public boolean isActive() {

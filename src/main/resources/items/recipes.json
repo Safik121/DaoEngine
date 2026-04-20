@@ -13,5 +13,15 @@
     "input1": "sword_01",
     "input2": "fire_essence_01",
     "result": "heavenly_flame_sword"
+  },
+  {
+    "input1": "pill_qi_01",
+    "input2": "iron_ore_01",
+    "result": "book_thunder_clap"
+  },
+  {
+    "input1": "pill_qi_01",
+    "input2": "fire_essence_01",
+    "result": "book_fiery_palm"
   }
 ]

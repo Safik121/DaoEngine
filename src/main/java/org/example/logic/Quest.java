@@ -24,6 +24,7 @@ public class Quest {
 
     private List<String> rewardItemIds;
     private double rewardQi;
+    private String rewardSkillId;
 
     private boolean isCompleted;
     private String worldFlagOnComplete;
@@ -86,6 +87,8 @@ public class Quest {
     public boolean isCompleted() { return isCompleted; }
     public List<String> getRewardItemIds() { return rewardItemIds; }
     public double getRewardQi() { return rewardQi; }
+    public String getRewardSkillId() { return rewardSkillId; }
+    public void setRewardSkillId(String skillId) { this.rewardSkillId = skillId; }
     
     public String getWorldFlagOnComplete() { return worldFlagOnComplete; }
     public void setWorldFlagOnComplete(String flag) { this.worldFlagOnComplete = flag; }

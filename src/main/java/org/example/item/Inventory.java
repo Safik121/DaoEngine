@@ -169,18 +169,45 @@ public class Inventory {
      * @return true if consumed, false if not found.
      */
     public boolean consumeItem(String id) {
-        for (int i = 0; i < HOTBAR_SLOTS; i++) {
+        return removeItem(id, 1);
+    }
+
+    /**
+     * Checks if the inventory contains a specific amount of an item ID.
+     */
+    public boolean hasItem(String id, int amount) {
+        int count = 0;
+        for (Item item : hotbar) {
+            if (item != null && item.getId().equals(id)) count++;
+        }
+        for (Item item : mainInventory) {
+            if (item != null && item.getId().equals(id)) count++;
+        }
+        return count >= amount;
+    }
+
+    /**
+     * Removes a specific amount of items with the given ID.
+     */
+    public boolean removeItem(String id, int amount) {
+        int leftToRemove = amount;
+        
+        // Start with hotbar
+        for (int i = 0; i < HOTBAR_SLOTS && leftToRemove > 0; i++) {
             if (hotbar[i] != null && hotbar[i].getId().equals(id)) {
                 hotbar[i] = null;
-                return true;
+                leftToRemove--;
             }
         }
-        for (int i = 0; i < MAIN_SLOTS; i++) {
+        
+        // Then main inventory
+        for (int i = 0; i < MAIN_SLOTS && leftToRemove > 0; i++) {
             if (mainInventory[i] != null && mainInventory[i].getId().equals(id)) {
                 mainInventory[i] = null;
-                return true;
+                leftToRemove--;
             }
         }
-        return false;
+        
+        return leftToRemove == 0;
     }
 }

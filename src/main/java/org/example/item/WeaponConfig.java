@@ -18,7 +18,11 @@ public class WeaponConfig {
         /** A continuous segment or beam of energy connecting the source to the target. */
         BEAM,
         /** A circular area around the player that deals damage to all enemies inside. */
-        AOE_ZONE
+        AOE_ZONE,
+        /** A homing or standard energy bolt. */
+        MAGIC_MISSILE,
+        /** A fast-moving strike of lightning. */
+        LIGHTNING_BOLT
     }
 
     /** The behavior and rendering type of the projectile. */

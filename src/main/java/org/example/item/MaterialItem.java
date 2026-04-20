@@ -1,10 +1,11 @@
 package org.example.item;
 
 import org.example.entity.Player;
+import org.example.state.PlayState;
 
 /**
- * Specialized class for items used in crafting or as miscellaneous resources.
- * These items generally do not have active use effects.
+ * Represents raw materials or miscellaneous items that cannot be "used" directly
+ * but are essential for crafting and commerce.
  */
 public class MaterialItem extends Item {
     public MaterialItem(String id, String name, String description, Type type) {
@@ -12,7 +13,8 @@ public class MaterialItem extends Item {
     }
 
     @Override
-    public void use(Player player) {
-        System.out.println("Cannot use " + getName() + " directly. Try crafting with it.");
+    public void use(Player player, PlayState state) {
+        // Materials cannot be used directly.
+        System.out.println(getName() + " cannot be used directly. Try crafting with it!");
     }
 }

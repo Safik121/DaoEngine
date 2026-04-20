@@ -72,6 +72,9 @@ public class ItemRegistry {
             case CONSUMABLE:
                 item = new ConsumableItem(config.id, config.name, config.description);
                 break;
+            case SKILL_BOOK:
+                item = new SkillBookItem(config.id, config.name, config.description);
+                break;
             case CRAFTING:
             case MISC:
             default:
@@ -84,6 +87,7 @@ public class ItemRegistry {
         item.setMaxQiBoost(config.maxQiBoost);
         item.setWeaponConfigId(config.weaponConfigId);
         item.setSpriteId(config.spriteId);
+        item.setSkillId(config.skillId);
         
         return item;
     }

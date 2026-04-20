@@ -123,5 +123,57 @@
     "description": "A mythical blade forged in celestial fire.",
     "type": "WEAPON",
     "weaponConfigId": "heavenly_flame_sword"
+  },
+  {
+    "id": "pill_foundation",
+    "name": "Foundation Establishment Pill",
+    "description": "Required for a solid Foundation breakthrough.",
+    "type": "CONSUMABLE",
+    "detailedDescription": "A Tier 2 pill containing dense spiritual energy. It stabilizes the meridians, allowing the cultivator's Qi to condense into a liquid foundation without dissipating."
+  },
+  {
+    "id": "pill_core",
+    "name": "Core Formation Pill",
+    "description": "Assists in condensing the Golden Core.",
+    "type": "CONSUMABLE",
+    "detailedDescription": "A rare Tier 3 pill that aids in the compression of liquid Qi into a solid Golden Core. Without it, the Core might shatter during formation, leading to severe cultivation regression."
+  },
+  {
+    "id": "pill_soul",
+    "name": "Nascent Soul Pill",
+    "description": "Essential for birthing the Nascent Soul.",
+    "type": "CONSUMABLE",
+    "detailedDescription": "A legendary Tier 4 pill. It nourishes the spiritual mind and provides the vast energy burst required to shatter the Golden Core and birth the Immortal Nascent Soul."
+  },
+  {
+    "id": "pill_divine",
+    "name": "Divine Transformation Pill",
+    "description": "Cross the threshold into the Spirit Realm.",
+    "type": "CONSUMABLE",
+    "detailedDescription": "A Tier 5 pill that facilitates the fusion of the primordial spirit with the heavens. It is the final required catalyst for mortals attempting to touch the Dao."
+  },
+  {
+    "id": "book_fiery_palm",
+    "name": "Manual: Fiery Palm",
+    "description": "Technique: A burst of solar Qi.",
+    "type": "SKILL_BOOK",
+    "skillId": "fiery_palm",
+    "detailedDescription": "An ancient scorched scroll describing the circulation of Qi through the palm to ignite the surrounding essence. High damage, moderate cost."
+  },
+  {
+    "id": "book_void_sword",
+    "name": "Manual: Void Sword",
+    "description": "Technique: A slash through dimensions.",
+    "type": "SKILL_BOOK",
+    "skillId": "void_sword",
+    "detailedDescription": "A cold, translucent manual. It teaches the cultivator how to project their will into a blade of pure void energy."
+  },
+  {
+    "id": "book_thunder_clap",
+    "name": "Manual: Thunder Clap",
+    "description": "Technique: Flash like lightning.",
+    "type": "SKILL_BOOK",
+    "skillId": "thunder_clap",
+    "detailedDescription": "The pages of this book crackle with static electricity. It contains the fundamental mantras for the Thunder Clap movement and attack."
   }
 ]

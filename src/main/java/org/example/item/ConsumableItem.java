@@ -1,6 +1,7 @@
 package org.example.item;
 
 import org.example.entity.Player;
+import org.example.state.PlayState;
 
 /**
  * Specialized class for consumable items that restore player stats or grant buffs.
@@ -11,7 +12,7 @@ public class ConsumableItem extends Item {
     }
 
     @Override
-    public void use(Player player) {
+    public void use(Player player, PlayState state) {
         if (getHpRestore() > 0) {
             player.heal(getHpRestore());
             System.out.println("Restored " + getHpRestore() + " HP.");

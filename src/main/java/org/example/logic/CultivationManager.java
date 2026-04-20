@@ -17,7 +17,7 @@ public class CultivationManager {
         
         // Safety check if registry is empty
         if (this.progressionPath.isEmpty()) {
-            this.progressionPath.add(new CultivationRank("Mortal", 0, 0, 0, 0, 0, 0, "A mere mortal with no cultivation."));
+            this.progressionPath.add(new CultivationRank("Mortal", 0, 0, 0, 0, 0, 0, "A mere mortal with no cultivation.", null, 0));
         }
     }
 
@@ -43,10 +43,26 @@ public class CultivationManager {
         CultivationRank next = getNextRank();
         if (next == null) return false; // Max rank achieved
 
+        // Consume Qi for the breakthrough
         double requiredQi = next.getRequiredQiToBreakthrough();
+        String requiredItem = next.getRequiredItemId();
+        int requiredCount = next.getRequiredItemCount();
+
+        // Check for item requirements
+        if (requiredItem != null && !requiredItem.isEmpty() && requiredCount > 0) {
+            if (!player.getInventory().hasItem(requiredItem, requiredCount)) {
+                // Should ideally send a notification here but manager doesn't have reference to PlayState
+                System.out.println("[Cultivation] Missing required item: " + requiredItem + " x" + requiredCount);
+                return false;
+            }
+        }
+
         if (player.getQi() >= requiredQi) {
-            // Consume Qi for the breakthrough
+            // Consume Qi and Items
             player.setQi(player.getQi() - requiredQi);
+            if (requiredItem != null && !requiredItem.isEmpty() && requiredCount > 0) {
+                player.getInventory().removeItem(requiredItem, requiredCount);
+            }
             
             // Advance rank
             currentRankIndex++;

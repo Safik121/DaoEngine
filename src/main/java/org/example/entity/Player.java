@@ -30,6 +30,13 @@ public class Player extends LivingEntity {
     private int activeHotbarSlot = 0;
     /** Current attack cooldown in frames. */
     private double attackCooldown = 0;
+    /** Maximum attack cooldown in frames for UI progress. */
+    private double maxAttackCooldown = 1;
+    
+    /** Current skill (technique) cooldown in frames. */
+    private double skillCooldown = 0;
+    /** Maximum skill cooldown in frames for UI progress. */
+    private double maxSkillCooldown = 1;
     /** Timer (seconds) for cycling through animation frames. */
     private double animationTimer = 0;
     /** The player's currently equipped active technique. */
@@ -94,6 +101,10 @@ public class Player extends LivingEntity {
         animationTimer += deltaTime;
         if (animationTimer > 10.0)
             animationTimer -= 10.0;
+            
+        // Cooldowns and buffs should process even during meditation
+        updateCooldowns(deltaTime);
+        statusEffectManager.update(deltaTime); 
 
         // --- 1. Meditation Logic ---
         // Preserve external state (like the menu) or check for manual intervention
@@ -160,8 +171,6 @@ public class Player extends LivingEntity {
             y += dy;
         }
 
-        updateCooldowns(deltaTime);
-        statusEffectManager.update(deltaTime);
     }
 
     /**
@@ -359,6 +368,10 @@ public class Player extends LivingEntity {
         return attackCooldown <= 0;
     }
 
+    public boolean canUseSkill() {
+        return skillCooldown <= 0;
+    }
+
     /**
      * Sets the attack cooldown based on weapon properties.
      * 
@@ -366,6 +379,20 @@ public class Player extends LivingEntity {
      */
     public void setAttackCooldown(double cooldown) {
         this.attackCooldown = cooldown * 60.0;
+        this.maxAttackCooldown = Math.max(1, this.attackCooldown);
+    }
+
+    public void setSkillCooldown(double cooldown) {
+        this.skillCooldown = cooldown * 60.0;
+        this.maxSkillCooldown = Math.max(1, this.skillCooldown);
+    }
+    
+    public double getAttackCooldownRatio() {
+        return Math.max(0, Math.min(1.0, attackCooldown / maxAttackCooldown));
+    }
+
+    public double getSkillCooldownRatio() {
+        return Math.max(0, Math.min(1.0, skillCooldown / maxSkillCooldown));
     }
     
     public org.example.logic.Skill getActiveSkill() {
@@ -382,10 +409,16 @@ public class Player extends LivingEntity {
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     private void updateCooldowns(double deltaTime) {
+        double decrement = (deltaTime * 60.0);
+        
         if (attackCooldown > 0) {
-            attackCooldown -= (deltaTime * 60.0);
-            if (attackCooldown < 0)
-                attackCooldown = 0;
+            attackCooldown -= decrement;
+            if (attackCooldown < 0) attackCooldown = 0;
+        }
+        
+        if (skillCooldown > 0) {
+            skillCooldown -= decrement;
+            if (skillCooldown < 0) skillCooldown = 0;
         }
     }
 

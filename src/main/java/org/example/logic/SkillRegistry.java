@@ -1,7 +1,12 @@
 package org.example.logic;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.item.WeaponConfig;
+
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,29 +14,26 @@ import java.util.Map;
  */
 public class SkillRegistry {
     private static final Map<String, Skill> skills = new HashMap<>();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    static {
-        // Hardcoded for now, would ideally load from a JSON like ItemRegistry
-        WeaponConfig fieryPalmConfig = new WeaponConfig();
-        fieryPalmConfig.projectileType = WeaponConfig.ProjectileType.FIREBALL;
-        fieryPalmConfig.damage = 25.0;
-        fieryPalmConfig.speed = 6.0;
-        fieryPalmConfig.burstCount = 3;
-        fieryPalmConfig.spreadAngle = 30;
-        fieryPalmConfig.burstDelay = 0.1;
-        fieryPalmConfig.lifeSpan = 1.0;
-        fieryPalmConfig.size = 20.0;
-        
-        skills.put("fiery_palm", new Skill("fiery_palm", "Fiery Palm Technique", 30.0, 1.5, fieryPalmConfig));
+    public static void loadSkills(String resourcePath) {
+        try {
+            InputStream is = SkillRegistry.class.getResourceAsStream(resourcePath);
+            if (is == null) {
+                System.err.println("Skill configuration not found: " + resourcePath);
+                return;
+            }
 
-        WeaponConfig voidSwordConfig = new WeaponConfig();
-        voidSwordConfig.projectileType = WeaponConfig.ProjectileType.FLYING_SWORD;
-        voidSwordConfig.damage = 50.0;
-        voidSwordConfig.speed = 10.0;
-        voidSwordConfig.lifeSpan = 2.0;
-        voidSwordConfig.size = 24.0;
-
-        skills.put("void_sword", new Skill("void_sword", "Void Sword Slash", 50.0, 3.0, voidSwordConfig));
+            List<Skill> skillList = mapper.readValue(is, new TypeReference<List<Skill>>() {});
+            skills.clear();
+            for (Skill s : skillList) {
+                skills.put(s.getId(), s);
+            }
+            System.out.println("Loaded " + skills.size() + " techniques from JSON.");
+        } catch (Exception e) {
+            System.err.println("Fatal error loading SkillRegistry data!");
+            e.printStackTrace();
+        }
     }
 
     public static Skill getSkill(String id) {

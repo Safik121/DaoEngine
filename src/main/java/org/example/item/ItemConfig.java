@@ -30,4 +30,6 @@ public class ItemConfig {
     public String weaponConfigId;
     /** Unique mapping ID in assets.json for the item's texture. */
     public String spriteId;
+    /** Optional skill ID for SKILL_BOOK type items. */
+    public String skillId;
 }

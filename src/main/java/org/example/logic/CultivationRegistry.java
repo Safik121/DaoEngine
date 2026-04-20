@@ -27,6 +27,8 @@ public class CultivationRegistry {
         public double strBonus;
         public double defBonus;
         public double spiBonus;
+        public String requiredItemId;
+        public Integer requiredItemCount;
     }
 
     public static void loadConfigs(String resourcePath) {
@@ -50,7 +52,9 @@ public class CultivationRegistry {
                         stage.strBonus,
                         stage.defBonus,
                         stage.spiBonus,
-                        realm.description
+                        realm.description,
+                        stage.requiredItemId,
+                        stage.requiredItemCount != null ? stage.requiredItemCount : 0
                     ));
                 }
             }

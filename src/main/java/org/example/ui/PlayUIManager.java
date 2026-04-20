@@ -15,6 +15,9 @@ import org.example.item.WorldItem;
 import org.example.state.PlayState;
 import org.example.ConfigManager;
 import org.example.GameConfig;
+import org.example.logic.CultivationRank;
+import org.example.logic.Skill;
+import org.example.logic.DialogueChoice;
 
 /**
  * Dedicated manager for rendering all gameplay UI overlays.
@@ -83,6 +86,16 @@ public class PlayUIManager {
         gc.fillText((int) player.getQi() + " / " + (int) player.getMaxQi(), 30 + qiW,
                 20 + ui.barHeight + 5 + (qiH * 0.8));
 
+        // Weapon Cooldown Bar
+        double attackRatio = player.getAttackCooldownRatio();
+        if (attackRatio > 0) {
+            double barY = 20 + ui.barHeight + 5 + qiH + 5;
+            gc.setFill(Color.rgb(40, 40, 45, 0.7));
+            gc.fillRect(20, barY, qiW, 4);
+            gc.setFill(Color.ORANGERED);
+            gc.fillRect(20, barY, (1.0 - attackRatio) * qiW, 4);
+        }
+
         // Tribulation / Time
         if (state.isInTribulation()) {
             int remaining = state.countLivingTribulationEnemies();
@@ -100,6 +113,7 @@ public class PlayUIManager {
 
         drawQuests(gc, state);
         drawHotbar(gc, state);
+        drawActiveSkill(gc, state);
     }
     
     private void drawQuests(GraphicsContext gc, PlayState state) {
@@ -201,6 +215,60 @@ public class PlayUIManager {
             gc.setFont(Font.font("Arial", 12));
             gc.fillText(String.valueOf(i + 1), sx + 4, startY + 16);
         }
+    }
+
+    private void drawActiveSkill(GraphicsContext gc, PlayState state) {
+        Player player = state.getPlayer();
+        org.example.logic.Skill skill = player.getActiveSkill();
+        GameConfig.UIConfig ui = ConfigManager.getInstance().getConfig().ui;
+
+        double w = state.getScreenWidth();
+        double h = state.getScreenHeight();
+        double slotSize = 80;
+        double padding = 20;
+        double x = (w + (5 * 60 + 4 * 10)) / 2.0 + 30; // To the right of hotbar
+        double y = h - 95;
+
+        // Skill Border/Background
+        gc.setGlobalAlpha(0.85);
+        gc.setFill(DARK_INK);
+        gc.fillRoundRect(x, y, slotSize, slotSize, 15, 15);
+        gc.setStroke(GOLD);
+        gc.setLineWidth(2);
+        gc.strokeRoundRect(x, y, slotSize, slotSize, 15, 15);
+
+        if (skill != null) {
+            // Skill Icon (placeholder or text for now)
+            gc.setFill(Color.web("#AEEEEE"));
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 12));
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText(skill.getName().toUpperCase(), x + slotSize / 2, y + slotSize / 2);
+
+            // Qi Cost
+            gc.setFill(GOLD);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+            gc.fillText("Qi: " + (int) skill.getQiCost(), x + slotSize / 2, y + slotSize - 10);
+
+            // Cooldown Overlay (Sweep)
+            double ratio = player.getSkillCooldownRatio();
+            if (ratio > 0) {
+                gc.setFill(Color.rgb(0, 0, 0, 0.7));
+                gc.fillArc(x + 5, y + 5, slotSize - 10, slotSize - 10, 90, ratio * 360, javafx.scene.shape.ArcType.ROUND);
+            }
+        } else {
+            gc.setFill(Color.GRAY);
+            gc.setFont(Font.font("Arial", FontPosture.ITALIC, 10));
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText("Empty", x + slotSize / 2, y + slotSize / 2);
+        }
+
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+        gc.setGlobalAlpha(1.0);
+
+        // Label
+        gc.setFill(Color.LIGHTGRAY);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        gc.fillText("ACTIVE TECHNIQUE [RMB]", x, y - 10);
     }
 
     private void drawInventory(GraphicsContext gc, PlayState state) {

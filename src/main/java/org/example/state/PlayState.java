@@ -13,6 +13,9 @@ import org.example.entity.Player;
 import org.example.entity.Projectile;
 import org.example.entity.LightningStrike;
 import org.example.entity.EnemyRegistry;
+import org.example.logic.CultivationManager;
+import org.example.logic.CultivationRank;
+import org.example.logic.Skill;
 import org.example.item.Item;
 import org.example.item.WorldItem;
 import org.example.item.ItemRegistry;
@@ -440,18 +443,45 @@ public class PlayState implements GameState {
      */
     private void handleDialogueInteraction() {
         boolean ePressed = Input.isKeyPressed(KeyCode.E);
+        boolean lmbPressed = Input.isLmbPressed();
+        double mx = Input.getMouseX();
+        double my = Input.getMouseY();
+
         if (ePressed && !eWasPressed) {
             dialogManager.advance(this);
             eWasPressed = ePressed;
             return;
         }
 
-        // Choice selection via number keys
-        for (int i = 1; i <= 9; i++) {
-            KeyCode code = KeyCode.valueOf("DIGIT" + i);
-            if (Input.isKeyPressed(code)) {
-                dialogManager.selectChoice(i - 1, this);
-                break;
+        // Choice selection via number keys or mouse click
+        java.util.List<org.example.logic.DialogueChoice> choices = 
+            (dialogManager.getCurrentNode() != null) ? dialogManager.getCurrentNode().getChoices() : null;
+            
+        if (choices != null && !choices.isEmpty()) {
+            // Number keys
+            for (int i = 1; i <= Math.min(9, choices.size()); i++) {
+                KeyCode code = KeyCode.valueOf("DIGIT" + i);
+                if (Input.isKeyPressed(code)) {
+                    dialogManager.selectChoice(i - 1, this);
+                    break;
+                }
+            }
+            
+            // Mouse click support
+            if (lmbPressed && !lmbWasPressed) {
+                double width = 800;
+                double x = (screenWidth - width) / 2.0;
+                double y = screenHeight - 180 - 50;
+                double choiceY = y + 100;
+                
+                for (int i = 0; i < choices.size(); i++) {
+                    // Check if mouse is over this choice line
+                    if (mx >= x + 20 && mx <= x + width - 20 && my >= choiceY - 15 && my <= choiceY + 10) {
+                        dialogManager.selectChoice(i, this);
+                        break;
+                    }
+                    choiceY += 25;
+                }
             }
         }
     }
@@ -575,17 +605,19 @@ public class PlayState implements GameState {
         if (Input.isKeyPressed(KeyCode.DIGIT5))
             player.setActiveHotbarSlot(4);
 
-        if (Input.isKeyPressed(KeyCode.F)) {
+        // Use item in hotbar (F key or clicking while not a weapon)
+        if (Input.isKeyPressed(KeyCode.F) || Input.isLmbPressed()) {
             int activeSlot = player.getActiveHotbarSlot();
             Item activeItem = player.getInventory().getItemInHotbar(activeSlot);
-            if (activeItem != null) {
-                // Apply effects to player
-                activeItem.use(player);
+            
+            if (activeItem != null && activeItem.getType() != Item.Type.WEAPON) {
+                activeItem.use(player, this);
 
-                // If it's a consumable (like a pill), remove it after use
+                // If it's a consumable, remove it
                 if (activeItem.getType() == Item.Type.CONSUMABLE) {
                     player.getInventory().getHotbar()[activeSlot] = null;
                 }
+                // (SKILL_BOOK is removed in DialogManager upon confirmation)
             }
         }
 
@@ -781,7 +813,7 @@ public class PlayState implements GameState {
                 if (isInside(mx, my, sx, sy, slotSize)) {
                     Item item = player.getInventory().getMainInventory()[i];
                     if (item != null) {
-                        item.use(player);
+                        item.use(player, this);
                         if (item.getType() == Item.Type.CONSUMABLE)
                             player.getInventory().getMainInventory()[i] = null;
                     }
@@ -793,7 +825,7 @@ public class PlayState implements GameState {
                 if (isInside(mx, my, hX + i * (hudS + hudP), hY, hudS)) {
                     Item item = player.getInventory().getHotbar()[i];
                     if (item != null) {
-                        item.use(player);
+                        item.use(player, this);
                         if (item.getType() == Item.Type.CONSUMABLE)
                             player.getInventory().getHotbar()[i] = null;
                     }

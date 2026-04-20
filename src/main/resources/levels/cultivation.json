@@ -9,119 +9,119 @@
         "hpBonus": 24,
         "strBonus": 2,
         "defBonus": 1,
-        "spiBonus": 5
+        "spiBonus": 7
       },
       {
         "tier": 2,
         "qi": 135,
         "hpBonus": 36,
         "strBonus": 2,
-        "defBonus": 1,
-        "spiBonus": 7
+        "defBonus": 2,
+        "spiBonus": 16
       },
       {
         "tier": 3,
         "qi": 243,
         "hpBonus": 54,
         "strBonus": 3,
-        "defBonus": 1,
-        "spiBonus": 11
+        "defBonus": 3,
+        "spiBonus": 37
       },
       {
         "tier": 4,
         "qi": 437,
         "hpBonus": 81,
         "strBonus": 5,
-        "defBonus": 2,
-        "spiBonus": 16
+        "defBonus": 6,
+        "spiBonus": 85
       },
       {
         "tier": 5,
         "qi": 787,
         "hpBonus": 121,
         "strBonus": 7,
-        "defBonus": 2,
-        "spiBonus": 25
+        "defBonus": 10,
+        "spiBonus": 192
       },
       {
         "tier": 6,
         "qi": 1417,
         "hpBonus": 182,
         "strBonus": 10,
-        "defBonus": 3,
-        "spiBonus": 37
+        "defBonus": 17,
+        "spiBonus": 432
       },
       {
         "tier": 7,
         "qi": 2550,
         "hpBonus": 273,
         "strBonus": 15,
-        "defBonus": 4,
-        "spiBonus": 56
+        "defBonus": 30,
+        "spiBonus": 973
       },
       {
         "tier": 8,
         "qi": 4591,
         "hpBonus": 410,
         "strBonus": 21,
-        "defBonus": 6,
-        "spiBonus": 85
+        "defBonus": 51,
+        "spiBonus": 2189
       },
       {
         "tier": 9,
         "qi": 8264,
         "hpBonus": 615,
         "strBonus": 29,
-        "defBonus": 8,
-        "spiBonus": 128
+        "defBonus": 86,
+        "spiBonus": 4926
       },
       {
         "tier": 10,
         "qi": 14876,
         "hpBonus": 922,
         "strBonus": 41,
-        "defBonus": 10,
-        "spiBonus": 192
+        "defBonus": 146,
+        "spiBonus": 11084
       },
       {
         "tier": 11,
         "qi": 26778,
         "hpBonus": 1383,
         "strBonus": 57,
-        "defBonus": 13,
-        "spiBonus": 288
+        "defBonus": 247,
+        "spiBonus": 24939
       },
       {
         "tier": 12,
         "qi": 48201,
         "hpBonus": 2075,
         "strBonus": 80,
-        "defBonus": 17,
-        "spiBonus": 432
+        "defBonus": 417,
+        "spiBonus": 56113
       },
       {
         "tier": 13,
         "qi": 86762,
         "hpBonus": 3113,
         "strBonus": 113,
-        "defBonus": 23,
-        "spiBonus": 648
+        "defBonus": 705,
+        "spiBonus": 126255
       },
       {
         "tier": 14,
         "qi": 156172,
         "hpBonus": 4670,
         "strBonus": 158,
-        "defBonus": 30,
-        "spiBonus": 973
+        "defBonus": 1192,
+        "spiBonus": 284075
       },
       {
         "tier": 15,
         "qi": 281110,
         "hpBonus": 7006,
         "strBonus": 222,
-        "defBonus": 39,
-        "spiBonus": 1459
+        "defBonus": 2015,
+        "spiBonus": 639170
       }
     ]
   },
@@ -134,24 +134,26 @@
         "qi": 758997,
         "hpBonus": 12611,
         "strBonus": 311,
-        "defBonus": 51,
-        "spiBonus": 2189
+        "defBonus": 3405,
+        "spiBonus": 1438132,
+        "requiredItemId": "pill_foundation",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
         "qi": 1366194,
         "hpBonus": 18917,
         "strBonus": 435,
-        "defBonus": 66,
-        "spiBonus": 3284
+        "defBonus": 5756,
+        "spiBonus": 3235799
       },
       {
         "tier": 3,
         "qi": 2459150,
         "hpBonus": 28375,
         "strBonus": 609,
-        "defBonus": 86,
-        "spiBonus": 4926
+        "defBonus": 9727,
+        "spiBonus": 7280548
       }
     ]
   },
@@ -164,32 +166,34 @@
         "qi": 6639706,
         "hpBonus": 51075,
         "strBonus": 853,
-        "defBonus": 112,
-        "spiBonus": 7389
+        "defBonus": 16440,
+        "spiBonus": 16381233,
+        "requiredItemId": "pill_core",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
         "qi": 11951471,
         "hpBonus": 76613,
         "strBonus": 1195,
-        "defBonus": 146,
-        "spiBonus": 11084
+        "defBonus": 27783,
+        "spiBonus": 36857774
       },
       {
         "tier": 3,
         "qi": 21512648,
         "hpBonus": 114920,
         "strBonus": 1673,
-        "defBonus": 190,
-        "spiBonus": 16626
+        "defBonus": 46954,
+        "spiBonus": 82929992
       },
       {
         "tier": 4,
         "qi": 38722767,
         "hpBonus": 172381,
         "strBonus": 2342,
-        "defBonus": 247,
-        "spiBonus": 24939
+        "defBonus": 79353,
+        "spiBonus": 186592482
       }
     ]
   },
@@ -202,32 +206,34 @@
         "qi": 104551472,
         "hpBonus": 310286,
         "strBonus": 3279,
-        "defBonus": 321,
-        "spiBonus": 37409
+        "defBonus": 134106,
+        "spiBonus": 419833086,
+        "requiredItemId": "pill_soul",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
         "qi": 188192650,
         "hpBonus": 465429,
         "strBonus": 4591,
-        "defBonus": 417,
-        "spiBonus": 56113
+        "defBonus": 226640,
+        "spiBonus": 944624444
       },
       {
         "tier": 3,
         "qi": 338746770,
         "hpBonus": 698144,
         "strBonus": 6428,
-        "defBonus": 542,
-        "spiBonus": 84170
+        "defBonus": 383022,
+        "spiBonus": 2125405000
       },
       {
         "tier": 4,
         "qi": 609744186,
         "hpBonus": 1047216,
         "strBonus": 8999,
-        "defBonus": 705,
-        "spiBonus": 126255
+        "defBonus": 647307,
+        "spiBonus": 4782161251
       }
     ]
   },
@@ -240,32 +246,34 @@
         "qi": 1646309302,
         "hpBonus": 1884989,
         "strBonus": 12599,
-        "defBonus": 917,
-        "spiBonus": 189383
+        "defBonus": 1093950,
+        "spiBonus": 10759862816,
+        "requiredItemId": "pill_divine",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
         "qi": 2963356745,
         "hpBonus": 2827484,
         "strBonus": 17639,
-        "defBonus": 1192,
-        "spiBonus": 284075
+        "defBonus": 1848776,
+        "spiBonus": 24209691336
       },
       {
         "tier": 3,
         "qi": 5334042141,
         "hpBonus": 4241226,
         "strBonus": 24695,
-        "defBonus": 1550,
-        "spiBonus": 426113
+        "defBonus": 3124432,
+        "spiBonus": 54471805506
       },
       {
         "tier": 4,
         "qi": 9601275854,
         "hpBonus": 6361839,
         "strBonus": 34573,
-        "defBonus": 2015,
-        "spiBonus": 639170
+        "defBonus": 5280290,
+        "spiBonus": 122561562389
       }
     ]
   },
@@ -278,32 +286,32 @@
         "qi": 25923444807,
         "hpBonus": 11451311,
         "strBonus": 48402,
-        "defBonus": 2619,
-        "spiBonus": 958755
+        "defBonus": 8923690,
+        "spiBonus": 275763515376
       },
       {
         "tier": 2,
         "qi": 46662200654,
         "hpBonus": 17176967,
         "strBonus": 67764,
-        "defBonus": 3405,
-        "spiBonus": 1438132
+        "defBonus": 15081036,
+        "spiBonus": 620467909598
       },
       {
         "tier": 3,
         "qi": 83991961177,
         "hpBonus": 25765451,
         "strBonus": 94869,
-        "defBonus": 4427,
-        "spiBonus": 2157199
+        "defBonus": 25486951,
+        "spiBonus": 1396052796596
       },
       {
         "tier": 4,
         "qi": 151185530119,
         "hpBonus": 38648177,
         "strBonus": 132817,
-        "defBonus": 5756,
-        "spiBonus": 3235799
+        "defBonus": 43072948,
+        "spiBonus": 3141118792341
       }
     ]
   },
@@ -316,32 +324,32 @@
         "qi": 408200931323,
         "hpBonus": 69566719,
         "strBonus": 185944,
-        "defBonus": 7482,
-        "spiBonus": 4853698
+        "defBonus": 72793283,
+        "spiBonus": 7067517282767
       },
       {
         "tier": 2,
         "qi": 734761676382,
         "hpBonus": 104350079,
         "strBonus": 260322,
-        "defBonus": 9727,
-        "spiBonus": 7280548
+        "defBonus": 123020648,
+        "spiBonus": 15901913886226
       },
       {
         "tier": 3,
         "qi": 1322571017488,
         "hpBonus": 156525119,
         "strBonus": 364451,
-        "defBonus": 12646,
-        "spiBonus": 10920822
+        "defBonus": 207904896,
+        "spiBonus": 35779306244010
       },
       {
         "tier": 4,
         "qi": 2380627831479,
         "hpBonus": 234787679,
         "strBonus": 510231,
-        "defBonus": 16440,
-        "spiBonus": 16381233
+        "defBonus": 351359275,
+        "spiBonus": 80503439049023
       }
     ]
   },
@@ -354,8 +362,8 @@
         "qi": 6427695144995,
         "hpBonus": 422617822,
         "strBonus": 714324,
-        "defBonus": 21372,
-        "spiBonus": 24571849
+        "defBonus": 593797175,
+        "spiBonus": 181132737860303
       }
     ]
   },
@@ -368,8 +376,8 @@
         "qi": 17354776891489,
         "hpBonus": 760712080,
         "strBonus": 1000053,
-        "defBonus": 27783,
-        "spiBonus": 36857774
+        "defBonus": 1003517226,
+        "spiBonus": 407548660185681
       }
     ]
   },
@@ -382,32 +390,32 @@
         "qi": 46857897607020,
         "hpBonus": 1369281745,
         "strBonus": 1400075,
-        "defBonus": 36118,
-        "spiBonus": 55286661
+        "defBonus": 1695944113,
+        "spiBonus": 916984485417784
       },
       {
         "tier": 2,
         "qi": 84344215692636,
         "hpBonus": 2053922617,
         "strBonus": 1960105,
-        "defBonus": 46954,
-        "spiBonus": 82929992
+        "defBonus": 2866145551,
+        "spiBonus": 2063215092190014
       },
       {
         "tier": 3,
         "qi": 151819588246745,
         "hpBonus": 3080883926,
         "strBonus": 2744147,
-        "defBonus": 61040,
-        "spiBonus": 124394988
+        "defBonus": 4843785982,
+        "spiBonus": 4642233957427533
       },
       {
         "tier": 4,
         "qi": 273275258844142,
         "hpBonus": 4621325890,
         "strBonus": 3841806,
-        "defBonus": 79353,
-        "spiBonus": 186592482
+        "defBonus": 8185998310,
+        "spiBonus": 10445026404211950
       }
     ]
   },
@@ -420,32 +428,32 @@
         "qi": 737843198879184,
         "hpBonus": 8318386602,
         "strBonus": 5378529,
-        "defBonus": 103159,
-        "spiBonus": 279888724
+        "defBonus": 13834337145,
+        "spiBonus": 23501309409476888
       },
       {
         "tier": 2,
         "qi": 1328117757982532,
         "hpBonus": 12477579904,
         "strBonus": 7529941,
-        "defBonus": 134106,
-        "spiBonus": 419833086
+        "defBonus": 23380029775,
+        "spiBonus": 52877946171323000
       },
       {
         "tier": 3,
         "qi": 2390611964368557,
         "hpBonus": 18716369856,
         "strBonus": 10541918,
-        "defBonus": 174338,
-        "spiBonus": 629749629
+        "defBonus": 39512250320,
+        "spiBonus": 118975378885476736
       },
       {
         "tier": 4,
         "qi": 4303101535863403,
         "hpBonus": 28074554784,
         "strBonus": 14758685,
-        "defBonus": 226640,
-        "spiBonus": 944624444
+        "defBonus": 66775703042,
+        "spiBonus": 267694602492322656
       }
     ]
   },
@@ -458,32 +466,32 @@
         "qi": 11618374146831188,
         "hpBonus": 50534198612,
         "strBonus": 20662159,
-        "defBonus": 294632,
-        "spiBonus": 1416936667
+        "defBonus": 112850938141,
+        "spiBonus": 602312855607725952
       },
       {
         "tier": 2,
         "qi": 20913073464296140,
         "hpBonus": 75801297918,
         "strBonus": 28927023,
-        "defBonus": 383022,
-        "spiBonus": 2125405000
+        "defBonus": 190718085458,
+        "spiBonus": 1355203925117383168
       },
       {
         "tier": 3,
         "qi": 37643532235733056,
         "hpBonus": 113701946877,
         "strBonus": 40497832,
-        "defBonus": 497929,
-        "spiBonus": 3188107501
+        "defBonus": 322313564425,
+        "spiBonus": 3049208831514112000
       },
       {
         "tier": 4,
         "qi": 67758358024319504,
         "hpBonus": 170552920316,
         "strBonus": 56696965,
-        "defBonus": 647307,
-        "spiBonus": 4782161251
+        "defBonus": 544709923879,
+        "spiBonus": 6860719870906752000
       }
     ]
   },
@@ -496,40 +504,40 @@
         "qi": 182947566665662656,
         "hpBonus": 306995256569,
         "strBonus": 79375751,
-        "defBonus": 841500,
-        "spiBonus": 7173241877
+        "defBonus": 920559771355,
+        "spiBonus": 15436619709540192256
       },
       {
         "tier": 2,
         "qi": 329305619998192768,
         "hpBonus": 460492884853,
         "strBonus": 111126052,
-        "defBonus": 1093950,
-        "spiBonus": 10759862816
+        "defBonus": 1555746013591,
+        "spiBonus": 34732394346465435648
       },
       {
         "tier": 3,
         "qi": 592750115996747008,
         "hpBonus": 690739327280,
         "strBonus": 155576473,
-        "defBonus": 1422135,
-        "spiBonus": 16139794224
+        "defBonus": 2629210762969,
+        "spiBonus": 78147887279547236352
       },
       {
         "tier": 4,
         "qi": 1000000000000000000,
         "hpBonus": 1036108990921,
         "strBonus": 217807062,
-        "defBonus": 1848776,
-        "spiBonus": 24209691336
+        "defBonus": 4443366189418,
+        "spiBonus": 175832746378981277696
       },
       {
         "tier": 5,
         "qi": 1000000000000000000,
         "hpBonus": 1554163486382,
         "strBonus": 304929887,
-        "defBonus": 2403409,
-        "spiBonus": 36314537004
+        "defBonus": 7509288860117,
+        "spiBonus": 395623679352707874816
       }
     ]
   },
@@ -542,8 +550,8 @@
         "qi": 1500000000000000000,
         "hpBonus": 2797494275487,
         "strBonus": 426901842,
-        "defBonus": 3124432,
-        "spiBonus": 54471805506
+        "defBonus": 12690698173598,
+        "spiBonus": 890153278543592816640
       }
     ]
   },
@@ -556,8 +564,8 @@
         "qi": 1500000000000000000,
         "hpBonus": 5035489695878,
         "strBonus": 597662579,
-        "defBonus": 4061761,
-        "spiBonus": 81707708259
+        "defBonus": 21447279913381,
+        "spiBonus": 2002844876723083804672
       }
     ]
   },
@@ -570,40 +578,40 @@
         "qi": 1500000000000000000,
         "hpBonus": 9063881452580,
         "strBonus": 836727611,
-        "defBonus": 5280290,
-        "spiBonus": 122561562389
+        "defBonus": 36245903053614,
+        "spiBonus": 4506400972626938822656
       },
       {
         "tier": 2,
         "qi": 1000000000000000000,
         "hpBonus": 13595822178870,
         "strBonus": 1171418656,
-        "defBonus": 6864377,
-        "spiBonus": 183842343584
+        "defBonus": 61255576160608,
+        "spiBonus": 10139402188410612350976
       },
       {
         "tier": 3,
         "qi": 1000000000000000000,
         "hpBonus": 20393733268306,
         "strBonus": 1639986118,
-        "defBonus": 8923690,
-        "spiBonus": 275763515376
+        "defBonus": 103521923711427,
+        "spiBonus": 22813654923923878313984
       },
       {
         "tier": 4,
         "qi": 1000000000000000000,
         "hpBonus": 30590599902459,
         "strBonus": 2295980565,
-        "defBonus": 11600797,
-        "spiBonus": 413645273065
+        "defBonus": 174952051072313,
+        "spiBonus": 51330723578828726206464
       },
       {
         "tier": 5,
         "qi": 1000000000000000000,
         "hpBonus": 45885899853689,
         "strBonus": 3214372792,
-        "defBonus": 15081036,
-        "spiBonus": 620467909598
+        "defBonus": 295668966312209,
+        "spiBonus": 115494128052364642353152
       }
     ]
   },
@@ -616,64 +624,64 @@
         "qi": 1500000000000000000,
         "hpBonus": 82594619736641,
         "strBonus": 4500121909,
-        "defBonus": 19605347,
-        "spiBonus": 930701864397
+        "defBonus": 499680553067633,
+        "spiBonus": 259861788117820445294592
       },
       {
         "tier": 2,
         "qi": 1000000000000000000,
         "hpBonus": 123891929604961,
         "strBonus": 6300170673,
-        "defBonus": 25486951,
-        "spiBonus": 1396052796596
+        "defBonus": 844460134684300,
+        "spiBonus": 584689023265096001912832
       },
       {
         "tier": 3,
         "qi": 1000000000000000000,
         "hpBonus": 185837894407442,
         "strBonus": 8820238942,
-        "defBonus": 33133037,
-        "spiBonus": 2094079194894
+        "defBonus": 1427137627616468,
+        "spiBonus": 1315550302346466104967168
       },
       {
         "tier": 4,
         "qi": 1000000000000000000,
         "hpBonus": 278756841611164,
         "strBonus": 12348334519,
-        "defBonus": 43072948,
-        "spiBonus": 3141118792341
+        "defBonus": 2411862590671831,
+        "spiBonus": 2959988180279548736176128
       },
       {
         "tier": 5,
         "qi": 1000000000000000000,
         "hpBonus": 418135262416746,
         "strBonus": 17287668326,
-        "defBonus": 55994833,
-        "spiBonus": 4711678188511
+        "defBonus": 4076047778235395,
+        "spiBonus": 6659973405628985059049472
       },
       {
         "tier": 6,
         "qi": 1000000000000000000,
         "hpBonus": 627202893625119,
         "strBonus": 24202735657,
-        "defBonus": 72793283,
-        "spiBonus": 7067517282767
+        "defBonus": 6888520745217818,
+        "spiBonus": 14984940162665215577554944
       },
       {
         "tier": 7,
         "qi": 1000000000000000000,
         "hpBonus": 940804340437678,
         "strBonus": 33883829920,
-        "defBonus": 94631268,
-        "spiBonus": 10601275924151
+        "defBonus": 11641600059418114,
+        "spiBonus": 33716115365996735049498624
       },
       {
         "tier": 8,
         "qi": 1000000000000000000,
         "hpBonus": 1411206510656518,
         "strBonus": 47437361888,
-        "defBonus": 123020648,
-        "spiBonus": 15901913886226
+        "defBonus": 19674304100416612,
+        "spiBonus": 75861259573492653861371904
       }
     ]
   },
@@ -686,8 +694,8 @@
         "qi": 1500000000000000000,
         "hpBonus": 2540171719181732,
         "strBonus": 66412306644,
-        "defBonus": 159926843,
-        "spiBonus": 23852870829340
+        "defBonus": 33249573929704076,
+        "spiBonus": 170687834040358447565766656
       }
     ]
   },
@@ -700,8 +708,8 @@
         "qi": 1500000000000000000,
         "hpBonus": 4572309094527119,
         "strBonus": 92977229302,
-        "defBonus": 207904896,
-        "spiBonus": 35779306244010
+        "defBonus": 56191779941199896,
+        "spiBonus": 384047626590806541382713344
       }
     ]
   }

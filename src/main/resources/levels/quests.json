@@ -1,13 +1,13 @@
 {
-  "kill_bats": {
-    "id": "kill_bats",
-    "name": "Bat Exterminator",
-    "description": "Defeat 3 Lesser Spirit Bats to secure the start of your journey.",
+  "scout_forest": {
+    "id": "scout_forest",
+    "name": "First Steps",
+    "description": "Defeat your first Slime to begin your cultivation journey.",
     "objectiveType": "KILL",
-    "targetId": "bat_01",
-    "requiredAmount": 3,
-    "rewardItemIds": ["pill_qi_01", "realm_token"],
-    "rewardQi": 50.0
+    "targetId": "slime_01",
+    "requiredAmount": 1,
+    "rewardItemIds": ["pill_qi_01"],
+    "rewardQi": 15.0
   },
   "collect_iron": {
     "id": "collect_iron",
@@ -18,5 +18,15 @@
     "requiredAmount": 5,
     "rewardItemIds": ["mat_hammer_01"],
     "rewardQi": 20.0
+  },
+  "thunder_quest": {
+    "id": "thunder_quest",
+    "name": "Thunderous Initiation",
+    "description": "Demonstrate your resolve. Defeat 3 Slimes to unlock the Thunder Clap Technique.",
+    "objectiveType": "KILL",
+    "targetId": "slime_01",
+    "requiredAmount": 3,
+    "rewardItemIds": ["pill_qi_01", "book_thunder_clap"],
+    "rewardQi": 100.0
   }
 }

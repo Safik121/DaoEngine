@@ -1,0 +1,70 @@
+[
+  {
+    "id": "fiery_palm",
+    "name": "Fiery Palm Technique",
+    "qiCost": 30.0,
+    "cooldown": 1.5,
+    "weaponConfig": {
+      "projectileType": "FIREBALL",
+      "damage": 25.0,
+      "speed": 6.0,
+      "burstCount": 3,
+      "spreadAngle": 30,
+      "burstDelay": 0.1,
+      "lifeSpan": 1.0,
+      "size": 20.0
+    }
+  },
+  {
+    "id": "void_sword",
+    "name": "Void Sword Slash",
+    "qiCost": 50.0,
+    "cooldown": 3.0,
+    "weaponConfig": {
+      "projectileType": "FLYING_SWORD",
+      "damage": 50.0,
+      "speed": 10.0,
+      "lifeSpan": 2.0,
+      "size": 24.0
+    }
+  },
+  {
+    "id": "basic_fist",
+    "name": "Basic Fist Technique",
+    "qiCost": 10.0,
+    "cooldown": 0.5,
+    "weaponConfig": {
+      "projectileType": "MAGIC_MISSILE",
+      "damage": 10.0,
+      "speed": 5.0,
+      "lifeSpan": 0.5,
+      "size": 16.0
+    }
+  },
+  {
+    "id": "thunder_clap",
+    "name": "Thunder Clap Technique",
+    "qiCost": 45.0,
+    "cooldown": 2.0,
+    "weaponConfig": {
+      "projectileType": "LIGHTNING_BOLT",
+      "damage": 40.0,
+      "speed": 15.0,
+      "lifeSpan": 0.3,
+      "size": 32.0
+    }
+  },
+  {
+    "id": "soul_devourer",
+    "name": "Soul Devourer Art",
+    "qiCost": 80.0,
+    "cooldown": 5.0,
+    "weaponConfig": {
+      "projectileType": "FIREBALL",
+      "damage": 100.0,
+      "speed": 4.0,
+      "lifeSpan": 4.0,
+      "size": 48.0
+    }
+  }
+]

@@ -1,6 +1,7 @@
 package org.example.item;
 
 import org.example.entity.Player;
+import org.example.state.PlayState;
 
 /**
  * Base class for all items in the game.
@@ -17,6 +18,8 @@ public abstract class Item {
         WEAPON,
         /** Used in the crafting system. */
         CRAFTING,
+        /** Technical manual for learning skills. */
+        SKILL_BOOK,
         /** Miscellaneous items. */
         MISC
     }
@@ -38,6 +41,8 @@ public abstract class Item {
     private String weaponConfigId;
     /** Unique ID of the sprite for this item from assets.json. */
     private String spriteId;
+    /** The skill ID this book teaches, if applicable. */
+    private String skillId;
 
     /**
      * Constructs a new Item.
@@ -59,8 +64,9 @@ public abstract class Item {
      * Applies any configured effects to the target player, implemented by subclasses.
      * 
      * @param player The player instance to apply effects to.
+     * @param state  The current PlayState for world interaction.
      */
-    public abstract void use(Player player);
+    public abstract void use(Player player, PlayState state);
 
     // Getters and Setters
     /** @return Unique item ID. */
@@ -103,4 +109,7 @@ public abstract class Item {
     
     public String getSpriteId() { return spriteId; }
     public void setSpriteId(String spriteId) { this.spriteId = spriteId; }
+
+    public String getSkillId() { return skillId; }
+    public void setSkillId(String skillId) { this.skillId = skillId; }
 }

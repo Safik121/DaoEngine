@@ -60,12 +60,14 @@ public class CombatManager {
                     }
                 }
             }
-        } else if (Input.isRmbPressed() && state.getPlayer().canAttack()) {
+        }
+        
+        if (Input.isRmbPressed() && state.getPlayer().canUseSkill()) {
             org.example.logic.Skill activeSkill = state.getPlayer().getActiveSkill();
             if (activeSkill != null) {
                 if (state.getPlayer().spendQi(activeSkill.getQiCost())) {
                     fireWeaponOrSkill(activeSkill.getWeaponConfig(), state);
-                    state.getPlayer().setAttackCooldown(activeSkill.getCooldown());
+                    state.getPlayer().setSkillCooldown(activeSkill.getCooldown());
                 }
             }
         }
