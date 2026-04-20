@@ -218,7 +218,7 @@ public class Player extends LivingEntity {
         // --- 1. Draw Sprite ---
         String spriteId = "player_idle";
 
-        if (isMeditating) {
+        if (isMeditating || Input.isKeyPressed(KeyCode.SPACE)) {
             spriteId = "player_meditate";
         } else if (Input.isKeyPressed(KeyCode.W) || Input.isKeyPressed(KeyCode.S) ||
                 Input.isKeyPressed(KeyCode.A) || Input.isKeyPressed(KeyCode.D)) {
