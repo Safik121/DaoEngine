@@ -7,6 +7,8 @@ import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.example.ConfigManager;
+import org.example.AssetRegistry;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,12 @@ public class LoadingState implements GameState {
     private final double loadingDuration = 2.5; // seconds
     private double elapsedTime = 0;
     private boolean finished = false;
+
+    // Slideshow state
+    private List<Image> bgImages = new ArrayList<>();
+    private int currentImgIndex = 0;
+    private double slideshowTimer = 0;
+    private final double switchInterval = 0.8; // seconds
 
     private String currentMessage = "Initialising Heavens...";
     private final List<String> messages = new ArrayList<>();
@@ -43,6 +51,12 @@ public class LoadingState implements GameState {
         messages.add("Seeking the Heavenly Dao...");
         messages.add("Forging the Golden Core...");
         messages.add("Entering the Immortal Realm...");
+
+        // Load background images
+        for (int i = 1; i <= 3; i++) {
+            Image img = AssetRegistry.getSprite("ui_loading_" + i, 0);
+            if (img != null) bgImages.add(img);
+        }
     }
 
     @Override
@@ -59,6 +73,15 @@ public class LoadingState implements GameState {
         if (progress >= 1.0) {
             finished = true;
         }
+
+        // Update slideshow
+        slideshowTimer += deltaTime;
+        if (slideshowTimer >= switchInterval) {
+            slideshowTimer = 0;
+            if (!bgImages.isEmpty()) {
+                currentImgIndex = (currentImgIndex + 1) % bgImages.size();
+            }
+        }
     }
 
     @Override
@@ -69,17 +92,25 @@ public class LoadingState implements GameState {
     }
 
     private void drawBackground(GraphicsContext gc) {
-        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, null,
-                new Stop(0, DARK_INK),
-                new Stop(1, Color.BLACK)
-        );
-        gc.setFill(grad);
-        gc.fillRect(0, 0, width, height);
+        if (!bgImages.isEmpty() && currentImgIndex < bgImages.size()) {
+            gc.drawImage(bgImages.get(currentImgIndex), 0, 0, width, height);
+            
+            // Dark Overlay for readability
+            gc.setFill(Color.rgb(0, 0, 0, 0.4));
+            gc.fillRect(0, 0, width, height);
+        } else {
+            LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, null,
+                    new Stop(0, DARK_INK),
+                    new Stop(1, Color.BLACK)
+            );
+            gc.setFill(grad);
+            gc.fillRect(0, 0, width, height);
+        }
 
-        // Border
+        // Ancient Silk Border
         gc.setStroke(GOLD);
-        gc.setLineWidth(2);
-        gc.strokeRect(10, 10, width - 20, height - 20);
+        gc.setLineWidth(3);
+        gc.strokeRect(15, 15, width - 30, height - 30);
     }
 
     private void drawProgressBar(GraphicsContext gc) {

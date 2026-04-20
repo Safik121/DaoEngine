@@ -9,6 +9,8 @@ import javafx.scene.text.FontWeight;
 import org.example.SaveData;
 import org.example.SaveManager;
 import org.example.Input;
+import org.example.AssetRegistry;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +76,18 @@ public class LoadState implements GameState {
     }
 
     private void drawBackground(GraphicsContext gc) {
-        // Procedural "Silk & Ink" Gradient (Matches MenuState)
-        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, null,
-            new Stop(0, DARK_INK),
-            new Stop(1, Color.BLACK)
-        );
-        gc.setFill(grad);
-        gc.fillRect(0, 0, 1024, 768);
+        Image bg = AssetRegistry.getSprite("ui_load_bg", 0);
+        if (bg != null) {
+            gc.drawImage(bg, 0, 0, 1024, 768);
+        } else {
+            // Procedural "Silk & Ink" Gradient (Matches MenuState)
+            LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, null,
+                new Stop(0, DARK_INK),
+                new Stop(1, Color.BLACK)
+            );
+            gc.setFill(grad);
+            gc.fillRect(0, 0, 1024, 768);
+        }
     }
 
     private void drawTitle(GraphicsContext gc) {

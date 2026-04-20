@@ -65,6 +65,18 @@
   "ui_menu_bg": {
     "path": "/textures/ui/menu_bg.png"
   },
+  "ui_loading_1": {
+    "path": "/textures/ui/loading_1.png"
+  },
+  "ui_loading_2": {
+    "path": "/textures/ui/loading_2.png"
+  },
+  "ui_loading_3": {
+    "path": "/textures/ui/loading_3.png"
+  },
+  "ui_load_bg": {
+    "path": "/textures/ui/load_bg.png"
+  },
   "ui_button_normal": {
     "path": "/textures/ui/button_normal.png"
   },
