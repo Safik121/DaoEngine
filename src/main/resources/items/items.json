@@ -169,6 +169,8 @@
     "name": "Core Formation Pill",
     "description": "Assists in condensing the Golden Core.",
     "type": "CONSUMABLE",
+    "spriteId": "item_pill_core",
+    "spriteFrame": 0,
     "detailedDescription": "A rare Tier 3 pill that aids in the compression of liquid Qi into a solid Golden Core. Without it, the Core might shatter during formation, leading to severe cultivation regression."
   },
   {
@@ -176,6 +178,8 @@
     "name": "Nascent Soul Pill",
     "description": "Essential for birthing the Nascent Soul.",
     "type": "CONSUMABLE",
+    "spriteId": "item_pill_soul",
+    "spriteFrame": 0,
     "detailedDescription": "A legendary Tier 4 pill. It nourishes the spiritual mind and provides the vast energy burst required to shatter the Golden Core and birth the Immortal Nascent Soul."
   },
   {
@@ -183,6 +187,8 @@
     "name": "Divine Transformation Pill",
     "description": "Cross the threshold into the Spirit Realm.",
     "type": "CONSUMABLE",
+    "spriteId": "item_pill_divine",
+    "spriteFrame": 0,
     "detailedDescription": "A Tier 5 pill that facilitates the fusion of the primordial spirit with the heavens. It is the final required catalyst for mortals attempting to touch the Dao."
   },
   {
@@ -214,5 +220,199 @@
     "spriteId": "item_book_thunder_clap",
     "spriteFrame": 0,
     "detailedDescription": "The pages of this book crackle with static electricity. It contains the fundamental mantras for the Thunder Clap movement and attack."
+  },
+  {
+    "id": "herb_spirit",
+    "name": "Spirit Herb",
+    "description": "A herb glowing with spiritual light.",
+    "type": "CRAFTING",
+    "spriteId": "item_herb_spirit",
+    "spriteFrame": 0
+  },
+  {
+    "id": "leaf_jade",
+    "name": "Jade Leaf",
+    "description": "A leaf that feels like cold jade.",
+    "type": "CRAFTING",
+    "spriteId": "item_leaf_jade",
+    "spriteFrame": 0
+  },
+  {
+    "id": "water_celestial",
+    "name": "Celestial Water",
+    "description": "Pure water from a mountain peak.",
+    "type": "CRAFTING",
+    "spriteId": "item_water_celestial",
+    "spriteFrame": 0
+  },
+  {
+    "id": "bone_dragon",
+    "name": "Dragon Bone",
+    "description": "A fragment of a prehistoric beast.",
+    "type": "CRAFTING",
+    "spriteId": "item_bone_dragon",
+    "spriteFrame": 0
+  },
+  {
+    "id": "shard_void",
+    "name": "Void Shard",
+    "description": "A pulsating shard of darkness.",
+    "type": "CRAFTING",
+    "spriteId": "item_shard_void",
+    "spriteFrame": 0
+  },
+  {
+    "id": "essence_heavenly",
+    "name": "Heavenly Essence",
+    "description": "Concentrated energy of the heavens.",
+    "type": "CRAFTING",
+    "spriteId": "item_essence_heavenly",
+    "spriteFrame": 0
+  },
+  {
+    "id": "meteorite_iron",
+    "name": "Meteorite Iron",
+    "description": "Heavy metal from the stars.",
+    "type": "CRAFTING",
+    "spriteId": "item_meteorite_iron",
+    "spriteFrame": 0
+  },
+  {
+    "id": "soul_silk",
+    "name": "Soul Silk",
+    "description": "Fine silk that hums with energy.",
+    "type": "CRAFTING",
+    "spriteId": "item_soul_silk",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_transformation",
+    "name": "Soul Transformation Pill",
+    "description": "Required for Soul Transformation realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_transformation",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_ascendant",
+    "name": "Ascendant Pill",
+    "description": "Required for Ascendant realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_ascendant",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_yin",
+    "name": "Illusory Yin Pill",
+    "description": "Required for Illusory Yin realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_yin",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_yang",
+    "name": "Corporeal Yang Pill",
+    "description": "Required for Corporeal Yang realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_yang",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_nirvana_scryer",
+    "name": "Nirvana Scryer Pill",
+    "description": "Required for Nirvana Scryer realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_nirvana_scryer",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_nirvana_cleanser",
+    "name": "Nirvana Cleanser Pill",
+    "description": "Required for Nirvana Cleanser realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_nirvana_cleanser",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_nirvana_shatterer",
+    "name": "Nirvana Shatterer Pill",
+    "description": "Required for Nirvana Shatterer realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_nirvana_shatterer",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_heavenly_tribulation",
+    "name": "Heavenly Tribulation Pill",
+    "description": "Assists in passing the 5 Desolations.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_heavenly_tribulation",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_void_gate",
+    "name": "Void Gate Pill",
+    "description": "Connects the soul to the Great Void.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_void_gate",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_spirit_void",
+    "name": "Spirit Void Pill",
+    "description": "Fuses the soul with Joss Flame energy.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_spirit_void",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_arcane_void",
+    "name": "Arcane Void Pill",
+    "description": "Survive the Nine Arcane Tribulations.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_arcane_void",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_void_tribulant",
+    "name": "Void Tribulant Pill",
+    "description": "Required for Void Tribulant realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_void_tribulant",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_heaven_bridge",
+    "name": "Heaven Trampling Pill",
+    "description": "Required to cross the Nine Bridges.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_heaven_bridge",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pill_daoseed",
+    "name": "Dao Seed",
+    "description": "The seed of ultimate truth. Final realm.",
+    "type": "CONSUMABLE",
+    "spriteId": "item_pill_daoseed",
+    "spriteFrame": 0
+  },
+  {
+    "id": "sword_03",
+    "name": "Meteorite Edge",
+    "description": "A heavy blade forged from a fallen star.",
+    "type": "WEAPON",
+    "weaponConfigId": "sword_01",
+    "spriteId": "item_sword_03",
+    "spriteFrame": 0
+  },
+  {
+    "id": "divine_sun_blade",
+    "name": "Divine Sun Blade",
+    "description": "A blade that shines with the light of a thousand suns.",
+    "type": "WEAPON",
+    "weaponConfigId": "heavenly_flame_sword",
+    "spriteId": "item_divine_sun_blade",
+    "spriteFrame": 0
   }
 ]

@@ -23,5 +23,21 @@
     "input1": "pill_qi_01",
     "input2": "fire_essence_01",
     "result": "book_fiery_palm"
-  }
+  },
+  { "input1": "pill_qi_01", "input2": "herb_spirit", "result": "pill_transformation" },
+  { "input1": "pill_transformation", "input2": "leaf_jade", "result": "pill_ascendant" },
+  { "input1": "pill_ascendant", "input2": "water_celestial", "result": "pill_yin" },
+  { "input1": "pill_yin", "input2": "water_celestial", "result": "pill_yang" },
+  { "input1": "pill_yang", "input2": "bone_dragon", "result": "pill_nirvana_scryer" },
+  { "input1": "pill_nirvana_scryer", "input2": "bone_dragon", "result": "pill_nirvana_cleanser" },
+  { "input1": "pill_nirvana_cleanser", "input2": "bone_dragon", "result": "pill_nirvana_shatterer" },
+  { "input1": "pill_nirvana_shatterer", "input2": "essence_heavenly", "result": "pill_heavenly_tribulation" },
+  { "input1": "pill_heavenly_tribulation", "input2": "shard_void", "result": "pill_void_gate" },
+  { "input1": "pill_void_gate", "input2": "soul_silk", "result": "pill_spirit_void" },
+  { "input1": "pill_spirit_void", "input2": "essence_heavenly", "result": "pill_arcane_void" },
+  { "input1": "pill_arcane_void", "input2": "shard_void", "result": "pill_void_tribulant" },
+  { "input1": "pill_void_tribulant", "input2": "essence_heavenly", "result": "pill_heaven_bridge" },
+  { "input1": "pill_heaven_bridge", "input2": "essence_heavenly", "result": "pill_daoseed" },
+  { "input1": "sword_02", "input2": "meteorite_iron", "result": "sword_03" },
+  { "input1": "heavenly_flame_sword", "input2": "essence_heavenly", "result": "divine_sun_blade" }
 ]

@@ -287,7 +287,9 @@
         "hpBonus": 11451311,
         "strBonus": 48402,
         "defBonus": 8923690,
-        "spiBonus": 275763515376
+        "spiBonus": 275763515376,
+        "requiredItemId": "pill_transformation",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -325,7 +327,9 @@
         "hpBonus": 69566719,
         "strBonus": 185944,
         "defBonus": 72793283,
-        "spiBonus": 7067517282767
+        "spiBonus": 7067517282767,
+        "requiredItemId": "pill_ascendant",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -363,7 +367,9 @@
         "hpBonus": 422617822,
         "strBonus": 714324,
         "defBonus": 593797175,
-        "spiBonus": 181132737860303
+        "spiBonus": 181132737860303,
+        "requiredItemId": "pill_yin",
+        "requiredItemCount": 1
       }
     ]
   },
@@ -377,7 +383,9 @@
         "hpBonus": 760712080,
         "strBonus": 1000053,
         "defBonus": 1003517226,
-        "spiBonus": 407548660185681
+        "spiBonus": 407548660185681,
+        "requiredItemId": "pill_yang",
+        "requiredItemCount": 1
       }
     ]
   },
@@ -391,7 +399,9 @@
         "hpBonus": 1369281745,
         "strBonus": 1400075,
         "defBonus": 1695944113,
-        "spiBonus": 916984485417784
+        "spiBonus": 916984485417784,
+        "requiredItemId": "pill_nirvana_scryer",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -429,7 +439,9 @@
         "hpBonus": 8318386602,
         "strBonus": 5378529,
         "defBonus": 13834337145,
-        "spiBonus": 23501309409476888
+        "spiBonus": 23501309409476888,
+        "requiredItemId": "pill_nirvana_cleanser",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -467,7 +479,9 @@
         "hpBonus": 50534198612,
         "strBonus": 20662159,
         "defBonus": 112850938141,
-        "spiBonus": 602312855607725952
+        "spiBonus": 602312855607725952,
+        "requiredItemId": "pill_nirvana_shatterer",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -505,7 +519,9 @@
         "hpBonus": 306995256569,
         "strBonus": 79375751,
         "defBonus": 920559771355,
-        "spiBonus": 15436619709540192256
+        "spiBonus": 15436619709540192256,
+        "requiredItemId": "pill_heavenly_tribulation",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -551,7 +567,9 @@
         "hpBonus": 2797494275487,
         "strBonus": 426901842,
         "defBonus": 12690698173598,
-        "spiBonus": 890153278543592816640
+        "spiBonus": 890153278543592816640,
+        "requiredItemId": "pill_void_gate",
+        "requiredItemCount": 1
       }
     ]
   },
@@ -565,7 +583,9 @@
         "hpBonus": 5035489695878,
         "strBonus": 597662579,
         "defBonus": 21447279913381,
-        "spiBonus": 2002844876723083804672
+        "spiBonus": 2002844876723083804672,
+        "requiredItemId": "pill_spirit_void",
+        "requiredItemCount": 1
       }
     ]
   },
@@ -579,7 +599,9 @@
         "hpBonus": 9063881452580,
         "strBonus": 836727611,
         "defBonus": 36245903053614,
-        "spiBonus": 4506400972626938822656
+        "spiBonus": 4506400972626938822656,
+        "requiredItemId": "pill_arcane_void",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -625,7 +647,9 @@
         "hpBonus": 82594619736641,
         "strBonus": 4500121909,
         "defBonus": 499680553067633,
-        "spiBonus": 259861788117820445294592
+        "spiBonus": 259861788117820445294592,
+        "requiredItemId": "pill_void_tribulant",
+        "requiredItemCount": 1
       },
       {
         "tier": 2,
@@ -695,7 +719,9 @@
         "hpBonus": 2540171719181732,
         "strBonus": 66412306644,
         "defBonus": 33249573929704076,
-        "spiBonus": 170687834040358447565766656
+        "spiBonus": 170687834040358447565766656,
+        "requiredItemId": "pill_heaven_bridge",
+        "requiredItemCount": 1
       }
     ]
   },
@@ -709,7 +735,9 @@
         "hpBonus": 4572309094527119,
         "strBonus": 92977229302,
         "defBonus": 56191779941199896,
-        "spiBonus": 384047626590806541382713344
+        "spiBonus": 384047626590806541382713344,
+        "requiredItemId": "pill_daoseed",
+        "requiredItemCount": 1
       }
     ]
   }
