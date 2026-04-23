@@ -82,5 +82,26 @@
   },
   "ui_button_hover": {
     "path": "/textures/ui/button_hover.png"
-  }
+  },
+  "item_pill_qi_01": { "path": "/textures/items/pill_qi_01.png" },
+  "item_pill_hp_01": { "path": "/textures/items/pill_hp_01.png" },
+  "item_iron_ore_01": { "path": "/textures/items/iron_ore_01.png" },
+  "item_fire_essence_01": { "path": "/textures/items/fire_essence_01.png" },
+  "item_mat_hammer_01": { "path": "/textures/items/mat_hammer_01.png" },
+  "item_sword_01": { "path": "/textures/items/sword_01.png" },
+  "item_fireball_staff": { "path": "/textures/items/fireball_staff.png" },
+  "item_book_fiery_palm": { "path": "/textures/items/book_fiery_palm.png" },
+  "item_book_void_sword": { "path": "/textures/items/book_void_sword.png" },
+  "item_book_thunder_clap": { "path": "/textures/items/book_thunder_clap.png" },
+  "item_pill_spirit_01": { "path": "/textures/items/pill_spirit_01.png" },
+  "item_pill_maxhp_01": { "path": "/textures/items/pill_maxhp_01.png" },
+  "item_divine_eyes": { "path": "/textures/items/divine_eyes.png" },
+  "item_triple_fireball": { "path": "/textures/items/triple_fireball.png" },
+  "item_spirit_burst": { "path": "/textures/items/spirit_burst.png" },
+  "item_spiritual_aura": { "path": "/textures/items/spiritual_aura.png" },
+  "item_realm_token": { "path": "/textures/items/realm_token.png" },
+  "item_sword_02": { "path": "/textures/items/sword_02.png" },
+  "item_flame_sword_01": { "path": "/textures/items/flame_sword_01.png" },
+  "item_heavenly_flame_sword": { "path": "/textures/items/heavenly_flame_sword.png" },
+  "item_pill_foundation": { "path": "/textures/items/pill_foundation.png" }
 }

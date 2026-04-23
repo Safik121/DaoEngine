@@ -41,6 +41,8 @@ public abstract class Item {
     private String weaponConfigId;
     /** Unique ID of the sprite for this item from assets.json. */
     private String spriteId;
+    /** The index of the frame within the sprite sheet (if applicable). */
+    private int spriteFrame = 0;
     /** The skill ID this book teaches, if applicable. */
     private String skillId;
 
@@ -109,6 +111,9 @@ public abstract class Item {
     
     public String getSpriteId() { return spriteId; }
     public void setSpriteId(String spriteId) { this.spriteId = spriteId; }
+    
+    public int getSpriteFrame() { return spriteFrame; }
+    public void setSpriteFrame(int spriteFrame) { this.spriteFrame = spriteFrame; }
 
     public String getSkillId() { return skillId; }
     public void setSkillId(String skillId) { this.skillId = skillId; }

@@ -4,7 +4,8 @@
     "name": "Spirit Pill",
     "description": "Ancient Qi recovery pill.",
     "type": "CONSUMABLE",
-    "spriteId": "tile_vein",
+    "spriteId": "item_pill_qi_01",
+    "spriteFrame": 0,
     "qiRestore": 20.0,
     "detailedDescription": "A fundamental pill for any cultivator. It contains a small amount of spiritual essence to jumpstart Qi circulation."
   },
@@ -13,7 +14,8 @@
     "name": "Healing Pill",
     "description": "Restores 40 Health Points.",
     "type": "CONSUMABLE",
-    "spriteId": "tile_variety",
+    "spriteId": "item_pill_hp_01",
+    "spriteFrame": 0,
     "hpRestore": 40.0,
     "detailedDescription": "Crafted from medicinal herbs, this pill accelerates the body's natural healing process. Essential for survival in harsh realms."
   },
@@ -23,6 +25,8 @@
     "description": "Refined pill. Permanently increases Max Qi and restores vast amounts.",
     "type": "CONSUMABLE",
     "qiRestore": 100.0,
+    "spriteId": "item_pill_spirit_01",
+    "spriteFrame": 0,
     "maxQiBoost": 25.0
   },
   {
@@ -31,6 +35,8 @@
     "description": "Rare medicine. Permanently increases Max HP.",
     "type": "CONSUMABLE",
     "maxHpBoost": 20.0,
+    "spriteId": "item_pill_maxhp_01",
+    "spriteFrame": 0,
     "hpRestore": 20.0
   },
   {
@@ -38,6 +44,8 @@
     "name": "Rusty Hammer",
     "description": "A heavy crafting tool.",
     "type": "CRAFTING",
+    "spriteId": "item_mat_hammer_01",
+    "spriteFrame": 0,
     "detailedDescription": "An old, heavy hammer once used by a master blacksmith. It remains remarkably sturdy and is essential for basic crafting."
   },
   {
@@ -45,6 +53,8 @@
     "name": "Iron Ore",
     "description": "Raw material for forging.",
     "type": "CRAFTING",
+    "spriteId": "item_iron_ore_01",
+    "spriteFrame": 0,
     "detailedDescription": "A chunk of dense iron ore. While common, its high spiritual conductivity makes it a staple in low-level artifact forging."
   },
   {
@@ -53,7 +63,8 @@
     "description": "A basic spiritual sword.",
     "type": "WEAPON",
     "weaponConfigId": "sword_01",
-    "spriteId": "tile_bridge",
+    "spriteId": "item_sword_01",
+    "spriteFrame": 0,
     "detailedDescription": "A standard-issue sword for disciples. It can be psychically controlled to strike enemies from a distance, provided the wielder has sufficient Qi."
   },
   {
@@ -61,74 +72,96 @@
     "name": "Fireball Staff",
     "description": "Hurl spheres of fire.",
     "type": "WEAPON",
-    "weaponConfigId": "fireball_staff"
+    "weaponConfigId": "fireball_staff",
+    "spriteId": "item_fireball_staff",
+    "spriteFrame": 0
   },
   {
     "id": "divine_eyes",
     "name": "Divine Eyes",
     "description": "A beam of concentrated spiritual energy.",
     "type": "WEAPON",
-    "weaponConfigId": "divine_eyes"
+    "weaponConfigId": "divine_eyes",
+    "spriteId": "item_divine_eyes",
+    "spriteFrame": 0
   },
   {
     "id": "triple_fireball",
     "name": "Triple Fireball Staff",
     "description": "Fires three fireballs in a fan pattern.",
     "type": "WEAPON",
-    "weaponConfigId": "triple_fireball"
+    "weaponConfigId": "triple_fireball",
+    "spriteId": "item_triple_fireball",
+    "spriteFrame": 0
   },
   {
     "id": "spirit_burst",
     "name": "Spirit Burst Sword",
     "description": "Unleashes a rapid sequence of flying swords.",
     "type": "WEAPON",
-    "weaponConfigId": "spirit_burst"
+    "weaponConfigId": "spirit_burst",
+    "spriteId": "item_spirit_burst",
+    "spriteFrame": 0
   },
   {
     "id": "spiritual_aura",
     "name": "Spiritual Aura",
     "description": "Creates a protective zone of spiritual energy.",
     "type": "WEAPON",
-    "weaponConfigId": "spiritual_aura"
+    "weaponConfigId": "spiritual_aura",
+    "spriteId": "item_spiritual_aura",
+    "spriteFrame": 0
   },
   {
     "id": "realm_token",
     "name": "Realm Token",
     "description": "Required to transition between realms.",
-    "type": "MISC"
+    "type": "MISC",
+    "spriteId": "item_realm_token",
+    "spriteFrame": 0
   },
   {
     "id": "sword_02",
     "name": "Improved Qi Sword",
     "description": "A sword infused with concentrated Qi.",
     "type": "WEAPON",
-    "weaponConfigId": "sword_01"
+    "weaponConfigId": "sword_01",
+    "spriteId": "item_sword_02",
+    "spriteFrame": 0
   },
   {
     "id": "flame_sword_01",
     "name": "Flame Sword",
     "description": "A blade that burns with spiritual fire.",
     "type": "WEAPON",
-    "weaponConfigId": "fireball_staff"
+    "weaponConfigId": "fireball_staff",
+    "spriteId": "item_flame_sword_01",
+    "spriteFrame": 0
   },
   {
     "id": "fire_essence_01",
     "name": "Fire Essence",
     "description": "Concentrated heat from a spirit vein.",
-    "type": "CRAFTING"
+    "type": "CRAFTING",
+    "spriteId": "item_fire_essence_01",
+    "spriteFrame": 0
   },
   {
     "id": "heavenly_flame_sword",
     "name": "Heavenly Flame Sword",
     "description": "A mythical blade forged in celestial fire.",
     "type": "WEAPON",
-    "weaponConfigId": "heavenly_flame_sword"
+    "weaponConfigId": "heavenly_flame_sword",
+    "spriteId": "item_heavenly_flame_sword",
+    "spriteFrame": 0
   },
   {
     "id": "pill_foundation",
     "name": "Foundation Establishment Pill",
     "description": "Required for a solid Foundation breakthrough.",
     "type": "CONSUMABLE",
+    "spriteId": "item_pill_foundation",
+    "spriteFrame": 0,
     "detailedDescription": "A Tier 2 pill containing dense spiritual energy. It stabilizes the meridians, allowing the cultivator's Qi to condense into a liquid foundation without dissipating."
   },
   {
@@ -158,6 +191,8 @@
     "description": "Technique: A burst of solar Qi.",
     "type": "SKILL_BOOK",
     "skillId": "fiery_palm",
+    "spriteId": "item_book_fiery_palm",
+    "spriteFrame": 0,
     "detailedDescription": "An ancient scorched scroll describing the circulation of Qi through the palm to ignite the surrounding essence. High damage, moderate cost."
   },
   {
@@ -166,6 +201,8 @@
     "description": "Technique: A slash through dimensions.",
     "type": "SKILL_BOOK",
     "skillId": "void_sword",
+    "spriteId": "item_book_void_sword",
+    "spriteFrame": 0,
     "detailedDescription": "A cold, translucent manual. It teaches the cultivator how to project their will into a blade of pure void energy."
   },
   {
@@ -174,6 +211,8 @@
     "description": "Technique: Flash like lightning.",
     "type": "SKILL_BOOK",
     "skillId": "thunder_clap",
+    "spriteId": "item_book_thunder_clap",
+    "spriteFrame": 0,
     "detailedDescription": "The pages of this book crackle with static electricity. It contains the fundamental mantras for the Thunder Clap movement and attack."
   }
 ]

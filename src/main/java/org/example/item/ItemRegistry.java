@@ -87,6 +87,7 @@ public class ItemRegistry {
         item.setMaxQiBoost(config.maxQiBoost);
         item.setWeaponConfigId(config.weaponConfigId);
         item.setSpriteId(config.spriteId);
+        item.setSpriteFrame(config.spriteFrame);
         item.setSkillId(config.skillId);
         
         return item;

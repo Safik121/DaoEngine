@@ -1,6 +1,7 @@
 package org.example.ui;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -412,9 +413,58 @@ public class PlayUIManager {
             drawItemIcon(gc, x, y, size, item, Color.ORANGE);
     }
 
-    private void drawItemIcon(GraphicsContext gc, double x, double y, double size, Item item, Color color) {
-        gc.setFill(color);
-        gc.fillRect(x + 5, y + 5, size - 10, size - 10);
+    private void drawItemIcon(GraphicsContext gc, double x, double y, double size, Item item, Color fallbackColor) {
+        // --- 1. Background / Slot Frame ---
+        gc.setFill(Color.web("#1a1a1a", 0.8));
+        gc.fillRoundRect(x, y, size, size, 8, 8);
+        
+        // --- 2. Render Texture with Rounded Corners ---
+        if (item != null && item.getSpriteId() != null) {
+            Image sprite = AssetRegistry.getSprite(item.getSpriteId(), item.getSpriteFrame());
+            if (sprite != null) {
+                gc.save();
+                
+                // Define rounded clipping path
+                double pad = 2; // Subtract a small padding for the border
+                double rx = x + pad;
+                double ry = y + pad;
+                double rs = size - (pad * 2);
+                double rounded = 6;
+                
+                gc.beginPath();
+                gc.moveTo(rx + rounded, ry);
+                gc.lineTo(rx + rs - rounded, ry);
+                gc.arcTo(rx + rs, ry, rx + rs, ry + rounded, rounded);
+                gc.lineTo(rx + rs, ry + rs - rounded);
+                gc.arcTo(rx + rs, ry + rs, rx + rs - rounded, ry + rs, rounded);
+                gc.lineTo(rx + rounded, ry + rs);
+                gc.arcTo(rx, ry + rs, rx, ry + rs - rounded, rounded);
+                gc.lineTo(rx, ry + rounded);
+                gc.arcTo(rx, ry, rx + rounded, ry, rounded);
+                gc.closePath();
+                gc.clip();
+
+                // Draw the actual high-quality icon
+                gc.drawImage(sprite, rx, ry, rs, rs);
+                
+                gc.restore();
+                
+                // --- 3. Premium Border Overlay ---
+                gc.setStroke(Color.web("#d4af37", 0.5)); // Subtle gold
+                gc.setLineWidth(1.5);
+                gc.strokeRoundRect(rx, ry, rs, rs, rounded, rounded);
+                
+                return;
+            }
+        }
+        
+        // Fallback to stylized colored rectangle if no icon exists
+        gc.setFill(fallbackColor);
+        gc.setGlobalAlpha(0.6);
+        gc.fillRoundRect(x + 5, y + 5, size - 10, size - 10, 5, 5);
+        gc.setGlobalAlpha(1.0);
+        gc.setStroke(fallbackColor.brighter());
+        gc.strokeRoundRect(x + 5, y + 5, size - 10, size - 10, 5, 5);
     }
 
     private void renderFullMap(GraphicsContext gc, PlayState state) {
