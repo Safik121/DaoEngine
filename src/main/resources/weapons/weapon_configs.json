@@ -68,5 +68,63 @@
     "lifeSpan": 3.0,
     "burstCount": 3,
     "burstDelay": 0.1
+  },
+  "spear_thunder": {
+    "projectileType": "LIGHTNING_BOLT",
+    "damage": 50.0,
+    "cooldown": 0.6,
+    "speed": 15.0,
+    "size": 12.0,
+    "qiCost": 20.0,
+    "lifeSpan": 0.5
+  },
+  "fan_jade": {
+    "projectileType": "AOE_ZONE",
+    "damage": 25.0,
+    "cooldown": 1.5,
+    "speed": 0.0,
+    "size": 220.0,
+    "qiCost": 40.0,
+    "lifeSpan": 4.0
+  },
+  "dagger_void": {
+    "projectileType": "FLYING_SWORD",
+    "damage": 10.0,
+    "cooldown": 0.1,
+    "speed": 12.0,
+    "size": 6.0,
+    "qiCost": 5.0,
+    "lifeSpan": 1.5
+  },
+  "staff_phoenix": {
+    "projectileType": "FIREBALL",
+    "damage": 30.0,
+    "cooldown": 1.2,
+    "speed": 6.0,
+    "size": 20.0,
+    "qiCost": 50.0,
+    "lifeSpan": 3.0,
+    "projectileCount": 5,
+    "spreadAngle": 60.0
+  },
+  "hammer_obsidian": {
+    "projectileType": "AOE_ZONE",
+    "damage": 100.0,
+    "cooldown": 2.5,
+    "speed": 0.0,
+    "size": 180.0,
+    "qiCost": 60.0,
+    "lifeSpan": 0.8
+  },
+  "flute_celestial": {
+    "projectileType": "MAGIC_MISSILE",
+    "damage": 20.0,
+    "cooldown": 0.5,
+    "speed": 8.0,
+    "size": 10.0,
+    "qiCost": 15.0,
+    "lifeSpan": 5.0,
+    "burstCount": 3,
+    "burstDelay": 0.2
   }
 }

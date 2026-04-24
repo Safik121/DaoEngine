@@ -414,5 +414,99 @@
     "weaponConfigId": "heavenly_flame_sword",
     "spriteId": "item_divine_sun_blade",
     "spriteFrame": 0
+  },
+  {
+    "id": "crystal_thunder",
+    "name": "Thunder Crystal",
+    "description": "A crystal pulsing with raw lightning.",
+    "type": "CRAFTING",
+    "spriteId": "item_crystal_thunder",
+    "spriteFrame": 0
+  },
+  {
+    "id": "core_obsidian",
+    "name": "Obsidian Core",
+    "description": "The dense heart of a volcano.",
+    "type": "CRAFTING",
+    "spriteId": "item_core_obsidian",
+    "spriteFrame": 0
+  },
+  {
+    "id": "feather_phoenix",
+    "name": "Phoenix Feather",
+    "description": "A feather that never stops burning.",
+    "type": "CRAFTING",
+    "spriteId": "item_feather_phoenix",
+    "spriteFrame": 0
+  },
+  {
+    "id": "pearl_sea",
+    "name": "Deep Sea Pearl",
+    "description": "A pearl that holds the weight of the ocean.",
+    "type": "CRAFTING",
+    "spriteId": "item_pearl_sea",
+    "spriteFrame": 0
+  },
+  {
+    "id": "diamond_star",
+    "name": "Star Diamond",
+    "description": "A gem fallen from the higher realms.",
+    "type": "CRAFTING",
+    "spriteId": "item_diamond_star",
+    "spriteFrame": 0
+  },
+  {
+    "id": "spear_thunder",
+    "name": "Thunder Spear",
+    "description": "A spear that strikes like a lightning bolt.",
+    "type": "WEAPON",
+    "weaponConfigId": "spear_thunder",
+    "spriteId": "item_spear_thunder",
+    "spriteFrame": 0
+  },
+  {
+    "id": "fan_jade",
+    "name": "Jade Wind Fan",
+    "description": "An elegant fan that commands the gale.",
+    "type": "WEAPON",
+    "weaponConfigId": "fan_jade",
+    "spriteId": "item_fan_jade",
+    "spriteFrame": 0
+  },
+  {
+    "id": "dagger_void",
+    "name": "Void Daggers",
+    "description": "Twin daggers that slip through space.",
+    "type": "WEAPON",
+    "weaponConfigId": "dagger_void",
+    "spriteId": "item_dagger_void",
+    "spriteFrame": 0
+  },
+  {
+    "id": "staff_phoenix",
+    "name": "Phoenix Greatstaff",
+    "description": "A staff that unleashes the fires of rebirth.",
+    "type": "WEAPON",
+    "weaponConfigId": "staff_phoenix",
+    "spriteId": "item_staff_phoenix",
+    "spriteFrame": 0
+  },
+  {
+    "id": "hammer_obsidian",
+    "name": "Obsidian Great-Hammer",
+    "description": "A hammer that cracks the very earth.",
+    "type": "WEAPON",
+    "weaponConfigId": "hammer_obsidian",
+    "spriteId": "item_hammer_obsidian",
+    "spriteFrame": 0
+  },
+  {
+    "id": "flute_celestial",
+    "name": "Celestial Flute",
+    "description": "A flute whose notes seek out the soul.",
+    "type": "WEAPON",
+    "weaponConfigId": "flute_celestial",
+    "spriteId": "item_flute_celestial",
+    "spriteFrame": 0
   }
 ]

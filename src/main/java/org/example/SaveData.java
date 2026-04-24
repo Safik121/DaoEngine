@@ -41,6 +41,10 @@ public class SaveData {
     public String levelConfigPath;
     @JsonProperty("currentTime")
     public double currentTime;
+    @JsonProperty("cultivationIndex")
+    public int cultivationIndex;
+    @JsonProperty("activeSkillId")
+    public String activeSkillId;
 
     // World Story/Progress Persistence
     @JsonProperty("worldFlags")
@@ -96,11 +100,28 @@ public class SaveData {
         } // Jackson
     }
 
+    /** Data for active quest progress. */
+    public static class QuestSaveData {
+        @JsonProperty("id")
+        public String id;
+        @JsonProperty("currentAmount")
+        public int currentAmount;
+
+        public QuestSaveData() {
+        } // Jackson
+    }
+
     @JsonProperty("activeEnemies")
     public java.util.List<EnemySaveData> activeEnemies = new java.util.ArrayList<>();
 
     @JsonProperty("itemsOnGround")
     public java.util.List<ItemSaveData> itemsOnGround = new java.util.ArrayList<>();
+
+    @JsonProperty("activeQuests")
+    public java.util.List<QuestSaveData> activeQuests = new java.util.ArrayList<>();
+
+    @JsonProperty("completedQuestIds")
+    public java.util.List<String> completedQuestIds = new java.util.ArrayList<>();
 
     /** No-arg constructor for Jackson serialization. */
     public SaveData() {

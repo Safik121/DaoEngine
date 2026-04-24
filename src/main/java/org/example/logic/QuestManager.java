@@ -111,4 +111,8 @@ public class QuestManager implements GameEventListener {
     public List<Quest> getActiveQuests() {
         return activeQuests;
     }
+
+    public List<Quest> getCompletedQuests() {
+        return completedQuests;
+    }
 }

@@ -39,5 +39,11 @@
   { "input1": "pill_void_tribulant", "input2": "essence_heavenly", "result": "pill_heaven_bridge" },
   { "input1": "pill_heaven_bridge", "input2": "essence_heavenly", "result": "pill_daoseed" },
   { "input1": "sword_02", "input2": "meteorite_iron", "result": "sword_03" },
-  { "input1": "heavenly_flame_sword", "input2": "essence_heavenly", "result": "divine_sun_blade" }
+  { "input1": "heavenly_flame_sword", "input2": "essence_heavenly", "result": "divine_sun_blade" },
+  { "input1": "crystal_thunder", "input2": "iron_ore_01", "result": "spear_thunder" },
+  { "input1": "leaf_jade", "input2": "pearl_sea", "result": "fan_jade" },
+  { "input1": "shard_void", "input2": "meteorite_iron", "result": "dagger_void" },
+  { "input1": "essence_heavenly", "input2": "feather_phoenix", "result": "staff_phoenix" },
+  { "input1": "core_obsidian", "input2": "meteorite_iron", "result": "hammer_obsidian" },
+  { "input1": "water_celestial", "input2": "diamond_star", "result": "flute_celestial" }
 ]

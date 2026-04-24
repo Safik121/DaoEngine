@@ -13,7 +13,11 @@
     "baseSpeed": 3.0,
     "pickupRange": 150.0,
     "size": 24.0,
-    "startingItems": ["sword_01", "fire_essence_01", "book_fiery_palm", "book_void_sword", "book_thunder_clap"]
+    "startingItems": [
+      "pill_spirit_01",
+      "pill_hp_01",
+      "pill_spirit_01"
+    ]
   },
   "ui": {
     "hpColor": "#FF0000",

@@ -92,4 +92,14 @@ public class Quest {
     
     public String getWorldFlagOnComplete() { return worldFlagOnComplete; }
     public void setWorldFlagOnComplete(String flag) { this.worldFlagOnComplete = flag; }
+
+    /**
+     * Used for restoring saved state.
+     */
+    public void setCurrentAmount(int amount) {
+        this.currentAmount = amount;
+        if (this.currentAmount >= this.requiredAmount) {
+            this.isCompleted = true;
+        }
+    }
 }

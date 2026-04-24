@@ -130,5 +130,16 @@
   "item_pill_heaven_bridge": { "path": "/textures/items/pill_heaven_bridge.png" },
   "item_pill_daoseed": { "path": "/textures/items/pill_daoseed.png" },
   "item_sword_03": { "path": "/textures/items/sword_03.png" },
-  "item_divine_sun_blade": { "path": "/textures/items/divine_sun_blade.png" }
+  "item_divine_sun_blade": { "path": "/textures/items/divine_sun_blade.png" },
+  "item_crystal_thunder": { "path": "/textures/items/crystal_thunder.png" },
+  "item_core_obsidian": { "path": "/textures/items/core_obsidian.png" },
+  "item_feather_phoenix": { "path": "/textures/items/feather_phoenix.png" },
+  "item_pearl_sea": { "path": "/textures/items/pearl_sea.png" },
+  "item_diamond_star": { "path": "/textures/items/diamond_star.png" },
+  "item_spear_thunder": { "path": "/textures/items/spear_thunder.png" },
+  "item_fan_jade": { "path": "/textures/items/fan_jade.png" },
+  "item_dagger_void": { "path": "/textures/items/dagger_void.png" },
+  "item_staff_phoenix": { "path": "/textures/items/staff_phoenix.png" },
+  "item_hammer_obsidian": { "path": "/textures/items/hammer_obsidian.png" },
+  "item_flute_celestial": { "path": "/textures/items/flute_celestial.png" }
 }

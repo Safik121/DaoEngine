@@ -298,6 +298,36 @@ public class PlayState implements GameState {
             itemsOnGround.add(new WorldItem(ItemRegistry.createItem(iData.id), iData.x, iData.y));
         }
 
+        // Restore Cultivation
+        player.getCultivationManager().setCurrentRankIndex(data.cultivationIndex);
+
+        // Restore Active Skill
+        if (data.activeSkillId != null) {
+            org.example.logic.Skill skill = org.example.logic.SkillRegistry.getSkill(data.activeSkillId);
+            if (skill != null) {
+                player.setActiveSkill(skill);
+            }
+        }
+
+        // Restore Quests
+        if (data.activeQuests != null) {
+            for (SaveData.QuestSaveData qsd : data.activeQuests) {
+                org.example.logic.Quest q = org.example.logic.QuestRegistry.createQuest(qsd.id);
+                if (q != null) {
+                    q.setCurrentAmount(qsd.currentAmount);
+                    questManager.addQuest(q, this);
+                }
+            }
+        }
+        if (data.completedQuestIds != null) {
+            for (String qid : data.completedQuestIds) {
+                org.example.logic.Quest q = org.example.logic.QuestRegistry.createQuest(qid);
+                if (q != null) {
+                    questManager.getCompletedQuests().add(q);
+                }
+            }
+        }
+
         activeStrikes = new ArrayList<>();
         projectiles = new ArrayList<>();
 
@@ -1067,6 +1097,27 @@ public class PlayState implements GameState {
             data.worldFlags = org.example.logic.WorldState.getInstance().getFlags();
             data.worldCounters = org.example.logic.WorldState.getInstance().getCounters();
 
+            // Save Cultivation
+            data.cultivationIndex = player.getCultivationManager().getCurrentRankIndex();
+
+            // Save Active Skill
+            if (player.getActiveSkill() != null) {
+                data.activeSkillId = player.getActiveSkill().getId();
+            }
+
+            // Save Quests
+            for (org.example.logic.Quest q : questManager.getActiveQuests()) {
+                SaveData.QuestSaveData qsd = new SaveData.QuestSaveData();
+                qsd.id = q.getId();
+                qsd.currentAmount = q.getCurrentAmount();
+                data.activeQuests.add(qsd);
+            }
+            
+            // Collect completed quest IDs (need to add getter to QuestManager)
+            for (org.example.logic.Quest q : questManager.getCompletedQuests()) {
+                data.completedQuestIds.add(q.getId());
+            }
+
             org.example.SaveManager.save(data, slot);
         } catch (java.io.IOException e) {
             System.err.println("CRITICAL: Save failed for slot " + slot);
@@ -1156,6 +1207,39 @@ public class PlayState implements GameState {
                 Item item = ItemRegistry.createItem(id.id);
                 if (item != null) {
                     this.itemsOnGround.add(new WorldItem(item, id.x, id.y));
+                }
+            }
+        }
+
+        // Restore Cultivation
+        player.getCultivationManager().setCurrentRankIndex(data.cultivationIndex);
+
+        // Restore Active Skill
+        if (data.activeSkillId != null) {
+            org.example.logic.Skill skill = org.example.logic.SkillRegistry.getSkill(data.activeSkillId);
+            if (skill != null) {
+                player.setActiveSkill(skill);
+            }
+        }
+
+        // Restore Quests
+        if (data.activeQuests != null) {
+            for (SaveData.QuestSaveData qsd : data.activeQuests) {
+                org.example.logic.Quest q = org.example.logic.QuestRegistry.createQuest(qsd.id);
+                if (q != null) {
+                    q.setCurrentAmount(qsd.currentAmount);
+                    questManager.addQuest(q, this);
+                }
+            }
+        }
+        if (data.completedQuestIds != null) {
+            for (String qid : data.completedQuestIds) {
+                org.example.logic.Quest q = org.example.logic.QuestRegistry.createQuest(qid);
+                if (q != null) {
+                    // Need to add to completedQuests list in QuestManager
+                    // Actually QuestManager.addQuest checks if it has it, but it adds to active.
+                    // I'll add a proper restore method to QuestManager.
+                    questManager.getCompletedQuests().add(q);
                 }
             }
         }
