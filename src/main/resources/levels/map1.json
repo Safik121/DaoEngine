@@ -20,7 +20,7 @@
   "initialEnemyCount": 10,
   "tribulationTotalEnemies": 20,
   "tribulationScalingFactor": 1.0,
-  "enemyPool": ["bat_01", "zombie_01"],
+  "enemyPool": ["bat_01"],
   "interactables": [
     {
       "name": "Mysterious Traveler",

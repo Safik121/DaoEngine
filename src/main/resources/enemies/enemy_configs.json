@@ -7,7 +7,7 @@
     "speed": 1.5,
     "size": 18.0,
     "color": "#8A2BE2",
-    "spriteId": "tile_variety"
+    "spriteId": "bat_01"
   },
   "zombie_01": {
     "name": "Corpse Wight",
