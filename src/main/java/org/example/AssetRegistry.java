@@ -128,6 +128,14 @@ public class AssetRegistry {
     }
 
     /**
+     * Helper to get the total number of frames for a specific sprite ID.
+     */
+    public static int getFrameCount(String spriteId) {
+        SpriteMetadata meta = spriteMap.get(spriteId);
+        return (meta != null) ? meta.frames : 1;
+    }
+
+    /**
      * POJO for JSON mapping of sprite metadata.
      */
     public static class SpriteMetadata {

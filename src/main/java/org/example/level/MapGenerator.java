@@ -173,7 +173,8 @@ public class MapGenerator {
         }
         for (int y = cy - size; y <= cy + size; y++) {
             for (int x = cx - size; x <= cx + size; x++) {
-                if (x >= 0 && x < level.width && y >= 0 && y < level.height) {
+                // Prevent overwriting map borders
+                if (x > 0 && x < level.width - 1 && y > 0 && y < level.height - 1) {
                     double dist = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
                     if (dist < size * (0.7 + random.nextDouble() * 0.6)) {
                         level.data.get(y).set(x, type);
@@ -335,7 +336,8 @@ public class MapGenerator {
     private static void drawRiverBlob(Level level, int cx, int cy, int size, int type) {
         for (int ty = cy - size; ty <= cy + size; ty++) {
             for (int tx = cx - size; tx <= cx + size; tx++) {
-                if (tx >= 0 && tx < level.width && ty >= 0 && ty < level.height) {
+                // Prevent overwriting the absolute map borders (x=0, x=W-1, y=0, y=H-1)
+                if (tx > 0 && tx < level.width - 1 && ty > 0 && ty < level.height - 1) {
                     double distSq = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
                     if (distSq <= size * size) {
                         int current = level.data.get(ty).get(tx);

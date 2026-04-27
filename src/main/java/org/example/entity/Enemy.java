@@ -247,8 +247,8 @@ public class Enemy extends LivingEntity {
     @Override
     public void render(GraphicsContext gc, double cameraX, double cameraY) {
         // --- 1. Draw Sprite ---
-        int frameCount = 4; // Assuming 4 frames for basic enemies
-        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+        int frames = AssetRegistry.getFrameCount(id);
+        int frameIndex = (int) (animationTimer / 0.1) % frames;
 
         javafx.scene.image.Image sprite = AssetRegistry.getSprite(id, frameIndex);
         if (sprite != null) {

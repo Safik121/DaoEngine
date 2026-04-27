@@ -27,6 +27,12 @@ public class QuestManager implements GameEventListener {
         }
     }
 
+    public void addCompletedQuest(Quest q) {
+        if (!isQuestCompleted(q.getId())) {
+            completedQuests.add(q);
+        }
+    }
+
     public boolean hasQuest(String id) {
         for (Quest q : activeQuests) if (q.getId().equals(id)) return true;
         for (Quest q : completedQuests) if (q.getId().equals(id)) return true;

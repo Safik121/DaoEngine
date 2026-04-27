@@ -1236,10 +1236,7 @@ public class PlayState implements GameState {
             for (String qid : data.completedQuestIds) {
                 org.example.logic.Quest q = org.example.logic.QuestRegistry.createQuest(qid);
                 if (q != null) {
-                    // Need to add to completedQuests list in QuestManager
-                    // Actually QuestManager.addQuest checks if it has it, but it adds to active.
-                    // I'll add a proper restore method to QuestManager.
-                    questManager.getCompletedQuests().add(q);
+                    questManager.addCompletedQuest(q);
                 }
             }
         }
