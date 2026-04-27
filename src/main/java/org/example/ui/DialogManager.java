@@ -131,7 +131,30 @@ public class DialogManager {
             try {
                 double amount = Double.parseDouble(action.substring("HEAL:".length()));
                 state.heal(amount);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
+        } else if (action.startsWith("ADD_QI:")) {
+            try {
+                double amount = Double.parseDouble(action.substring("ADD_QI:".length()));
+                state.getPlayer().restoreQi(amount);
+                state.addNotification("Spirit Power + " + (int) amount);
+            } catch (Exception e) {
+            }
+        } else if (action.startsWith("ADD_HP:")) {
+            try {
+                double amount = Double.parseDouble(action.substring("ADD_HP:".length()));
+                state.getPlayer().getStats().setMaxHp(state.getPlayer().getMaxHp() + amount);
+                state.getPlayer().heal(amount);
+                state.addNotification("Constitution + " + (int) amount);
+            } catch (Exception e) {
+            }
+        } else if (action.startsWith("ADD_STR:")) {
+            try {
+                double amount = Double.parseDouble(action.substring("ADD_STR:".length()));
+                state.getPlayer().getStats().setStrength(state.getPlayer().getStats().getStrength() + amount);
+                state.addNotification("Strength + " + (int) amount);
+            } catch (Exception e) {
+            }
         }
     }
 

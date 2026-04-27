@@ -1,0 +1,33 @@
+{
+  "name": "Frozen Abyss",
+  "width": 170,
+  "height": 170,
+  "tileSize": 32,
+  "biome": "ICE",
+  "veinCount": 28,
+  "veinMinSize": 15,
+  "veinMaxSize": 30,
+  "hasLakes": true,
+  "lakeCount": 8,
+  "lakeSize": 25,
+  "hasRivers": false,
+  "riverCount": 0,
+  "bridgeMin": 0,
+  "bridgeMax": 0,
+  "bridgeMinWidth": 0,
+  "bridgeMaxWidth": 0,
+  "tribulationTime": 100.0,
+  "initialEnemyCount": 40,
+  "tribulationTotalEnemies": 100,
+  "tribulationScalingFactor": 1.8,
+  "enemyPool": ["archer_01", "guard_01"],
+  "interactables": [
+    {
+      "name": "Frozen Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_yang",
+      "count": 5
+    }
+  ],
+  "initialWorldItems": ["pill_yang", "jade_leaf_01"]
+}

@@ -54,4 +54,23 @@ public class LevelLoader {
             return new LevelConfig(); // Fallback to defaults
         }
     }
+
+    /**
+     * DTO for world_manifest.json
+     */
+    public static class WorldManifest {
+        public java.util.List<String> maps;
+    }
+
+    public static WorldManifest loadManifest(String filePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            InputStream is = LevelLoader.class.getResourceAsStream(filePath);
+            if (is == null) return null;
+            return mapper.readValue(is, WorldManifest.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -1,0 +1,33 @@
+{
+  "name": "Ta Tian Peak",
+  "width": 250,
+  "height": 250,
+  "tileSize": 32,
+  "biome": "ICE",
+  "veinCount": 100,
+  "veinMinSize": 50,
+  "veinMaxSize": 100,
+  "hasLakes": true,
+  "lakeCount": 30,
+  "lakeSize": 60,
+  "hasRivers": true,
+  "riverCount": 10,
+  "bridgeMin": 10,
+  "bridgeMax": 20,
+  "bridgeMinWidth": 10,
+  "bridgeMaxWidth": 15,
+  "tribulationTime": 300.0,
+  "initialEnemyCount": 100,
+  "tribulationTotalEnemies": 500,
+  "tribulationScalingFactor": 5.0,
+  "enemyPool": ["guard_01", "archer_01"],
+  "interactables": [
+    {
+      "name": "Dao Ancestor",
+      "type": "NPC",
+      "dialogueTreeId": "npc_dao_01",
+      "count": 1
+    }
+  ],
+  "initialWorldItems": ["pill_daoseed", "pill_heaven_bridge"]
+}

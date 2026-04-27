@@ -1,32 +1,52 @@
 {
-  "scout_forest": {
-    "id": "scout_forest",
-    "name": "First Steps",
-    "description": "Defeat your first Slime to begin your cultivation journey.",
+  "tutorial_han": {
+    "id": "tutorial_han",
+    "name": "Clearing the Valley",
+    "description": "Disciple Han needs the valley cleared of bats. Defeat 5 Spirit Bats.",
     "objectiveType": "KILL",
-    "targetId": "slime_01",
-    "requiredAmount": 1,
-    "rewardItemIds": ["pill_qi_01"],
-    "rewardQi": 15.0
+    "targetId": "bat_01",
+    "requiredAmount": 5,
+    "rewardItemIds": ["realm_token", "pill_qi_01"],
+    "rewardQi": 50.0
   },
-  "collect_iron": {
-    "id": "collect_iron",
-    "name": "Iron Gathering",
-    "description": "Gather 5 Iron Ores for the blacksmith.",
+  "iron_elder_mo": {
+    "id": "iron_elder_mo",
+    "name": "Elder Mo's Catalyst",
+    "description": "Elder Mo needs Iron Ore for a special refinement. Collect 10 Iron Ore.",
     "objectiveType": "COLLECT",
     "targetId": "iron_ore_01",
-    "requiredAmount": 5,
-    "rewardItemIds": ["mat_hammer_01"],
-    "rewardQi": 20.0
+    "requiredAmount": 10,
+    "rewardItemIds": ["pill_foundation", "pill_hp_01"],
+    "rewardQi": 200.0
   },
-  "thunder_quest": {
-    "id": "thunder_quest",
-    "name": "Thunderous Initiation",
-    "description": "Demonstrate your resolve. Defeat 3 Slimes to unlock the Thunder Clap Technique.",
+  "zombie_purge": {
+    "id": "zombie_purge",
+    "name": "Purge the Defiled",
+    "description": "The Spirit Mine is infested with zombies. Defeat 15 Zombies.",
     "objectiveType": "KILL",
-    "targetId": "slime_01",
-    "requiredAmount": 3,
-    "rewardItemIds": ["pill_qi_01", "book_thunder_clap"],
-    "rewardQi": 100.0
+    "targetId": "zombie_01",
+    "requiredAmount": 15,
+    "rewardItemIds": ["pill_core", "pill_qi_02"],
+    "rewardQi": 500.0
+  },
+  "trial_of_fire": {
+    "id": "trial_of_fire",
+    "name": "Trial of Fire",
+    "description": "Sword Saint Shen challenges you. Defeat 10 Inferno Guards.",
+    "objectiveType": "KILL",
+    "targetId": "guard_01",
+    "requiredAmount": 10,
+    "rewardItemIds": ["pill_divine", "realm_token"],
+    "rewardQi": 2000.0
+  },
+  "final_ascension": {
+    "id": "final_ascension",
+    "name": "The Final Ascension",
+    "description": "Ancestor Wang watches your final step. Defeat 20 Heavenly Archers.",
+    "objectiveType": "KILL",
+    "targetId": "archer_01",
+    "requiredAmount": 20,
+    "rewardItemIds": ["pill_daoseed"],
+    "rewardQi": 100000.0
   }
 }

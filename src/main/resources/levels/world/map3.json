@@ -1,0 +1,39 @@
+{
+  "name": "Inferno Battlefield",
+  "width": 180,
+  "height": 180,
+  "tileSize": 32,
+  "biome": "FIRE",
+  "veinCount": 15,
+  "veinMinSize": 10,
+  "veinMaxSize": 25,
+  "hasLakes": true,
+  "lakeCount": 8,
+  "lakeSize": 20,
+  "hasRivers": true,
+  "riverCount": 5,
+  "bridgeMin": 3,
+  "bridgeMax": 6,
+  "bridgeMinWidth": 5,
+  "bridgeMaxWidth": 8,
+  "tribulationTime": 100.0,
+  "initialEnemyCount": 30,
+  "tribulationTotalEnemies": 80,
+  "tribulationScalingFactor": 1.6,
+  "enemyPool": ["guard_01", "archer_01"],
+  "interactables": [
+    {
+      "name": "Sword Saint Shen",
+      "type": "NPC",
+      "dialogueTreeId": "npc_shen_01",
+      "count": 1
+    },
+    {
+      "name": "Crimson Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_jie_dan",
+      "count": 4
+    }
+  ],
+  "initialWorldItems": ["pill_spirit_01", "fire_essence_01", "pill_core"]
+}

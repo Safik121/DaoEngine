@@ -113,26 +113,29 @@ public class PlayState implements GameState {
     private boolean levelVictoryAchieved = false;
     /** Whether the cultivation/meditation menu is currently open. */
     private boolean cultivationMenuOpen = false;
-    
+
     /** Simple notification tracking. */
     public static class Notification {
         public String message;
         public double timer;
-        public Notification(String m, double t) { this.message = m; this.timer = t; }
+
+        public Notification(String m, double t) {
+            this.message = m;
+            this.timer = t;
+        }
     }
+
     private List<Notification> notifications = new ArrayList<>();
 
-    /** Tracks the path of the last loaded level configuration. */
-    private String lastConfigPath = "/levels/map1.json";
-
-    /** Pool of level configurations for sequential progression. */
-    private static final String[] LEVEL_POOL = {
-            "/levels/map1.json",
-            "/levels/map2.json",
-            "/levels/map3.json"
-    };
-    /** Current index in the level pool. */
+    /** Dynamic list of levels loaded from world_manifest.json. */
+    private java.util.List<String> worldManifest = new java.util.ArrayList<>();
     private int currentLevelIndex = 0;
+
+    /** Path to the last used level configuration for resets/saves. */
+    private String lastConfigPath = "/levels/world/map1.json";
+
+    /** Current map level (1-20) for scaling difficulty and rewards. */
+    private int mapLevel = 1;
 
     /** Cached image of the map background for performance. */
     private WritableImage mapCache;
@@ -170,7 +173,7 @@ public class PlayState implements GameState {
     private List<WorldItem> itemsOnGround;
     /** Tracks active fire bursts. */
     private List<CombatManager.BurstTracker> pendingBursts = new ArrayList<>();
-    
+
     private org.example.logic.ParticleManager particleManager;
     private org.example.logic.SoundManager soundManager;
     private org.example.logic.QuestManager questManager;
@@ -192,13 +195,24 @@ public class PlayState implements GameState {
         this.soundManager = new org.example.logic.SoundManager();
         this.questManager = new org.example.logic.QuestManager();
         this.eventManager = new org.example.logic.event.EventManager();
-        
+
         // Register Event Listeners
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ENTITY_DEATH, this.questManager);
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ITEM_PICKUP, this.questManager);
 
-        // Load configuration from JSON
-        lastConfigPath = "/levels/level_gen.json";
+        // Load World Manifest
+        LevelLoader.WorldManifest manifest = LevelLoader.loadManifest("/levels/world/world_manifest.json");
+        if (manifest != null) {
+            this.worldManifest = manifest.maps;
+        }
+
+        // Load initial level from manifest
+        if (!worldManifest.isEmpty()) {
+            lastConfigPath = "/levels/world/" + worldManifest.get(0);
+        } else {
+            lastConfigPath = "/levels/world/map1.json";
+        }
+        
         currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
         currentLevel = MapGenerator.generate(currentLevelConfig);
         this.currentMapSeed = currentLevel.seed;
@@ -239,11 +253,11 @@ public class PlayState implements GameState {
         this.soundManager = new org.example.logic.SoundManager();
         this.questManager = new org.example.logic.QuestManager();
         this.eventManager = new org.example.logic.event.EventManager();
-        
+
         // Register Event Listeners
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ENTITY_DEATH, this.questManager);
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ITEM_PICKUP, this.questManager);
-        
+
         // Restore Level
         lastConfigPath = data.levelConfigPath;
         if (lastConfigPath == null)
@@ -337,7 +351,6 @@ public class PlayState implements GameState {
 
     }
 
-
     /**
      * Updates the camera position to follow the player and stay within map
      * boundaries.
@@ -366,12 +379,14 @@ public class PlayState implements GameState {
      * Spawns initial items on the ground based on the LevelConfig definitions.
      */
     private void spawnInitialItems() {
-        if (currentLevelConfig.initialWorldItems == null) return;
+        if (currentLevelConfig.initialWorldItems == null)
+            return;
 
         for (String itemId : currentLevelConfig.initialWorldItems) {
             double[] pos = gameMap.getRandomFreePositionAwayFrom(16, player.getX(), player.getY(), 150);
             if (pos != null) {
-                itemsOnGround.add(new org.example.item.WorldItem(org.example.item.ItemRegistry.createItem(itemId), pos[0], pos[1]));
+                itemsOnGround.add(new org.example.item.WorldItem(org.example.item.ItemRegistry.createItem(itemId),
+                        pos[0], pos[1]));
             }
         }
     }
@@ -386,17 +401,21 @@ public class PlayState implements GameState {
                 // Pick a random enemy from the pool
                 String enemyId = currentLevelConfig.enemyPool
                         .get(new Random().nextInt(currentLevelConfig.enemyPool.size()));
-                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], false, 1.0));
+                // Scaling factor based on map level: 1.3^ (level - 1)
+                double scaleFactor = Math.pow(1.3, mapLevel - 1);
+                enemies.add(EnemyRegistry.createEnemy(enemyId, pos[0], pos[1], false, scaleFactor));
             }
         }
     }
 
     /**
-     * Adds initial starting items to the player's inventory as defined in game_config.json.
+     * Adds initial starting items to the player's inventory as defined in
+     * game_config.json.
      */
     private void addStartingItems() {
         if (player != null && player.getInventory() != null) {
-            java.util.List<String> startingItems = org.example.ConfigManager.getInstance().getConfig().player.startingItems;
+            java.util.List<String> startingItems = org.example.ConfigManager.getInstance()
+                    .getConfig().player.startingItems;
             if (startingItems != null) {
                 for (String itemId : startingItems) {
                     player.getInventory().addItem(org.example.item.ItemRegistry.createItem(itemId));
@@ -450,7 +469,8 @@ public class PlayState implements GameState {
         // --- Update Notifications ---
         for (int i = notifications.size() - 1; i >= 0; i--) {
             notifications.get(i).timer -= deltaTime;
-            if (notifications.get(i).timer <= 0) notifications.remove(i);
+            if (notifications.get(i).timer <= 0)
+                notifications.remove(i);
         }
 
         // --- Centralized Input State Update ---
@@ -484,9 +504,10 @@ public class PlayState implements GameState {
         }
 
         // Choice selection via number keys or mouse click
-        java.util.List<org.example.logic.DialogueChoice> choices = 
-            (dialogManager.getCurrentNode() != null) ? dialogManager.getCurrentNode().getChoices() : null;
-            
+        java.util.List<org.example.logic.DialogueChoice> choices = (dialogManager.getCurrentNode() != null)
+                ? dialogManager.getCurrentNode().getChoices()
+                : null;
+
         if (choices != null && !choices.isEmpty()) {
             // Number keys
             for (int i = 1; i <= Math.min(9, choices.size()); i++) {
@@ -496,14 +517,14 @@ public class PlayState implements GameState {
                     break;
                 }
             }
-            
+
             // Mouse click support
             if (lmbPressed && !lmbWasPressed) {
                 double width = 800;
                 double x = (screenWidth - width) / 2.0;
                 double y = screenHeight - 180 - 50;
                 double choiceY = y + 100;
-                
+
                 for (int i = 0; i < choices.size(); i++) {
                     // Check if mouse is over this choice line
                     if (mx >= x + 20 && mx <= x + width - 20 && my >= choiceY - 15 && my <= choiceY + 10) {
@@ -521,7 +542,8 @@ public class PlayState implements GameState {
      * Now triggered by the 'E' key and uses proximity check for the nearest item.
      */
     private void handleWorldInteraction() {
-        if (dialogManager.isActive()) return;
+        if (dialogManager.isActive())
+            return;
 
         boolean ePressed = Input.isKeyPressed(KeyCode.E);
         if (ePressed && !eWasPressed) {
@@ -532,10 +554,12 @@ public class PlayState implements GameState {
             java.util.List<org.example.logic.Interactable> all = new java.util.ArrayList<>();
             all.addAll(currentLevel.interactables);
             all.addAll(itemsOnGround);
-            if (currentLevel.gate != null) all.add(currentLevel.gate);
+            if (currentLevel.gate != null)
+                all.add(currentLevel.gate);
 
             for (org.example.logic.Interactable inter : all) {
-                double dist = Math.sqrt(Math.pow(inter.getX() - player.getX(), 2) + Math.pow(inter.getY() - player.getY(), 2));
+                double dist = Math
+                        .sqrt(Math.pow(inter.getX() - player.getX(), 2) + Math.pow(inter.getY() - player.getY(), 2));
                 if (dist < inter.getInteractionRange() && dist < minDist) {
                     minDist = dist;
                     best = inter;
@@ -599,13 +623,15 @@ public class PlayState implements GameState {
             org.example.logic.CultivationManager cm = player.getCultivationManager();
             if (cm.attemptBreakthrough(player)) {
                 System.out.println("BREAKTHROUGH SUCCESSFUL! New Rank: " + cm.getCurrentRank().getFullName());
-                particleManager.spawnQiBurst(player.getX() + player.getSize()/2, player.getY() + player.getSize()/2);
+                particleManager.spawnQiBurst(player.getX() + player.getSize() / 2,
+                        player.getY() + player.getSize() / 2);
                 soundManager.playSfx("breakthrough");
             } else {
                 if (cm.getNextRank() == null) {
                     System.out.println("Maximum Realm Achieved!");
                 } else {
-                    System.out.println("Insufficient Qi for breakthrough. Required: " + cm.getNextRank().getRequiredQiToBreakthrough() + ", current: " + player.getQi());
+                    System.out.println("Insufficient Qi for breakthrough. Required: "
+                            + cm.getNextRank().getRequiredQiToBreakthrough() + ", current: " + player.getQi());
                 }
             }
         }
@@ -639,7 +665,7 @@ public class PlayState implements GameState {
         if (Input.isKeyPressed(KeyCode.F) || Input.isLmbPressed()) {
             int activeSlot = player.getActiveHotbarSlot();
             Item activeItem = player.getInventory().getItemInHotbar(activeSlot);
-            
+
             if (activeItem != null && activeItem.getType() != Item.Type.WEAPON) {
                 activeItem.use(player, this);
 
@@ -669,14 +695,17 @@ public class PlayState implements GameState {
         projectiles.clear();
         itemsOnGround.clear();
 
-        // Load configuration and regenerate - Sequential progression
+        // Load configuration and regenerate - Sequential progression from manifest
         currentLevelIndex++;
-        if (currentLevelIndex >= LEVEL_POOL.length) {
-            // Reset to beginning or could optionally randomize after completion
-            currentLevelIndex = 0; 
+        if (currentLevelIndex >= worldManifest.size()) {
+            // Loop back to start but keep mapLevel scaling!
+            currentLevelIndex = 0;
         }
-        
-        String levelFile = LEVEL_POOL[currentLevelIndex];
+
+        // Increase world level for scaling
+        mapLevel++;
+
+        String levelFile = "/levels/world/" + worldManifest.get(currentLevelIndex);
         lastConfigPath = levelFile;
         currentLevelConfig = LevelLoader.loadConfig(levelFile);
         currentLevel = MapGenerator.generate(currentLevelConfig);
@@ -720,15 +749,26 @@ public class PlayState implements GameState {
             Enemy enemy = enemies.get(i);
             if (enemy.isDead()) {
                 enemyDied = true;
-                
+
                 eventManager.triggerEvent(org.example.logic.event.GameEvent.ENTITY_DEATH, enemy.getId(), 1, this);
-                
+
+                // --- Qi Absorption System ---
+                // Base Qi is 10, scales by 2.4x per map level
+                double qiReward = 10.0 * Math.pow(2.4, mapLevel - 1);
+                // Tribulation enemies give 3x more Qi
+                if (enemy.isTribulation())
+                    qiReward *= 3.0;
+
+                player.restoreQi(qiReward);
+                addNotification(String.format("+%.0f Qi Absorbed", qiReward));
+
                 // Roll for loot
                 java.util.List<String> drops = org.example.logic.LootRegistry.rollLoot(enemy.getId());
                 for (String itemId : drops) {
-                    itemsOnGround.add(new WorldItem(org.example.item.ItemRegistry.createItem(itemId), enemy.getX(), enemy.getY()));
+                    itemsOnGround.add(new WorldItem(org.example.item.ItemRegistry.createItem(itemId), enemy.getX(),
+                            enemy.getY()));
                 }
-                
+
                 enemies.remove(i);
             }
         }
@@ -929,7 +969,8 @@ public class PlayState implements GameState {
 
     public void addNotification(String message) {
         notifications.add(new Notification(message, 3.5)); // Display for 3.5 seconds
-        if (notifications.size() > 5) notifications.remove(0); // Max 5 at once
+        if (notifications.size() > 5)
+            notifications.remove(0); // Max 5 at once
     }
 
     public List<Notification> getNotifications() {
@@ -1112,7 +1153,7 @@ public class PlayState implements GameState {
                 qsd.currentAmount = q.getCurrentAmount();
                 data.activeQuests.add(qsd);
             }
-            
+
             // Collect completed quest IDs (need to add getter to QuestManager)
             for (org.example.logic.Quest q : questManager.getCompletedQuests()) {
                 data.completedQuestIds.add(q.getId());
@@ -1273,11 +1314,11 @@ public class PlayState implements GameState {
     public CombatManager getCombatManager() {
         return combatManager;
     }
-    
+
     public org.example.logic.ParticleManager getParticleManager() {
         return particleManager;
     }
-    
+
     public org.example.logic.SoundManager getSoundManager() {
         return soundManager;
     }
@@ -1381,7 +1422,6 @@ public class PlayState implements GameState {
     public PlayMode getCurrentMode() {
         return currentMode;
     }
-
 
     public boolean isPaused() {
         return isPaused;

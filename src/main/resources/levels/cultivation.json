@@ -1,743 +1,192 @@
 [
   {
-    "realmName": "Ning Qi",
-    "description": "Qi Condensation (\u51dd\u6c14) | Divided into 15 layers. Progress by absorbing spiritual energy. The purpose of this step is building foundation for grasping natural law in the Second Step.",
+    "realmName": "Ning Qi (Early)",
+    "description": "Qi Condensation Layers 1-5. Gathering the first strands of spiritual energy.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 75,
-        "hpBonus": 24,
-        "strBonus": 2,
-        "defBonus": 1,
-        "spiBonus": 7
-      },
-      {
-        "tier": 2,
-        "qi": 135,
-        "hpBonus": 36,
-        "strBonus": 2,
-        "defBonus": 2,
-        "spiBonus": 16
-      },
-      {
-        "tier": 3,
-        "qi": 243,
-        "hpBonus": 54,
-        "strBonus": 3,
-        "defBonus": 3,
-        "spiBonus": 37
-      },
-      {
-        "tier": 4,
-        "qi": 437,
-        "hpBonus": 81,
-        "strBonus": 5,
-        "defBonus": 6,
-        "spiBonus": 85
-      },
-      {
-        "tier": 5,
-        "qi": 787,
-        "hpBonus": 121,
-        "strBonus": 7,
-        "defBonus": 10,
-        "spiBonus": 192
-      },
-      {
-        "tier": 6,
-        "qi": 1417,
-        "hpBonus": 182,
-        "strBonus": 10,
-        "defBonus": 17,
-        "spiBonus": 432
-      },
-      {
-        "tier": 7,
-        "qi": 2550,
-        "hpBonus": 273,
-        "strBonus": 15,
-        "defBonus": 30,
-        "spiBonus": 973
-      },
-      {
-        "tier": 8,
-        "qi": 4591,
-        "hpBonus": 410,
-        "strBonus": 21,
-        "defBonus": 51,
-        "spiBonus": 2189
-      },
-      {
-        "tier": 9,
-        "qi": 8264,
-        "hpBonus": 615,
-        "strBonus": 29,
-        "defBonus": 86,
-        "spiBonus": 4926
-      },
-      {
-        "tier": 10,
-        "qi": 14876,
-        "hpBonus": 922,
-        "strBonus": 41,
-        "defBonus": 146,
-        "spiBonus": 11084
-      },
-      {
-        "tier": 11,
-        "qi": 26778,
-        "hpBonus": 1383,
-        "strBonus": 57,
-        "defBonus": 247,
-        "spiBonus": 24939
-      },
-      {
-        "tier": 12,
-        "qi": 48201,
-        "hpBonus": 2075,
-        "strBonus": 80,
-        "defBonus": 417,
-        "spiBonus": 56113
-      },
-      {
-        "tier": 13,
-        "qi": 86762,
-        "hpBonus": 3113,
-        "strBonus": 113,
-        "defBonus": 705,
-        "spiBonus": 126255
-      },
-      {
-        "tier": 14,
-        "qi": 156172,
-        "hpBonus": 4670,
-        "strBonus": 158,
-        "defBonus": 1192,
-        "spiBonus": 284075
-      },
-      {
-        "tier": 15,
-        "qi": 281110,
-        "hpBonus": 7006,
-        "strBonus": 222,
-        "defBonus": 2015,
-        "spiBonus": 639170
+      { "tier": 1, "qi": 100, "hpBonus": 50, "strBonus": 5, "defBonus": 2, "spiBonus": 10 }
+    ]
+  },
+  {
+    "realmName": "Ning Qi (Mid)",
+    "description": "Qi Condensation Layers 6-10. Your meridians begin to widen.",
+    "stages": [
+      { "tier": 2, "qi": 260, "hpBonus": 120, "strBonus": 12, "defBonus": 5, "spiBonus": 30 }
+    ]
+  },
+  {
+    "realmName": "Ning Qi (Peak)",
+    "description": "Qi Condensation Layers 11-15. Reaching the limit of a mortal body.",
+    "stages": [
+      { "tier": 3, "qi": 670, "hpBonus": 300, "strBonus": 25, "defBonus": 15, "spiBonus": 80 }
+    ]
+  },
+  {
+    "realmName": "Foundation Establishment",
+    "description": "Zhu Ji. Spiritual energy refines the body to its core.",
+    "stages": [
+      { 
+        "tier": 4, "qi": 1750, "hpBonus": 800, "strBonus": 60, "defBonus": 40, "spiBonus": 250,
+        "requiredItemId": "pill_foundation", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Zhu Ji",
-    "description": "Foundation Establishment (\u7b51\u57fa) | Divided into Early, Middle, Late. Spiritual energy refines the body so the body would be more suited for cultivation.",
+    "realmName": "Core Formation",
+    "description": "Jie Dan. Condensing spiritual energy into a solid Golden Core.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 758997,
-        "hpBonus": 12611,
-        "strBonus": 311,
-        "defBonus": 3405,
-        "spiBonus": 1438132,
-        "requiredItemId": "pill_foundation",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 1366194,
-        "hpBonus": 18917,
-        "strBonus": 435,
-        "defBonus": 5756,
-        "spiBonus": 3235799
-      },
-      {
-        "tier": 3,
-        "qi": 2459150,
-        "hpBonus": 28375,
-        "strBonus": 609,
-        "defBonus": 9727,
-        "spiBonus": 7280548
+      { 
+        "tier": 5, "qi": 4500, "hpBonus": 2000, "strBonus": 150, "defBonus": 100, "spiBonus": 700,
+        "requiredItemId": "pill_core", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Jie Dan",
-    "description": "Core Formation (\u7ed3\u4e39) | Divided into Early, Middle, Late, Peak. Form Spiritual Energy into a Core inside the Dantian.",
+    "realmName": "Nascent Soul",
+    "description": "Yuan Ying. Breaking the Core to produce an Immortal Soul.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 6639706,
-        "hpBonus": 51075,
-        "strBonus": 853,
-        "defBonus": 16440,
-        "spiBonus": 16381233,
-        "requiredItemId": "pill_core",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 11951471,
-        "hpBonus": 76613,
-        "strBonus": 1195,
-        "defBonus": 27783,
-        "spiBonus": 36857774
-      },
-      {
-        "tier": 3,
-        "qi": 21512648,
-        "hpBonus": 114920,
-        "strBonus": 1673,
-        "defBonus": 46954,
-        "spiBonus": 82929992
-      },
-      {
-        "tier": 4,
-        "qi": 38722767,
-        "hpBonus": 172381,
-        "strBonus": 2342,
-        "defBonus": 79353,
-        "spiBonus": 186592482
+      { 
+        "tier": 6, "qi": 12000, "hpBonus": 5000, "strBonus": 400, "defBonus": 250, "spiBonus": 2000,
+        "requiredItemId": "pill_soul", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Yuan Ying",
-    "description": "Nascent Soul (\u5143\u5a74) | Divided into Early, Middle, Late, Peak. Break the Core to produce a Nascent Soul.",
+    "realmName": "Spirit Severing",
+    "description": "Hua Shen. Severing mortal ties and comprehending the domain.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 104551472,
-        "hpBonus": 310286,
-        "strBonus": 3279,
-        "defBonus": 134106,
-        "spiBonus": 419833086,
-        "requiredItemId": "pill_soul",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 188192650,
-        "hpBonus": 465429,
-        "strBonus": 4591,
-        "defBonus": 226640,
-        "spiBonus": 944624444
-      },
-      {
-        "tier": 3,
-        "qi": 338746770,
-        "hpBonus": 698144,
-        "strBonus": 6428,
-        "defBonus": 383022,
-        "spiBonus": 2125405000
-      },
-      {
-        "tier": 4,
-        "qi": 609744186,
-        "hpBonus": 1047216,
-        "strBonus": 8999,
-        "defBonus": 647307,
-        "spiBonus": 4782161251
+      { 
+        "tier": 7, "qi": 31000, "hpBonus": 12000, "strBonus": 1000, "defBonus": 600, "spiBonus": 5500,
+        "requiredItemId": "pill_divine", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Hua Shen",
-    "description": "Soul Formation / Deity Transformation (\u5316\u795e) | Divided into Early, Mid, Late, Great Cycle. Comprehend the heavens and obtain a Domain. Then form an Origin Soul by fusing that domain with the Nascent Soul.",
+    "realmName": "Soul Transformation",
+    "description": "Ying Bian. The Origin Soul becomes corporeal and mighty.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1646309302,
-        "hpBonus": 1884989,
-        "strBonus": 12599,
-        "defBonus": 1093950,
-        "spiBonus": 10759862816,
-        "requiredItemId": "pill_divine",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 2963356745,
-        "hpBonus": 2827484,
-        "strBonus": 17639,
-        "defBonus": 1848776,
-        "spiBonus": 24209691336
-      },
-      {
-        "tier": 3,
-        "qi": 5334042141,
-        "hpBonus": 4241226,
-        "strBonus": 24695,
-        "defBonus": 3124432,
-        "spiBonus": 54471805506
-      },
-      {
-        "tier": 4,
-        "qi": 9601275854,
-        "hpBonus": 6361839,
-        "strBonus": 34573,
-        "defBonus": 5280290,
-        "spiBonus": 122561562389
+      { 
+        "tier": 8, "qi": 80000, "hpBonus": 30000, "strBonus": 2500, "defBonus": 1500, "spiBonus": 15000,
+        "requiredItemId": "pill_transformation", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Ying Bian",
-    "description": "Soul Transformation / Infant Transformation (\u5a74\u53d8) | Divided into Early, Mid, Late, Great Cycle. Celestial spiritual energy to completely refine the body and allow the Origin Soul to go from non-corporeal to corporeal.",
+    "realmName": "Ascendant",
+    "description": "Wen Ding. Fusing the domain with the Origin Soul.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 25923444807,
-        "hpBonus": 11451311,
-        "strBonus": 48402,
-        "defBonus": 8923690,
-        "spiBonus": 275763515376,
-        "requiredItemId": "pill_transformation",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 46662200654,
-        "hpBonus": 17176967,
-        "strBonus": 67764,
-        "defBonus": 15081036,
-        "spiBonus": 620467909598
-      },
-      {
-        "tier": 3,
-        "qi": 83991961177,
-        "hpBonus": 25765451,
-        "strBonus": 94869,
-        "defBonus": 25486951,
-        "spiBonus": 1396052796596
-      },
-      {
-        "tier": 4,
-        "qi": 151185530119,
-        "hpBonus": 38648177,
-        "strBonus": 132817,
-        "defBonus": 43072948,
-        "spiBonus": 3141118792341
+      { 
+        "tier": 9, "qi": 210000, "hpBonus": 80000, "strBonus": 6000, "defBonus": 4000, "spiBonus": 45000,
+        "requiredItemId": "pill_ascendant", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Wen Ding",
-    "description": "Ascendant (\u95ee\u9f0e) | Divided into Early, Mid, Late, Great Cycle. Fusing domain and celestial spiritual energy with the origin soul.",
+    "realmName": "Illusory Yin",
+    "description": "Yin Xu. Entering the Second Step. Devouring Origin Energy.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 408200931323,
-        "hpBonus": 69566719,
-        "strBonus": 185944,
-        "defBonus": 72793283,
-        "spiBonus": 7067517282767,
-        "requiredItemId": "pill_ascendant",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 734761676382,
-        "hpBonus": 104350079,
-        "strBonus": 260322,
-        "defBonus": 123020648,
-        "spiBonus": 15901913886226
-      },
-      {
-        "tier": 3,
-        "qi": 1322571017488,
-        "hpBonus": 156525119,
-        "strBonus": 364451,
-        "defBonus": 207904896,
-        "spiBonus": 35779306244010
-      },
-      {
-        "tier": 4,
-        "qi": 2380627831479,
-        "hpBonus": 234787679,
-        "strBonus": 510231,
-        "defBonus": 351359275,
-        "spiBonus": 80503439049023
+      { 
+        "tier": 10, "qi": 550000, "hpBonus": 200000, "strBonus": 15000, "defBonus": 10000, "spiBonus": 120000,
+        "requiredItemId": "pill_yin", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Yin Xu",
-    "description": "Illusory Yin (\u9634\u865a) | Change in the origin soul. A real origin soul can devour origin energy and gain new life from origin energy.",
+    "realmName": "Corporeal Yang",
+    "description": "Yang Shi. Spiritual energy is replaced by Origin Energy.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 6427695144995,
-        "hpBonus": 422617822,
-        "strBonus": 714324,
-        "defBonus": 593797175,
-        "spiBonus": 181132737860303,
-        "requiredItemId": "pill_yin",
-        "requiredItemCount": 1
+      { 
+        "tier": 11, "qi": 1400000, "hpBonus": 500000, "strBonus": 40000, "defBonus": 25000, "spiBonus": 350000,
+        "requiredItemId": "pill_yang", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Yang Shi",
-    "description": "Corporeal Yang (\u9633\u5b9e) | All the celestial spiritual energy dissipating and being replaced by origin energy.",
+    "realmName": "Nirvana Scryer",
+    "description": "Kui Nie. Starting to comprehend the laws of nature.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 17354776891489,
-        "hpBonus": 760712080,
-        "strBonus": 1000053,
-        "defBonus": 1003517226,
-        "spiBonus": 407548660185681,
-        "requiredItemId": "pill_yang",
-        "requiredItemCount": 1
+      { 
+        "tier": 12, "qi": 3700000, "hpBonus": 1200000, "strBonus": 100000, "defBonus": 60000, "spiBonus": 1000000,
+        "requiredItemId": "pill_nirvana_scryer", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Kui Nie",
-    "description": "Nirvana Scryer (\u7aa5\u6d85) | Divided into Early, Mid, Late, Peak. Able to start comprehending natural law.",
+    "realmName": "Nirvana Cleanser",
+    "description": "Jing Nie. Gaining control over natural laws.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 46857897607020,
-        "hpBonus": 1369281745,
-        "strBonus": 1400075,
-        "defBonus": 1695944113,
-        "spiBonus": 916984485417784,
-        "requiredItemId": "pill_nirvana_scryer",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 84344215692636,
-        "hpBonus": 2053922617,
-        "strBonus": 1960105,
-        "defBonus": 2866145551,
-        "spiBonus": 2063215092190014
-      },
-      {
-        "tier": 3,
-        "qi": 151819588246745,
-        "hpBonus": 3080883926,
-        "strBonus": 2744147,
-        "defBonus": 4843785982,
-        "spiBonus": 4642233957427533
-      },
-      {
-        "tier": 4,
-        "qi": 273275258844142,
-        "hpBonus": 4621325890,
-        "strBonus": 3841806,
-        "defBonus": 8185998310,
-        "spiBonus": 10445026404211950
+      { 
+        "tier": 13, "qi": 9500000, "hpBonus": 3000000, "strBonus": 250000, "defBonus": 150000, "spiBonus": 2800000,
+        "requiredItemId": "pill_nirvana_cleanser", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Jing Nie",
-    "description": "Nirvana Cleanser (\u51c0\u6d85) | Divided into Early, Mid, Late, Peak. In this realm, one will be able to control natural law.",
+    "realmName": "Nirvana Shatterer",
+    "description": "Sui Nie. Comprehension forms an Essence.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 737843198879184,
-        "hpBonus": 8318386602,
-        "strBonus": 5378529,
-        "defBonus": 13834337145,
-        "spiBonus": 23501309409476888,
-        "requiredItemId": "pill_nirvana_cleanser",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 1328117757982532,
-        "hpBonus": 12477579904,
-        "strBonus": 7529941,
-        "defBonus": 23380029775,
-        "spiBonus": 52877946171323000
-      },
-      {
-        "tier": 3,
-        "qi": 2390611964368557,
-        "hpBonus": 18716369856,
-        "strBonus": 10541918,
-        "defBonus": 39512250320,
-        "spiBonus": 118975378885476736
-      },
-      {
-        "tier": 4,
-        "qi": 4303101535863403,
-        "hpBonus": 28074554784,
-        "strBonus": 14758685,
-        "defBonus": 66775703042,
-        "spiBonus": 267694602492322656
-      }
-    ]
-  },
-  {
-    "realmName": "Sui Nie",
-    "description": "Nirvana Shatterer (\u788e\u6d85) | Divided into Early, Mid, Late, Peak. At this stage, one's comprehension of Natural law can form an Essence.",
-    "stages": [
-      {
-        "tier": 1,
-        "qi": 11618374146831188,
-        "hpBonus": 50534198612,
-        "strBonus": 20662159,
-        "defBonus": 112850938141,
-        "spiBonus": 602312855607725952,
-        "requiredItemId": "pill_nirvana_shatterer",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 20913073464296140,
-        "hpBonus": 75801297918,
-        "strBonus": 28927023,
-        "defBonus": 190718085458,
-        "spiBonus": 1355203925117383168
-      },
-      {
-        "tier": 3,
-        "qi": 37643532235733056,
-        "hpBonus": 113701946877,
-        "strBonus": 40497832,
-        "defBonus": 322313564425,
-        "spiBonus": 3049208831514112000
-      },
-      {
-        "tier": 4,
-        "qi": 67758358024319504,
-        "hpBonus": 170552920316,
-        "strBonus": 56696965,
-        "defBonus": 544709923879,
-        "spiBonus": 6860719870906752000
+      { 
+        "tier": 14, "qi": 25000000, "hpBonus": 8000000, "strBonus": 650000, "defBonus": 400000, "spiBonus": 7500000,
+        "requiredItemId": "pill_nirvana_shatterer", "requiredItemCount": 1 
       }
     ]
   },
   {
     "realmName": "Heaven's Blight",
-    "description": "Tribulations of the Heavens | There are 5 desolation/tribulation in this level. With each passing of desolation, your power will increase.",
+    "description": "Surviving the five tribulations of the heavens.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 182947566665662656,
-        "hpBonus": 306995256569,
-        "strBonus": 79375751,
-        "defBonus": 920559771355,
-        "spiBonus": 15436619709540192256,
-        "requiredItemId": "pill_heavenly_tribulation",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 329305619998192768,
-        "hpBonus": 460492884853,
-        "strBonus": 111126052,
-        "defBonus": 1555746013591,
-        "spiBonus": 34732394346465435648
-      },
-      {
-        "tier": 3,
-        "qi": 592750115996747008,
-        "hpBonus": 690739327280,
-        "strBonus": 155576473,
-        "defBonus": 2629210762969,
-        "spiBonus": 78147887279547236352
-      },
-      {
-        "tier": 4,
-        "qi": 1000000000000000000,
-        "hpBonus": 1036108990921,
-        "strBonus": 217807062,
-        "defBonus": 4443366189418,
-        "spiBonus": 175832746378981277696
-      },
-      {
-        "tier": 5,
-        "qi": 1000000000000000000,
-        "hpBonus": 1554163486382,
-        "strBonus": 304929887,
-        "defBonus": 7509288860117,
-        "spiBonus": 395623679352707874816
+      { 
+        "tier": 15, "qi": 65000000, "hpBonus": 20000000, "strBonus": 1600000, "defBonus": 1000000, "spiBonus": 20000000,
+        "requiredItemId": "pill_heavenly_tribulation", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Kong Nie",
-    "description": "Nirvana Void (\u7a7a\u6d85) | The Essence of the Cultivator undergoes a qualitative change by absorbing the energy from the Great Void Gate.",
+    "realmName": "Nirvana Void",
+    "description": "Kong Nie. Absorbing energy from the Great Void Gate.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 2797494275487,
-        "strBonus": 426901842,
-        "defBonus": 12690698173598,
-        "spiBonus": 890153278543592816640,
-        "requiredItemId": "pill_void_gate",
-        "requiredItemCount": 1
+      { 
+        "tier": 16, "qi": 170000000, "hpBonus": 50000000, "strBonus": 4000000, "defBonus": 2500000, "spiBonus": 55000000,
+        "requiredItemId": "pill_void_gate", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Kong Ling",
-    "description": "Spirit Void (\u7a7a\u7075) | At this realm, assuming the Cultivator uses Joss Flames, they will fuse with their Joss Flame Realm.",
+    "realmName": "Spirit Void",
+    "description": "Kong Ling. Fusing with the Joss Flame Realm.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 5035489695878,
-        "strBonus": 597662579,
-        "defBonus": 21447279913381,
-        "spiBonus": 2002844876723083804672,
-        "requiredItemId": "pill_spirit_void",
-        "requiredItemCount": 1
+      { 
+        "tier": 17, "qi": 440000000, "hpBonus": 120000000, "strBonus": 10000000, "defBonus": 6500000, "spiBonus": 150000000,
+        "requiredItemId": "pill_spirit_void", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Kong Xuan",
-    "description": "Arcane Void (\u7a7a\u7384) | Divided into Early, Mid, Late, Great Circle, Arcane Tribulant. Survivor of the nine tribulations.",
+    "realmName": "Arcane Void",
+    "description": "Kong Xuan. Survivor of the nine tribulations.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 9063881452580,
-        "strBonus": 836727611,
-        "defBonus": 36245903053614,
-        "spiBonus": 4506400972626938822656,
-        "requiredItemId": "pill_arcane_void",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 1000000000000000000,
-        "hpBonus": 13595822178870,
-        "strBonus": 1171418656,
-        "defBonus": 61255576160608,
-        "spiBonus": 10139402188410612350976
-      },
-      {
-        "tier": 3,
-        "qi": 1000000000000000000,
-        "hpBonus": 20393733268306,
-        "strBonus": 1639986118,
-        "defBonus": 103521923711427,
-        "spiBonus": 22813654923923878313984
-      },
-      {
-        "tier": 4,
-        "qi": 1000000000000000000,
-        "hpBonus": 30590599902459,
-        "strBonus": 2295980565,
-        "defBonus": 174952051072313,
-        "spiBonus": 51330723578828726206464
-      },
-      {
-        "tier": 5,
-        "qi": 1000000000000000000,
-        "hpBonus": 45885899853689,
-        "strBonus": 3214372792,
-        "defBonus": 295668966312209,
-        "spiBonus": 115494128052364642353152
+      { 
+        "tier": 18, "qi": 800000000, "hpBonus": 300000000, "strBonus": 25000000, "defBonus": 16000000, "spiBonus": 400000000,
+        "requiredItemId": "pill_arcane_void", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Kong Jie",
-    "description": "Void Tribulant (\u7a7a\u52ab) | Divided into Early, Mid, Late (Grand Exalt), Peak (Empyrean Exalt, Ascendant Empyrean, Grand Empyrean).",
+    "realmName": "Void Tribulant",
+    "description": "Kong Jie. The Empyrean Exalt status. Near the peak.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 82594619736641,
-        "strBonus": 4500121909,
-        "defBonus": 499680553067633,
-        "spiBonus": 259861788117820445294592,
-        "requiredItemId": "pill_void_tribulant",
-        "requiredItemCount": 1
-      },
-      {
-        "tier": 2,
-        "qi": 1000000000000000000,
-        "hpBonus": 123891929604961,
-        "strBonus": 6300170673,
-        "defBonus": 844460134684300,
-        "spiBonus": 584689023265096001912832
-      },
-      {
-        "tier": 3,
-        "qi": 1000000000000000000,
-        "hpBonus": 185837894407442,
-        "strBonus": 8820238942,
-        "defBonus": 1427137627616468,
-        "spiBonus": 1315550302346466104967168
-      },
-      {
-        "tier": 4,
-        "qi": 1000000000000000000,
-        "hpBonus": 278756841611164,
-        "strBonus": 12348334519,
-        "defBonus": 2411862590671831,
-        "spiBonus": 2959988180279548736176128
-      },
-      {
-        "tier": 5,
-        "qi": 1000000000000000000,
-        "hpBonus": 418135262416746,
-        "strBonus": 17287668326,
-        "defBonus": 4076047778235395,
-        "spiBonus": 6659973405628985059049472
-      },
-      {
-        "tier": 6,
-        "qi": 1000000000000000000,
-        "hpBonus": 627202893625119,
-        "strBonus": 24202735657,
-        "defBonus": 6888520745217818,
-        "spiBonus": 14984940162665215577554944
-      },
-      {
-        "tier": 7,
-        "qi": 1000000000000000000,
-        "hpBonus": 940804340437678,
-        "strBonus": 33883829920,
-        "defBonus": 11641600059418114,
-        "spiBonus": 33716115365996735049498624
-      },
-      {
-        "tier": 8,
-        "qi": 1000000000000000000,
-        "hpBonus": 1411206510656518,
-        "strBonus": 47437361888,
-        "defBonus": 19674304100416612,
-        "spiBonus": 75861259573492653861371904
+      { 
+        "tier": 19, "qi": 950000000, "hpBonus": 700000000, "strBonus": 60000000, "defBonus": 40000000, "spiBonus": 900000000,
+        "requiredItemId": "pill_void_tribulant", "requiredItemCount": 1 
       }
     ]
   },
   {
-    "realmName": "Half Heaven Trampling",
-    "description": "The Nine Bridges | At this stage the practitioner must cross the Nine Heaven Trampling Bridges to completely enter Fourth Step.",
+    "realmName": "Heaven Trampling",
+    "description": "Ta Tian. You have crossed the Nine Bridges. You ARE the Dao.",
     "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 2540171719181732,
-        "strBonus": 66412306644,
-        "defBonus": 33249573929704076,
-        "spiBonus": 170687834040358447565766656,
-        "requiredItemId": "pill_heaven_bridge",
-        "requiredItemCount": 1
-      }
-    ]
-  },
-  {
-    "realmName": "Ta Tian",
-    "description": "Heaven Trampling (\u8e0f\u5929) | Achieving the peak of the fourth step upon crossing the 9th bridge.",
-    "stages": [
-      {
-        "tier": 1,
-        "qi": 1500000000000000000,
-        "hpBonus": 4572309094527119,
-        "strBonus": 92977229302,
-        "defBonus": 56191779941199896,
-        "spiBonus": 384047626590806541382713344,
-        "requiredItemId": "pill_daoseed",
-        "requiredItemCount": 1
+      { 
+        "tier": 20, "qi": 1000000000, "hpBonus": 2000000000, "strBonus": 200000000, "defBonus": 150000000, "spiBonus": 2000000000,
+        "requiredItemId": "pill_daoseed", "requiredItemCount": 1 
       }
     ]
   }

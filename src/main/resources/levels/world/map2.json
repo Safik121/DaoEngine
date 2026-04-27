@@ -1,0 +1,39 @@
+{
+  "name": "Spirit Mine",
+  "width": 150,
+  "height": 150,
+  "tileSize": 32,
+  "biome": "ICE",
+  "veinCount": 20,
+  "veinMinSize": 8,
+  "veinMaxSize": 15,
+  "hasLakes": false,
+  "lakeCount": 0,
+  "lakeSize": 0,
+  "hasRivers": true,
+  "riverCount": 2,
+  "bridgeMin": 2,
+  "bridgeMax": 4,
+  "bridgeMinWidth": 4,
+  "bridgeMaxWidth": 6,
+  "tribulationTime": 80.0,
+  "initialEnemyCount": 20,
+  "tribulationTotalEnemies": 50,
+  "tribulationScalingFactor": 1.4,
+  "enemyPool": ["zombie_01", "guard_01"],
+  "interactables": [
+    {
+      "name": "Elder Mo",
+      "type": "NPC",
+      "dialogueTreeId": "npc_mo_01",
+      "count": 1
+    },
+    {
+      "name": "Ancient Mine Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_zhu_ji",
+      "count": 3
+    }
+  ],
+  "initialWorldItems": ["pill_hp_01", "iron_ore_01", "mat_hammer_01"]
+}

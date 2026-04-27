@@ -97,6 +97,17 @@ public class Enemy extends LivingEntity {
     }
 
     /**
+     * Scales the enemy stats based on a factor.
+     */
+    public void scaleStats(double factor) {
+        this.setMaxHp(this.getMaxHp() * factor);
+        this.setHp(this.getMaxHp());
+        this.damage *= factor;
+        // Optionally scale size slightly
+        this.size *= (1.0 + (factor - 1.0) * 0.1);
+    }
+
+    /**
      * Updates the enemy's state: movement, pathfinding, and attacking.
      * 
      * @param gameMap Game map for collision checks and pathfinding.

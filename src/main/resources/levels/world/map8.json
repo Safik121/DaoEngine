@@ -1,0 +1,33 @@
+{
+  "name": "Nirvana Plateau",
+  "width": 200,
+  "height": 200,
+  "tileSize": 32,
+  "biome": "ICE",
+  "veinCount": 40,
+  "veinMinSize": 25,
+  "veinMaxSize": 60,
+  "hasLakes": true,
+  "lakeCount": 15,
+  "lakeSize": 40,
+  "hasRivers": true,
+  "riverCount": 5,
+  "bridgeMin": 5,
+  "bridgeMax": 10,
+  "bridgeMinWidth": 6,
+  "bridgeMaxWidth": 10,
+  "tribulationTime": 130.0,
+  "initialEnemyCount": 60,
+  "tribulationTotalEnemies": 200,
+  "tribulationScalingFactor": 2.5,
+  "enemyPool": ["guard_01", "archer_01"],
+  "interactables": [
+    {
+      "name": "Nirvana Altar",
+      "type": "STELE",
+      "dialogueTreeId": "stele_nirvana",
+      "count": 6
+    }
+  ],
+  "initialWorldItems": ["pill_nirvana_cleanser", "pill_nirvana_shatterer"]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "The Heavenly Reach",
+  "width": 220,
+  "height": 220,
+  "tileSize": 32,
+  "biome": "FIRE",
+  "veinCount": 50,
+  "veinMinSize": 30,
+  "veinMaxSize": 80,
+  "hasLakes": true,
+  "lakeCount": 20,
+  "lakeSize": 50,
+  "hasRivers": true,
+  "riverCount": 6,
+  "bridgeMin": 8,
+  "bridgeMax": 15,
+  "bridgeMinWidth": 8,
+  "bridgeMaxWidth": 12,
+  "tribulationTime": 150.0,
+  "initialEnemyCount": 80,
+  "tribulationTotalEnemies": 300,
+  "tribulationScalingFactor": 3.0,
+  "enemyPool": ["guard_01", "archer_01"],
+  "interactables": [
+    {
+      "name": "Heavenly Guardian",
+      "type": "NPC",
+      "dialogueTreeId": "npc_guardian_final",
+      "count": 1
+    }
+  ],
+  "initialWorldItems": ["pill_heavenly_tribulation", "pill_void_gate"]
+}

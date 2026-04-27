@@ -1,0 +1,39 @@
+{
+  "name": "Mortal Valley",
+  "width": 100,
+  "height": 100,
+  "tileSize": 32,
+  "biome": "FOREST",
+  "veinCount": 10,
+  "veinMinSize": 4,
+  "veinMaxSize": 8,
+  "hasLakes": true,
+  "lakeCount": 4,
+  "lakeSize": 15,
+  "hasRivers": true,
+  "riverCount": 2,
+  "bridgeMin": 1,
+  "bridgeMax": 2,
+  "bridgeMinWidth": 3,
+  "bridgeMaxWidth": 5,
+  "tribulationTime": 60.0,
+  "initialEnemyCount": 15,
+  "tribulationTotalEnemies": 40,
+  "tribulationScalingFactor": 1.2,
+  "enemyPool": ["bat_01", "zombie_01"],
+  "interactables": [
+    {
+      "name": "Disciple Han",
+      "type": "NPC",
+      "dialogueTreeId": "npc_han_01",
+      "count": 1
+    },
+    {
+      "name": "Spirit Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_ning_qi",
+      "count": 2
+    }
+  ],
+  "initialWorldItems": ["pill_qi_01", "pill_hp_01", "herb_spirit"]
+}

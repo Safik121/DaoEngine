@@ -1,45 +1,106 @@
 {
-  "mysterious_traveler_start": {
-    "id": "mysterious_traveler_start",
-    "text": "Greetings, daoist. You look like someone who can handle themselves. There's a slime infestation nearby. Will you help?",
+  "npc_han_01": {
+    "id": "npc_han_01",
+    "text": "Greetings, little friend. The Mortal Valley is usually peaceful, but these Spirit Bats are causing trouble. Can you help?",
     "choices": [
-      {"text": "I will help you.", "nextNodeId": "mysterious_traveler_accept"},
-      {"text": "What's in it for me?", "nextNodeId": "mysterious_traveler_greedy"},
-      {"text": "I have no time for slimes.", "nextNodeId": "exit"}
+      { "text": "I will clear them out.", "nextNodeId": "npc_han_accept" },
+      { "text": "I have other matters to attend to.", "nextNodeId": "exit" }
     ]
   },
-  "mysterious_traveler_accept": {
-    "id": "mysterious_traveler_accept",
-    "text": "Excellent! Purge those slimes and I shall reward you with a Realm Token.",
-    "action": "GIVE_QUEST:kill_slimes",
+  "npc_han_accept": {
+    "id": "npc_han_accept",
+    "text": "Excellent. Defeat 5 of them and I'll give you a Realm Token to travel further.",
+    "action": "GIVE_QUEST:tutorial_han",
     "choices": []
   },
-  "mysterious_traveler_greedy": {
-    "id": "mysterious_traveler_greedy",
-    "text": "Pah! Young cultivators these days... Fine. I'll throw in some extra Spirit Pills.",
-    "action": "GIVE_QUEST:kill_slimes",
+  "npc_mo_01": {
+    "id": "npc_mo_01",
+    "text": "Cough... this old kotlík is falling apart! I need Iron Ore for my refinement. 10 pieces should do.",
     "choices": [
-      {"text": "Very well.", "nextNodeId": "mysterious_traveler_accept"}
+      { "text": "I'll find the ore for you.", "nextNodeId": "npc_mo_accept" },
+      { "text": "Good luck with your kotlík.", "nextNodeId": "exit" }
     ]
   },
-  "stele_mystic_01": {
-    "id": "stele_mystic_01",
-    "text": "'Breath of the Dragon, Heart of the Sun.' You feel a surge of Qi flowing through your veins as you read these words.",
-    "action": "HEAL:20",
+  "npc_mo_accept": {
+    "id": "npc_mo_accept",
+    "text": "Bless you! Bring me 10 Iron Ores and I'll grant you a Foundation Pill.",
+    "action": "GIVE_QUEST:iron_elder_mo",
     "choices": []
   },
-  "elder_wei_start": {
-    "id": "elder_wei_start",
-    "text": "Greetings, traveler. The bats in these woods have become aggressive due to the shifting Qi. Could you help clear them out?",
+  "npc_shen_01": {
+    "id": "npc_shen_01",
+    "text": "You stand before the Sword Saint. Only those with true resolve can cross the Inferno Battlefield. Prove your strength!",
     "choices": [
-      {"text": "I will handle the bats.", "nextNodeId": "elder_wei_accept"},
-      {"text": "I'm not interested.", "nextNodeId": "exit"}
+      { "text": "I am ready for the trial.", "nextNodeId": "npc_shen_accept" },
+      { "text": "I need more time.", "nextNodeId": "exit" }
     ]
   },
-  "elder_wei_accept": {
-    "id": "elder_wei_accept",
-    "text": "Thank you. Come back when you've dealt with 3 of them. Take these Spirit Pills as an advance.",
-    "action": "GIVE_QUEST:kill_bats",
+  "npc_shen_accept": {
+    "id": "npc_shen_accept",
+    "text": "Then face the Inferno Guards! 10 of them must fall by your hand.",
+    "action": "GIVE_QUEST:trial_of_fire",
+    "choices": []
+  },
+  "npc_wang_01": {
+    "id": "npc_wang_01",
+    "text": "You have come far, child. The Nine Bridges are before you. One final trial remains before you can truly Trample the Heavens.",
+    "choices": [
+      { "text": "I will complete my path.", "nextNodeId": "npc_wang_accept" }
+    ]
+  },
+  "npc_wang_accept": {
+    "id": "npc_wang_accept",
+    "text": "Defeat 20 Heavenly Archers to prove your Dao. Go now.",
+    "action": "GIVE_QUEST:final_ascension",
+    "choices": []
+  },
+  "stele_ning_qi": {
+    "id": "stele_ning_qi",
+    "text": "The stone hums with the energy of the first breath. You absorb a fragment of its ancient power.",
+    "action": "ADD_QI:100",
+    "choices": []
+  },
+  "stele_zhu_ji": {
+    "id": "stele_zhu_ji",
+    "text": "This stele contains the secrets of Foundation. Your body feels heavier and more durable.",
+    "action": "ADD_HP:50",
+    "choices": []
+  },
+  "stele_jie_dan": {
+    "id": "stele_jie_dan",
+    "text": "A crimson glow emanates from the surface. Your spiritual power surges!",
+    "action": "ADD_QI:1000",
+    "choices": []
+  },
+  "stele_final": {
+    "id": "stele_final",
+    "text": "'Heaven is but a step, the Dao is the path.' You feel enlightened.",
+    "action": "HEAL:1000",
+    "choices": []
+  },
+  "stele_yin": {
+    "id": "stele_yin",
+    "text": "The Yin energy is cold and mysterious. It strengthens your internal foundation.",
+    "action": "ADD_HP:100",
+    "choices": []
+  },
+  "stele_yang": {
+    "id": "stele_yang",
+    "text": "The Yang energy burns with fierce intensity. Your strength grows boundlessly!",
+    "action": "ADD_STR:20",
+    "choices": []
+  },
+  "npc_guardian_final": {
+    "id": "npc_guardian_final",
+    "text": "Stop, mortal! This is the Heavenly Reach. Only those who have conquered the nine heavens may pass.",
+    "choices": [
+      { "text": "I have conquered them all.", "nextNodeId": "npc_guardian_accept" }
+    ]
+  },
+  "npc_guardian_accept": {
+    "id": "npc_guardian_accept",
+    "text": "Very well. Take the Void Gate Pill and face your destiny.",
+    "action": "GIVE_QUEST:final_ascension",
     "choices": []
   }
 }

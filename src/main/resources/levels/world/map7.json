@@ -1,0 +1,33 @@
+{
+  "name": "Celestial Ruins",
+  "width": 190,
+  "height": 190,
+  "tileSize": 32,
+  "biome": "FOREST",
+  "veinCount": 35,
+  "veinMinSize": 20,
+  "veinMaxSize": 50,
+  "hasLakes": true,
+  "lakeCount": 12,
+  "lakeSize": 35,
+  "hasRivers": true,
+  "riverCount": 4,
+  "bridgeMin": 4,
+  "bridgeMax": 8,
+  "bridgeMinWidth": 5,
+  "bridgeMaxWidth": 9,
+  "tribulationTime": 110.0,
+  "initialEnemyCount": 50,
+  "tribulationTotalEnemies": 150,
+  "tribulationScalingFactor": 2.2,
+  "enemyPool": ["guard_01", "archer_01", "bat_01"],
+  "interactables": [
+    {
+      "name": "Celestial Ancestor",
+      "type": "NPC",
+      "dialogueTreeId": "npc_celestial_01",
+      "count": 1
+    }
+  ],
+  "initialWorldItems": ["pill_nirvana_scryer", "jade_leaf_01", "fire_essence_01"]
+}
