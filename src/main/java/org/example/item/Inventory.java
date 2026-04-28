@@ -152,15 +152,7 @@ public class Inventory {
      * @return true if the item exists in main inventory or hotbar.
      */
     public boolean hasItem(String id) {
-        for (Item item : hotbar) {
-            if (item != null && item.getId().equals(id))
-                return true;
-        }
-        for (Item item : mainInventory) {
-            if (item != null && item.getId().equals(id))
-                return true;
-        }
-        return false;
+        return hasItem(id, 1);
     }
 
     /**
@@ -188,8 +180,11 @@ public class Inventory {
 
     /**
      * Removes a specific amount of items with the given ID.
+     * Only performs removal if the full amount is available.
      */
     public boolean removeItem(String id, int amount) {
+        if (!hasItem(id, amount)) return false;
+
         int leftToRemove = amount;
         
         // Start with hotbar
@@ -208,6 +203,6 @@ public class Inventory {
             }
         }
         
-        return leftToRemove == 0;
+        return true;
     }
 }

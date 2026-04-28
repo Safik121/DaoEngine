@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.item.WeaponConfig;
@@ -29,7 +30,7 @@ public class SkillRegistry {
             for (Skill s : skillList) {
                 skills.put(s.getId(), s);
             }
-            System.out.println("Loaded " + skills.size() + " techniques from JSON.");
+            GameLogger.info("Loaded " + skills.size() + " techniques from JSON.");
         } catch (Exception e) {
             System.err.println("Fatal error loading SkillRegistry data!");
             e.printStackTrace();

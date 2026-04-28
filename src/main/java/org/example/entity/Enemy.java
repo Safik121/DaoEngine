@@ -96,16 +96,6 @@ public class Enemy extends LivingEntity {
         this.projectileConfig = config;
     }
 
-    /**
-     * Scales the enemy stats based on a factor.
-     */
-    public void scaleStats(double factor) {
-        this.setMaxHp(this.getMaxHp() * factor);
-        this.setHp(this.getMaxHp());
-        this.damage *= factor;
-        // Optionally scale size slightly
-        this.size *= (1.0 + (factor - 1.0) * 0.1);
-    }
 
     /**
      * Updates the enemy's state: movement, pathfinding, and attacking.
@@ -157,7 +147,8 @@ public class Enemy extends LivingEntity {
                     int targetY = (int) ((player.getY() + 6) / tileSize);
 
                     currentPath = Pathfinder.findPath(gameMap, startX, startY, targetX, targetY);
-                    pathRecalculateTimer = 20 + new Random().nextInt(20);
+                    // Recalculate roughly every 0.3 to 0.7 seconds
+                    pathRecalculateTimer = (int) ((0.3 + new Random().nextDouble() * 0.4) / deltaTime);
                 }
 
                 if (currentPath != null && !currentPath.isEmpty()) {

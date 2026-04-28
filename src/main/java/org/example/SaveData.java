@@ -41,6 +41,10 @@ public class SaveData {
     public String levelConfigPath;
     @JsonProperty("currentTime")
     public double currentTime;
+    @JsonProperty("mapLevel")
+    public int mapLevel = 1;
+    @JsonProperty("currentLevelIndex")
+    public int currentLevelIndex = 0;
     @JsonProperty("cultivationIndex")
     public int cultivationIndex;
     @JsonProperty("activeSkillId")

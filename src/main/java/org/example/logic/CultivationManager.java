@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import org.example.entity.Player;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class CultivationManager {
         if (requiredItem != null && !requiredItem.isEmpty() && requiredCount > 0) {
             if (!player.getInventory().hasItem(requiredItem, requiredCount)) {
                 // Should ideally send a notification here but manager doesn't have reference to PlayState
-                System.out.println("[Cultivation] Missing required item: " + requiredItem + " x" + requiredCount);
+                org.example.GameLogger.info("[Cultivation] Missing required item: " + requiredItem + " x" + requiredCount);
                 return false;
             }
         }

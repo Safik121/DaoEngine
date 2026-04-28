@@ -552,11 +552,24 @@ public class PlayUIManager {
         java.util.List<org.example.logic.DialogueChoice> choices = dm.getCurrentNode().getChoices();
         if (!choices.isEmpty()) {
             double choiceY = y + 100;
+            double mx = org.example.Input.getMouseX();
+            double my = org.example.Input.getMouseY();
+            
             gc.setFont(Font.font("Inter", FontWeight.BOLD, 14));
             for (int i = 0; i < choices.size(); i++) {
-                gc.setFill(Color.GOLD);
+                // Hover Check (Synchronized with PlayState's detection)
+                boolean hover = (mx >= x + 10 && mx <= x + width - 10 && my >= choiceY - 18 && my <= choiceY + 12);
+                
+                if (hover) {
+                    gc.setFill(Color.rgb(255, 255, 255, 0.1));
+                    gc.fillRoundRect(x + 15, choiceY - 18, width - 30, 25, 5, 5);
+                    gc.setFill(Color.GOLD);
+                } else {
+                    gc.setFill(Color.web("#D4AF37", 0.8));
+                }
+                
                 gc.fillText((i + 1) + ") ", x + 30, choiceY);
-                gc.setFill(Color.WHITE);
+                gc.setFill(hover ? Color.WHITE : Color.LIGHTGRAY);
                 gc.fillText(choices.get(i).getText(), x + 50, choiceY);
                 choiceY += 25;
             }

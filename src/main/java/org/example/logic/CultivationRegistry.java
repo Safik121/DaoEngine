@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,7 +59,7 @@ public class CultivationRegistry {
                     ));
                 }
             }
-            System.out.println("Loaded " + fullProgressionPath.size() + " cultivation stages.");
+            GameLogger.info("Loaded " + fullProgressionPath.size() + " cultivation stages.");
         } catch (Exception e) {
             System.err.println("Fatal error loading CultivationRegistry data!");
             e.printStackTrace();

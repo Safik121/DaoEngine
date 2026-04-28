@@ -11,7 +11,8 @@ import java.io.InputStream;
 public class ConfigManager {
     private static ConfigManager instance;
     private GameConfig config;
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private ConfigManager() {
         loadConfig("/game_config.json");
@@ -29,7 +30,7 @@ public class ConfigManager {
             InputStream is = ConfigManager.class.getResourceAsStream(path);
             if (is != null) {
                 config = mapper.readValue(is, GameConfig.class);
-                System.out.println("Loaded global game config: " + config.engine.title);
+                GameLogger.info("Loaded global game config: " + config.engine.title);
             } else {
                 System.err.println("Could not find global game config at: " + path);
                 createFallbackConfig();
@@ -69,7 +70,7 @@ public class ConfigManager {
             // Target the actual source file if running in an IDE environment
             File sourceFile = new File("src/main/resources/game_config.json");
             mapper.writerWithDefaultPrettyPrinter().writeValue(sourceFile, config);
-            System.out.println("Persistent config saved to: " + sourceFile.getAbsolutePath());
+            GameLogger.info("Persistent config saved to: " + sourceFile.getAbsolutePath());
         } catch (Exception e) {
             System.err.println("Failed to save persistent config!");
             e.printStackTrace();

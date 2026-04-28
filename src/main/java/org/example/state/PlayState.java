@@ -1,5 +1,6 @@
 package org.example.state;
 
+import org.example.GameLogger;
 import org.example.ui.PlayUIManager;
 import org.example.ui.DialogManager;
 import org.example.render.WorldRenderer;
@@ -188,7 +189,7 @@ public class PlayState implements GameState {
 
     private boolean pauseRequested = false;
 
-    public PlayState() {
+    private void initManagers() {
         this.worldRenderer = new WorldRenderer();
         this.combatManager = new CombatManager();
         this.particleManager = new org.example.logic.ParticleManager();
@@ -199,12 +200,19 @@ public class PlayState implements GameState {
         // Register Event Listeners
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ENTITY_DEATH, this.questManager);
         this.eventManager.subscribe(org.example.logic.event.GameEvent.ITEM_PICKUP, this.questManager);
+        
+        uiManager = new PlayUIManager();
+        dialogManager = new DialogManager();
 
-        // Load World Manifest
+        // Load World Manifest (Always needed for transitions)
         LevelLoader.WorldManifest manifest = LevelLoader.loadManifest("/levels/world/world_manifest.json");
         if (manifest != null) {
             this.worldManifest = manifest.maps;
         }
+    }
+
+    public PlayState() {
+        initManagers();
 
         // Load initial level from manifest
         if (!worldManifest.isEmpty()) {
@@ -236,9 +244,6 @@ public class PlayState implements GameState {
         addStartingItems();
 
         generateMapCache();
-        uiManager = new PlayUIManager();
-        dialogManager = new DialogManager();
-
     }
 
     /**
@@ -246,25 +251,18 @@ public class PlayState implements GameState {
      * Skips randomization and uses fixed seed and entity positions.
      */
     public PlayState(SaveData data) {
-
-        this.worldRenderer = new WorldRenderer();
-        this.combatManager = new CombatManager();
-        this.particleManager = new org.example.logic.ParticleManager();
-        this.soundManager = new org.example.logic.SoundManager();
-        this.questManager = new org.example.logic.QuestManager();
-        this.eventManager = new org.example.logic.event.EventManager();
-
-        // Register Event Listeners
-        this.eventManager.subscribe(org.example.logic.event.GameEvent.ENTITY_DEATH, this.questManager);
-        this.eventManager.subscribe(org.example.logic.event.GameEvent.ITEM_PICKUP, this.questManager);
+        initManagers();
 
         // Restore Level
         lastConfigPath = data.levelConfigPath;
         if (lastConfigPath == null)
-            lastConfigPath = "/levels/level_gen.json";
+            lastConfigPath = "/levels/world/map1.json";
         currentLevelConfig = LevelLoader.loadConfig(lastConfigPath);
         currentLevel = MapGenerator.generate(currentLevelConfig, data.mapSeed);
         this.currentMapSeed = data.mapSeed;
+        
+        this.mapLevel = data.mapLevel;
+        this.currentLevelIndex = data.currentLevelIndex;
 
         gameMap = new GameMap(currentLevel);
 
@@ -440,6 +438,13 @@ public class PlayState implements GameState {
 
         handleToggles();
 
+        // --- World & Combat Logic ---
+        // We handle these BEFORE UI so that a click closing a UI element 
+        // doesn't immediately trigger a world action in the same frame.
+        handleHotbarSelection();
+        handleWorldInteraction();
+
+        // --- UI Interactions ---
         if (inventoryOpen) {
             handleInventoryInteraction();
         }
@@ -450,15 +455,10 @@ public class PlayState implements GameState {
 
         if (cultivationMenuOpen) {
             handleCultivationInteraction();
-            player.setMeditating(true); // Force meditation animation
-            // When concentrating on Dao, the world still pulses but character stays still.
+            player.setMeditating(true);
         } else {
             player.setMeditating(false);
         }
-
-        // Even when Inventory or Map is open, the world continues to run!
-        handleHotbarSelection();
-        handleWorldInteraction();
         handleGameplayLogic(deltaTime);
         updateCamera();
 
@@ -526,8 +526,9 @@ public class PlayState implements GameState {
                 double choiceY = y + 100;
 
                 for (int i = 0; i < choices.size(); i++) {
-                    // Check if mouse is over this choice line
-                    if (mx >= x + 20 && mx <= x + width - 20 && my >= choiceY - 15 && my <= choiceY + 10) {
+                    // Check if mouse is over this choice line (expanded area)
+                    if (mx >= x + 10 && mx <= x + width - 10 && my >= choiceY - 18 && my <= choiceY + 12) {
+                        GameLogger.info("[DIALOGUE] Selected choice index: " + i + " (" + choices.get(i).getText() + ")");
                         dialogManager.selectChoice(i, this);
                         break;
                     }
@@ -662,7 +663,11 @@ public class PlayState implements GameState {
             player.setActiveHotbarSlot(4);
 
         // Use item in hotbar (F key or clicking while not a weapon)
-        if (Input.isKeyPressed(KeyCode.F) || Input.isLmbPressed()) {
+        // Ensure we don't trigger this if a dialogue is active or other UI is blocking
+        if (dialogManager.isActive() || inventoryOpen || cultivationMenuOpen || questLogOpen) return;
+
+        boolean lmbPressed = Input.isLmbPressed();
+        if (Input.isKeyPressed(KeyCode.F) || (lmbPressed && !lmbWasPressed)) {
             int activeSlot = player.getActiveHotbarSlot();
             Item activeItem = player.getInventory().getItemInHotbar(activeSlot);
 
@@ -735,7 +740,6 @@ public class PlayState implements GameState {
             return;
         }
 
-        player.getBuffManager().update(deltaTime);
         combatManager.update(this, deltaTime);
         particleManager.update(deltaTime);
 
@@ -778,7 +782,7 @@ public class PlayState implements GameState {
         // enemies remain.
         if (enemyDied && !levelVictoryAchieved && inTribulation) {
             if (countLivingTribulationEnemies() == 0) {
-                System.out.println("[EVENT] Final Tribulation enemy defeated! Victory Achieved.");
+                GameLogger.info("[EVENT] Final Tribulation enemy defeated! Victory Achieved.");
                 levelVictoryAchieved = true;
                 currentMode = PlayMode.VICTORY;
             }
@@ -991,7 +995,7 @@ public class PlayState implements GameState {
                 if (isInside(mx, my, x + panelW / 2 - 150, y + panelH - 80, 300, 50)) {
                     boolean success = cm.attemptBreakthrough(player);
                     if (success) {
-                        System.out.println("突破! Breakthrough successful!");
+                        GameLogger.info("突破! Breakthrough successful!");
                         soundManager.playSfx("level_up");
                         // Spawn golden particles around player
                         particleManager.spawnBreakthroughEffect(player.getX() + player.getSize() / 2,
@@ -1088,6 +1092,8 @@ public class PlayState implements GameState {
             data.activeHotbarSlot = player.getActiveHotbarSlot();
             data.levelConfigPath = this.lastConfigPath;
             data.currentTime = tribulationTimer.getRemainingSeconds();
+            data.mapLevel = this.mapLevel;
+            data.currentLevelIndex = this.currentLevelIndex;
             data.inTribulationFlag = this.inTribulation ? 1 : 0;
             data.victoryAchievedFlag = this.levelVictoryAchieved ? 1 : 0;
             data.tribulationSpawnLimit = this.currentLevelConfig.tribulationTotalEnemies;
@@ -1105,11 +1111,11 @@ public class PlayState implements GameState {
             }
             data.hotbarItemIds = hotIds;
 
-            System.out.println("[SAVE] Serializing " + (enemies != null ? enemies.size() : 0) + " enemies...");
+            GameLogger.info("[SAVE] Serializing " + (enemies != null ? enemies.size() : 0) + " enemies...");
 
             // Save Enemies
             if (enemies != null) {
-                System.out.println("[SAVE] Found " + enemies.size() + " active enemies.");
+                GameLogger.info("[SAVE] Found " + enemies.size() + " active enemies.");
                 for (Enemy e : enemies) {
                     SaveData.EnemySaveData ed = new SaveData.EnemySaveData();
                     ed.id = e.getId();
@@ -1225,7 +1231,7 @@ public class PlayState implements GameState {
         int restoredCount = 0;
         this.enemies.clear();
         if (data.activeEnemies != null) {
-            System.out.println("[LOAD] Attempting to restore " + data.activeEnemies.size() + " enemies...");
+            GameLogger.info("[LOAD] Attempting to restore " + data.activeEnemies.size() + " enemies...");
             for (SaveData.EnemySaveData ed : data.activeEnemies) {
                 boolean isT = (ed.tribulationFlag == 1);
                 Enemy e = EnemyRegistry.createEnemy(ed.id, ed.x, ed.y, isT, ed.scaling);
@@ -1239,7 +1245,7 @@ public class PlayState implements GameState {
                 }
             }
         }
-        System.out.println("[LOAD] Successfully restored " + restoredCount + " enemies to the world.");
+        GameLogger.info("[LOAD] Successfully restored " + restoredCount + " enemies to the world.");
 
         // Restore World Items
         this.itemsOnGround.clear();
@@ -1285,7 +1291,7 @@ public class PlayState implements GameState {
         this.currentMode = PlayMode.PLAYING;
         this.isPaused = false;
         generateMapCache();
-        System.out.println("Game loaded successfully from slot " + slot);
+        GameLogger.info("Game loaded successfully from slot " + slot);
     }
 
     /**
@@ -1479,7 +1485,7 @@ public class PlayState implements GameState {
         int count = 0;
         if (enemies != null) {
             for (Enemy e : enemies) {
-                if (e.isTribulation() && e.getHP() > 0)
+                if (e.isTribulation() && e.getHp() > 0)
                     count++;
             }
         }

@@ -1,0 +1,17 @@
+[2026-04-28 13:33:41] [INFO] Log file 'latest.log' initialized.
+[2026-04-28 13:33:41] [INFO] Loaded global game config: DaoEngine: Path to Immortality
+[2026-04-28 13:33:41] [INFO] Logger initialized with level: INFO
+[2026-04-28 13:33:41] [INFO] Loaded 13 weapon configurations.
+[2026-04-28 13:33:41] [INFO] Loaded 59 items from JSON.
+[2026-04-28 13:33:41] [INFO] Loaded 27 crafting recipes from JSON.
+[2026-04-28 13:33:41] [INFO] Loaded 4 enemy configurations.
+[2026-04-28 13:33:41] [INFO] Loaded 75 sprite definitions.
+[2026-04-28 13:33:41] [INFO] Loaded 4 loot tables.
+[2026-04-28 13:33:41] [INFO] Loaded 5 quests.
+[2026-04-28 13:33:41] [INFO] Loaded 16 dialogue nodes.
+[2026-04-28 13:33:41] [INFO] Loaded 20 cultivation stages.
+[2026-04-28 13:33:41] [INFO] Loaded 5 techniques from JSON.
+[2026-04-28 13:33:43] [INFO] Starting independent Tribulation timer: 60.0s
+[2026-04-28 13:34:13] [INFO] [Item] Picked up: Spirit Pill
+[2026-04-28 13:34:15] [INFO] Restored 100.0 Qi.
+[2026-04-28 13:34:15] [INFO] Increased max Qi by 25.0

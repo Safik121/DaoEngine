@@ -37,7 +37,7 @@ public class SaveManager {
         validateSlot(slot);
         File file = new File(SAVE_DIR, "save_slot_" + slot + ".json");
         mapper.writeValue(file, data);
-        System.out.println("Saved game state to slot " + slot);
+        GameLogger.info("Saved game state to slot " + slot);
     }
 
     /**
@@ -70,7 +70,7 @@ public class SaveManager {
         File file = new File(SAVE_DIR, "save_slot_" + slot + ".json");
         if (file.exists()) {
             file.delete();
-            System.out.println("Deleted save slot " + slot);
+            GameLogger.info("Deleted save slot " + slot);
         }
     }
 

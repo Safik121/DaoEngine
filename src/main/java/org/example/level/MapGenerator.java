@@ -171,12 +171,15 @@ public class MapGenerator {
             }
             return;
         }
+        double sizeSq = size * size;
         for (int y = cy - size; y <= cy + size; y++) {
             for (int x = cx - size; x <= cx + size; x++) {
                 // Prevent overwriting map borders
                 if (x > 0 && x < level.width - 1 && y > 0 && y < level.height - 1) {
-                    double dist = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
-                    if (dist < size * (0.7 + random.nextDouble() * 0.6)) {
+                    double dx = x - cx;
+                    double dy = y - cy;
+                    double distSq = dx * dx + dy * dy;
+                    if (distSq < sizeSq * (0.5 + random.nextDouble())) {
                         level.data.get(y).set(x, type);
                     }
                 }
@@ -406,7 +409,7 @@ public class MapGenerator {
     }
 
     private static double riverHeuristic(int x1, int y1, int x2, int y2) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+        return Math.hypot(x1 - x2, y1 - y2);
     }
 
     private static List<int[]> reconstructRiverPath(RiverNode node) {

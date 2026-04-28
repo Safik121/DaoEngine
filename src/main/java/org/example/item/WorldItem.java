@@ -1,5 +1,6 @@
 package org.example.item;
 
+import org.example.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.example.logic.Interactable;
@@ -59,12 +60,12 @@ public class WorldItem implements Interactable {
     public void onInteract(PlayState state) {
         if (state.getPlayer().getInventory().addItem(this.item)) {
             state.getItemsOnGround().remove(this);
-            System.out.println("[Item] Picked up: " + item.getName());
+            GameLogger.info("[Item] Picked up: " + item.getName());
             
             // Trigger Pickup Event
             state.getEventManager().triggerEvent(GameEvent.ITEM_PICKUP, item.getId(), 1, state);
         } else {
-            System.out.println("[Inventory] Full! Cannot pick up " + item.getName());
+            GameLogger.info("[Inventory] Full! Cannot pick up " + item.getName());
         }
     }
 

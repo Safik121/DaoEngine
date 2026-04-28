@@ -25,7 +25,6 @@ public abstract class LivingEntity extends BaseEntity {
     public AttributeSet getStats() { return stats; }
 
     public double getHp() { return stats.getHp(); }
-    public double getHP() { return stats.getHp(); } // Alias for some older code references
     public void setHp(double hp) { stats.setHp(hp); }
 
     public double getMaxHp() { return stats.getMaxHp(); }

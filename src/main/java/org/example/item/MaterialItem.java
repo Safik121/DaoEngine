@@ -1,5 +1,6 @@
 package org.example.item;
 
+import org.example.GameLogger;
 import org.example.entity.Player;
 import org.example.state.PlayState;
 
@@ -15,6 +16,6 @@ public class MaterialItem extends Item {
     @Override
     public void use(Player player, PlayState state) {
         // Materials cannot be used directly.
-        System.out.println(getName() + " cannot be used directly. Try crafting with it!");
+        GameLogger.info(getName() + " cannot be used directly. Try crafting with it!");
     }
 }

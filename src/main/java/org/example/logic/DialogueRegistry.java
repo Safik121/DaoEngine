@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,7 +49,7 @@ public class DialogueRegistry {
                 dialogues.put(temp.id, node);
             }
             
-            System.out.println("Loaded " + dialogues.size() + " dialogue nodes.");
+            org.example.GameLogger.info("Loaded " + dialogues.size() + " dialogue nodes.");
         } catch (Exception e) {
             System.err.println("Fatal error loading DialogueRegistry data!");
             e.printStackTrace();

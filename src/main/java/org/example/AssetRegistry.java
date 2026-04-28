@@ -19,7 +19,8 @@ public class AssetRegistry {
     private static final Map<String, Image> imageCache = new HashMap<>();
     /** Cached arrays of pre-clipped frames for multi-frame sprites. */
     private static final Map<String, Image[]> frameCache = new HashMap<>();
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Loads the asset manifest from JSON.
@@ -35,8 +36,16 @@ public class AssetRegistry {
             }
             Map<String, SpriteMetadata> loaded = mapper.readValue(is, new TypeReference<Map<String, SpriteMetadata>>() {
             });
+            
+            // Post-process to ensure frames count matches paths length if paths are present
+            for (SpriteMetadata meta : loaded.values()) {
+                if (meta.paths != null && meta.paths.length > 0) {
+                    meta.frames = meta.paths.length;
+                }
+            }
+            
             spriteMap.putAll(loaded);
-            System.out.println("Loaded " + spriteMap.size() + " sprite definitions.");
+            GameLogger.info("Loaded " + spriteMap.size() + " sprite definitions.");
         } catch (Exception e) {
             System.err.println("Error loading AssetRegistry manifest!");
             e.printStackTrace();
@@ -132,7 +141,9 @@ public class AssetRegistry {
      */
     public static int getFrameCount(String spriteId) {
         SpriteMetadata meta = spriteMap.get(spriteId);
-        return (meta != null) ? meta.frames : 1;
+        if (meta == null) return 1;
+        if (meta.paths != null && meta.paths.length > 0) return meta.paths.length;
+        return meta.frames;
     }
 
     /**

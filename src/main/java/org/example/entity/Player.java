@@ -39,10 +39,8 @@ public class Player extends LivingEntity {
     private double maxSkillCooldown = 1;
     /** Timer (seconds) for cycling through animation frames. */
     private double animationTimer = 0;
-    /** The player's currently equipped active technique. */
+    /** Player's currently equipped active technique. */
     private org.example.logic.Skill activeSkill;
-    /** Manager for temporary status effects. */
-    private org.example.logic.StatusEffectManager statusEffectManager;
     /** Manager for cultivation progression. */
     private org.example.logic.CultivationManager cultivationManager;
 
@@ -57,20 +55,14 @@ public class Player extends LivingEntity {
             ConfigManager.getInstance().getConfig().player.size, 
             ConfigManager.getInstance().getConfig().player.initialMaxHp, 
             ConfigManager.getInstance().getConfig().player.baseSpeed);
+        
+        this.maxQi = ConfigManager.getInstance().getConfig().player.initialMaxQi;
         this.qi = maxQi;
         this.inventory = new Inventory();
-        this.statusEffectManager = new org.example.logic.StatusEffectManager(this);
         this.cultivationManager = new org.example.logic.CultivationManager();
         this.activeSkill = org.example.logic.SkillRegistry.getSkill("fiery_palm");
     }
 
-    public org.example.logic.StatusEffectManager getStatusEffectManager() {
-        return statusEffectManager;
-    }
-    
-    public org.example.logic.StatusEffectManager getBuffManager() {
-        return statusEffectManager;
-    }
 
     /**
      * Updates player statistics from external data (e.g. during a Game Load).
@@ -279,27 +271,7 @@ public class Player extends LivingEntity {
         }
     }
 
-    /** @return Player's current X coordinate in pixels. */
-    public double getX() {
-        return x;
-    }
-
-    /** Sets the player's X coordinate. */
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    /** @return Player's current Y coordinate in pixels. */
-    public double getY() {
-        return y;
-    }
-
-    /** Sets the player's Y coordinate. */
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    // Health methods are now handled by LivingEntity/AttributeSet
+    // Health and Status methods are now handled by LivingEntity/AttributeSet
 
     /** @return Player's current Spiritual Energy (Qi). */
     public double getQi() {

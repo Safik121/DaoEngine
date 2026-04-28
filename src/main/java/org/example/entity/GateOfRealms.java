@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import org.example.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -55,10 +56,10 @@ public class GateOfRealms implements Interactable {
     @Override
     public void onInteract(PlayState state) {
         if (state.getPlayer().getInventory().consumeItem("realm_token")) {
-            System.out.println("[Gate] The Realm Token resonates! Entering the Gate of Realms...");
+            GameLogger.info("[Gate] The Realm Token resonates! Entering the Gate of Realms...");
             state.setVictory();
         } else {
-            System.out.println("[Gate] The gate remains sealed. You sense it requires a 'Realm Token'.");
+            GameLogger.info("[Gate] The gate remains sealed. You sense it requires a 'Realm Token'.");
         }
     }
 

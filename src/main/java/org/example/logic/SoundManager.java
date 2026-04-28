@@ -1,5 +1,7 @@
 package org.example.logic;
 
+import org.example.GameLogger;
+
 /**
  * Stub manager for audio to make integration easy once JavaFX Media is fully set up.
  */
@@ -12,12 +14,12 @@ public class SoundManager {
         // In a real implementation:
         // AudioClip clip = new AudioClip(getClass().getResource("/sounds/" + soundId + ".wav").toExternalForm());
         // clip.play();
-        System.out.println("[SFX] Playing: " + soundId);
+        GameLogger.info("[SFX] Playing: " + soundId);
     }
     
     public void playBgm(String trackId) {
         if (isMuted) return;
-        System.out.println("[BGM] Playing track: " + trackId);
+        GameLogger.info("[BGM] Playing track: " + trackId);
     }
 
     public void setMuted(boolean muted) {

@@ -1,5 +1,6 @@
 package org.example.item;
 
+import org.example.GameLogger;
 import org.example.entity.Player;
 import org.example.state.PlayState;
 
@@ -16,6 +17,6 @@ public class WeaponItem extends Item {
     public void use(Player player, PlayState state) {
         // Weapons are typically used via the CombatManager or active combat loop.
         // Direct 'use' from inventory could optionally equip it.
-        System.out.println("Equipped or readied weapon: " + getName());
+        GameLogger.info("Equipped or readied weapon: " + getName());
     }
 }

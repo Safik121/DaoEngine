@@ -206,15 +206,24 @@ public class CombatManager {
 
     private void handleStrikeDamage(PlayState state, LightningStrike strike) {
         GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
+        double radiusSq = Math.pow(strike.getRadius(), 2);
+        
         // Player damage
-        double distP = Math.sqrt(Math.pow(strike.getX() - state.getPlayer().getX(), 2) + Math.pow(strike.getY() - state.getPlayer().getY(), 2));
-        if (distP < strike.getRadius()) {
+        double dxP = strike.getX() - state.getPlayer().getX();
+        double dyP = strike.getY() - state.getPlayer().getY();
+        double distSqP = dxP * dxP + dyP * dyP;
+        
+        if (distSqP < radiusSq) {
             state.getPlayer().takeDamage(bal.lightningPlayerDamage);
         }
+
         // Enemy damage
         for (Enemy e : state.getEnemies()) {
-            double distE = Math.sqrt(Math.pow(strike.getX() - e.getX(), 2) + Math.pow(strike.getY() - e.getY(), 2));
-            if (distE < strike.getRadius()) {
+            double dxE = strike.getX() - e.getX();
+            double dyE = strike.getY() - e.getY();
+            double distSqE = dxE * dxE + dyE * dyE;
+            
+            if (distSqE < radiusSq) {
                 e.takeDamage(bal.lightningEnemyDamage);
             }
         }

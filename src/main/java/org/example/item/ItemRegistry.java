@@ -1,5 +1,6 @@
 package org.example.item;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -16,7 +17,8 @@ public class ItemRegistry {
     private static Map<String, ItemConfig> items = new HashMap<>();
     private static List<RecipeConfig> recipesList = new ArrayList<>();
     private static Map<String, String> recipes = new HashMap<>();
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Loads item and recipe data from the specified JSON paths.
@@ -33,7 +35,7 @@ public class ItemRegistry {
                 for (ItemConfig config : itemList) {
                     items.put(config.id, config);
                 }
-                System.out.println("Loaded " + items.size() + " items from JSON.");
+                GameLogger.info("Loaded " + items.size() + " items from JSON.");
             }
 
             // Load Recipes
@@ -46,10 +48,10 @@ public class ItemRegistry {
                     String key = getRecipeKey(recipe.input1, recipe.input2);
                     recipes.put(key, recipe.result);
                 }
-                System.out.println("Loaded " + recipes.size() + " crafting recipes from JSON.");
+                GameLogger.info("Loaded " + recipes.size() + " crafting recipes from JSON.");
             }
         } catch (Exception e) {
-            System.err.println("Fatal error loading ItemRegistry data!");
+            GameLogger.error("Fatal error loading ItemRegistry data!");
             e.printStackTrace();
         }
     }

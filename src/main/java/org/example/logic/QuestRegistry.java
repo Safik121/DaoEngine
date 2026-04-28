@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,7 +35,7 @@ public class QuestRegistry {
                 return;
             }
             questTemplates = mapper.readValue(is, new TypeReference<Map<String, QuestConfig>>() {});
-            System.out.println("Loaded " + questTemplates.size() + " quests.");
+            org.example.GameLogger.info("Loaded " + questTemplates.size() + " quests.");
         } catch (Exception e) {
             System.err.println("Fatal error loading QuestRegistry data!");
             e.printStackTrace();

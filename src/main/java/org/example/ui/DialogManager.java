@@ -98,18 +98,21 @@ public class DialogManager {
 
         DialogueChoice choice = currentNode.getChoices().get(index);
         String nextId = choice.getNextNodeId();
+        
+        org.example.GameLogger.info("Dialogue Choice Selected: " + choice.getText() + " -> " + nextId);
 
-        if (nextId == null || nextId.equalsIgnoreCase("exit")) {
+        if (nextId == null || nextId.equalsIgnoreCase("exit") || nextId.equalsIgnoreCase("close") || nextId.equalsIgnoreCase("quit")) {
             handleCompletion(state);
             close();
         } else if (nextId.equals("confirm_learn")) {
             handleSkillReplacement(state);
             close();
         } else {
-            currentNode = DialogueRegistry.getNode(nextId);
+            currentNode = org.example.logic.DialogueRegistry.getNode(nextId);
             if (currentNode != null) {
                 handleNodeAction(state);
             } else {
+                org.example.GameLogger.warning("Dialogue node not found: " + nextId + ". Closing.");
                 close();
             }
         }

@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -37,9 +38,9 @@ public class EnemyRegistry {
             }
             
             configs = loaded;
-            System.out.println("Loaded " + configs.size() + " enemy configurations.");
+            GameLogger.info("Loaded " + configs.size() + " enemy configurations.");
         } catch (Exception e) {
-            System.err.println("Fatal error loading EnemyRegistry data!");
+            GameLogger.error("Fatal error loading EnemyRegistry data!");
             e.printStackTrace();
         }
     }
@@ -55,7 +56,7 @@ public class EnemyRegistry {
     public static Enemy createEnemy(String id, double x, double y, boolean isTribulation, double scaling) {
         EnemyConfig config = configs.get(id);
         if (config == null) {
-            System.err.println("Unknown enemy ID: " + id);
+            GameLogger.error("Unknown enemy ID: " + id);
             return null;
         }
 

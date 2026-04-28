@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import org.example.entity.Player;
 import org.example.item.ItemRegistry;
 import org.example.logic.event.GameEvent;
@@ -20,7 +21,7 @@ public class QuestManager implements GameEventListener {
     public void addQuest(Quest q, PlayState state) {
         if (!hasQuest(q.getId())) {
             activeQuests.add(q);
-            System.out.println("[Quest] Added: " + q.getName());
+            org.example.GameLogger.info("[Quest] Added: " + q.getName());
             if (state != null) {
                 state.addNotification("New Quest: " + q.getName());
             }
@@ -85,7 +86,7 @@ public class QuestManager implements GameEventListener {
     private void completeQuest(Quest q, PlayState state) {
         activeQuests.remove(q);
         completedQuests.add(q);
-        System.out.println("[Quest] Completed: " + q.getName() + "!");
+        org.example.GameLogger.info("[Quest] Completed: " + q.getName() + "!");
         
         if (state != null) {
             state.addNotification("QUEST COMPLETED: " + q.getName());

@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,7 +31,7 @@ public class LootRegistry {
             }
             Map<String, List<LootEntry>> loaded = mapper.readValue(is, new TypeReference<Map<String, List<LootEntry>>>() {});
             lootTables = loaded;
-            System.out.println("Loaded " + lootTables.size() + " loot tables.");
+            GameLogger.info("Loaded " + lootTables.size() + " loot tables.");
         } catch (Exception e) {
             System.err.println("Fatal error loading LootRegistry data!");
             e.printStackTrace();

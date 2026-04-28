@@ -1,5 +1,6 @@
 package org.example.item;
 
+import org.example.GameLogger;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -16,7 +17,8 @@ public class WeaponRegistry {
     /** Internal cache mapping weapon IDs to their loaded configurations. */
     private static Map<String, WeaponConfig> weapons = new HashMap<>();
     /** Jackson mapper instance used for JSON deserialization. */
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Initializes the registry by loading weapon configurations from the classpath.
@@ -33,9 +35,9 @@ public class WeaponRegistry {
             }
             // Load map of WeaponConfigs indexed by their ID (e.g., "sword_01")
             weapons = mapper.readValue(is, new TypeReference<Map<String, WeaponConfig>>() {});
-            System.out.println("Loaded " + weapons.size() + " weapon configurations.");
+            GameLogger.info("Loaded " + weapons.size() + " weapon configurations.");
         } catch (Exception e) {
-            System.err.println("Error loading weapon configurations: " + filePath);
+            GameLogger.error("Error loading weapon configurations: " + filePath);
             e.printStackTrace();
         }
     }

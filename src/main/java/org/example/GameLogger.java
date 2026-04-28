@@ -1,8 +1,13 @@
 package org.example;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * A centralized logging utility for the DaoEngine.
- * Supports configurable logging levels to filter output.
+ * Supports configurable logging levels and writes to a 'latest.log' file.
  */
 public class GameLogger {
 
@@ -17,6 +22,18 @@ public class GameLogger {
     }
 
     private static Level currentLevel = Level.INFO;
+    private static PrintWriter fileWriter;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    static {
+        try {
+            // Initialize file logging
+            fileWriter = new PrintWriter(new FileWriter("latest.log", false));
+            info("Log file 'latest.log' initialized.");
+        } catch (Exception e) {
+            System.err.println("Failed to initialize log file: " + e.getMessage());
+        }
+    }
 
     /**
      * Initializes the logger with a specific level.
@@ -33,26 +50,45 @@ public class GameLogger {
     }
 
     public static void info(String message) {
-        if (currentLevel.rank >= Level.INFO.rank) {
-            System.out.println("[INFO] " + message);
-        }
+        log(Level.INFO, message, null);
     }
 
     public static void warning(String message) {
-        if (currentLevel.rank >= Level.WARNING.rank) {
-            System.out.println("[WARNING] " + message);
-        }
+        log(Level.WARNING, message, null);
     }
 
     public static void error(String message) {
-        if (currentLevel.rank >= Level.ERROR.rank) {
-            System.err.println("[ERROR] " + message);
-        }
+        log(Level.ERROR, message, null);
     }
 
     public static void error(String message, Throwable t) {
-        if (currentLevel.rank >= Level.ERROR.rank) {
-            System.err.println("[ERROR] " + message);
+        log(Level.ERROR, message, t);
+    }
+
+    private static void log(Level level, String message, Throwable t) {
+        String timestamp = LocalDateTime.now().format(formatter);
+        String formattedMessage = String.format("[%s] [%s] %s", timestamp, level, message);
+
+        // Console Output
+        if (currentLevel.rank >= level.rank) {
+            if (level == Level.ERROR) {
+                System.err.println(formattedMessage);
+            } else {
+                System.out.println(formattedMessage);
+            }
+        }
+
+        // File Output
+        if (fileWriter != null) {
+            fileWriter.println(formattedMessage);
+            if (t != null) {
+                t.printStackTrace(fileWriter);
+            }
+            fileWriter.flush();
+        }
+
+        // Optional: Print stack trace to console for errors
+        if (t != null && level == Level.ERROR) {
             t.printStackTrace();
         }
     }
