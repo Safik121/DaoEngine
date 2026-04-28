@@ -756,15 +756,16 @@ public class PlayState implements GameState {
 
                 eventManager.triggerEvent(org.example.logic.event.GameEvent.ENTITY_DEATH, enemy.getId(), 1, this);
 
-                // --- Qi Absorption System ---
-                // Base Qi is 10, scales by 2.4x per map level
-                double qiReward = 10.0 * Math.pow(2.4, mapLevel - 1);
-                // Tribulation enemies give 3x more Qi
+                // --- Qi Absorption System (Refinement) ---
+                // Defeating enemies now permanently increases Max Qi
+                // Balanced to scale with rank requirements (approx 2.2x per map level)
+                double maxQiGain = 5.0 * Math.pow(2.2, mapLevel - 1);
                 if (enemy.isTribulation())
-                    qiReward *= 3.0;
+                    maxQiGain *= 10.0; // Tribulation kills are massive boosts
 
-                player.restoreQi(qiReward);
-                addNotification(String.format("+%.0f Qi Absorbed", qiReward));
+                player.setMaxQi(player.getMaxQi() + maxQiGain);
+                player.restoreQi(maxQiGain * 2.0); // Refund enough for next attack
+                addNotification(String.format("+%.0f Max Qi Refined", maxQiGain));
 
                 // Roll for loot
                 java.util.List<String> drops = org.example.logic.LootRegistry.rollLoot(enemy.getId());
