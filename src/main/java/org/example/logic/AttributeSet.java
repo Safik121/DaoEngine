@@ -31,6 +31,7 @@ public class AttributeSet {
         if (this.hp < 0) this.hp = 0;
     }
     public void heal(double amount) {
+        if (amount <= 0) return;
         this.hp += amount;
         if (this.hp > this.maxHp) this.hp = this.maxHp;
     }

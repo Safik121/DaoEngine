@@ -35,6 +35,9 @@ public class SaveManager {
      */
     public static void save(SaveData data, int slot) throws IOException {
         validateSlot(slot);
+        if (data == null) {
+            throw new IllegalArgumentException("SaveData cannot be null.");
+        }
         File file = new File(SAVE_DIR, "save_slot_" + slot + ".json");
         mapper.writeValue(file, data);
         GameLogger.info("Saved game state to slot " + slot);
