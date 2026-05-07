@@ -27,6 +27,7 @@ import org.example.level.LevelLoader;
 import org.example.level.MapGenerator;
 import org.example.level.Biome;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -162,6 +163,7 @@ public class PlayState implements GameState {
     private boolean lmbWasPressed = false;
     /** Input buffer for the Right Mouse Button. */
     private boolean rmbWasPressed = false;
+    private org.example.logic.Interactable nearestInteractable;
 
     /** @return true if the cultivation menu is active. */
     public boolean isCultivationMenuOpen() {
@@ -232,7 +234,7 @@ public class PlayState implements GameState {
                 currentLevelConfig.height * currentLevelConfig.tileSize / 2.0);
 
         maxTime = currentLevelConfig.tribulationTime;
-        tribulationTimer = new TribulationTimer(maxTime, () -> combatManager.triggerTribulation(this));
+        tribulationTimer = new TribulationTimer(maxTime, () -> Platform.runLater(() -> combatManager.triggerTribulation(this)));
         tribulationTimer.start();
         enemies = new ArrayList<>();
         itemsOnGround = new ArrayList<>();
@@ -289,7 +291,7 @@ public class PlayState implements GameState {
 
         // Restore World Timers
         maxTime = currentLevelConfig.tribulationTime;
-        tribulationTimer = new TribulationTimer(data.currentTime, () -> combatManager.triggerTribulation(this));
+        tribulationTimer = new TribulationTimer(data.currentTime, () -> Platform.runLater(() -> combatManager.triggerTribulation(this)));
         if (data.inTribulationFlag == 1) {
             inTribulation = true;
         } else {
@@ -477,6 +479,7 @@ public class PlayState implements GameState {
         // Ensuring all handlers see correctly transitioned states for click detection.
         lmbWasPressed = Input.isLmbPressed();
         rmbWasPressed = Input.isRmbPressed();
+        eWasPressed = Input.isKeyPressed(KeyCode.E);
     }
 
     /**
@@ -499,7 +502,6 @@ public class PlayState implements GameState {
 
         if (ePressed && !eWasPressed) {
             dialogManager.advance(this);
-            eWasPressed = ePressed;
             return;
         }
 
@@ -518,7 +520,7 @@ public class PlayState implements GameState {
                 }
             }
 
-            // Mouse click support
+            // Mouse click support for choices
             if (lmbPressed && !lmbWasPressed) {
                 double width = 800;
                 double x = (screenWidth - width) / 2.0;
@@ -530,10 +532,15 @@ public class PlayState implements GameState {
                     if (mx >= x + 10 && mx <= x + width - 10 && my >= choiceY - 18 && my <= choiceY + 12) {
                         GameLogger.info("[DIALOGUE] Selected choice index: " + i + " (" + choices.get(i).getText() + ")");
                         dialogManager.selectChoice(i, this);
-                        break;
+                        return;
                     }
                     choiceY += 25;
                 }
+            }
+        } else {
+            // Mouse click support for advancing dialogue when no choices are present
+            if (lmbPressed && !lmbWasPressed) {
+                dialogManager.advance(this);
             }
         }
     }
@@ -543,35 +550,29 @@ public class PlayState implements GameState {
      * Now triggered by the 'E' key and uses proximity check for the nearest item.
      */
     private void handleWorldInteraction() {
-        if (dialogManager.isActive())
-            return;
+        nearestInteractable = null;
+        double minDist = Double.MAX_VALUE;
 
-        boolean ePressed = Input.isKeyPressed(KeyCode.E);
-        if (ePressed && !eWasPressed) {
-            org.example.logic.Interactable best = null;
-            double minDist = Double.MAX_VALUE;
+        // Collect all potential interactables in the world
+        java.util.List<org.example.logic.Interactable> all = new java.util.ArrayList<>();
+        all.addAll(currentLevel.interactables);
+        all.addAll(itemsOnGround);
+        if (currentLevel.gate != null)
+            all.add(currentLevel.gate);
 
-            // Collect all potential interactables in the world
-            java.util.List<org.example.logic.Interactable> all = new java.util.ArrayList<>();
-            all.addAll(currentLevel.interactables);
-            all.addAll(itemsOnGround);
-            if (currentLevel.gate != null)
-                all.add(currentLevel.gate);
-
-            for (org.example.logic.Interactable inter : all) {
-                double dist = Math
-                        .sqrt(Math.pow(inter.getX() - player.getX(), 2) + Math.pow(inter.getY() - player.getY(), 2));
-                if (dist < inter.getInteractionRange() && dist < minDist) {
-                    minDist = dist;
-                    best = inter;
-                }
-            }
-
-            if (best != null) {
-                best.onInteract(this);
+        for (org.example.logic.Interactable inter : all) {
+            double dist = Math
+                    .sqrt(Math.pow(inter.getX() - player.getX(), 2) + Math.pow(inter.getY() - player.getY(), 2));
+            if (dist < inter.getInteractionRange() && dist < minDist) {
+                minDist = dist;
+                nearestInteractable = inter;
             }
         }
-        eWasPressed = ePressed;
+
+        boolean ePressed = Input.isKeyPressed(KeyCode.E);
+        if (ePressed && !eWasPressed && nearestInteractable != null) {
+            nearestInteractable.onInteract(this);
+        }
     }
 
     public void setVictory() {
@@ -996,7 +997,7 @@ public class PlayState implements GameState {
                 if (isInside(mx, my, x + panelW / 2 - 150, y + panelH - 80, 300, 50)) {
                     boolean success = cm.attemptBreakthrough(player);
                     if (success) {
-                        GameLogger.info("突破! Breakthrough successful!");
+                        GameLogger.info("Breakthrough successful!");
                         soundManager.playSfx("level_up");
                         // Spawn golden particles around player
                         particleManager.spawnBreakthroughEffect(player.getX() + player.getSize() / 2,
@@ -1396,6 +1397,10 @@ public class PlayState implements GameState {
 
     public Item getDraggedItem() {
         return draggedItem;
+    }
+
+    public org.example.logic.Interactable getNearestInteractable() {
+        return nearestInteractable;
     }
 
     public int getScreenWidth() {

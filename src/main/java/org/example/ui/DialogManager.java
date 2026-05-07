@@ -119,45 +119,58 @@ public class DialogManager {
     }
 
     private void handleNodeAction(PlayState state) {
-        if (currentNode == null || currentNode.getAction() == null) return;
+        if (currentNode == null || currentNode.getAction() == null || activeDialogue == null) return;
+        
+        // If it's a Stele and it already gave a reward, don't trigger actions again
+        if (activeDialogue.getType() == InteractableEntity.Type.STELE && activeDialogue.hasGivenReward()) {
+            return;
+        }
 
         String action = currentNode.getAction();
+        boolean actionTriggered = false;
+
         if (action.startsWith("GIVE_QUEST:")) {
             String qId = action.substring("GIVE_QUEST:".length());
             if (!state.getQuestManager().hasQuest(qId)) {
                 Quest q = QuestRegistry.createQuest(qId);
                 if (q != null) {
                     state.getQuestManager().addQuest(q, state);
+                    actionTriggered = true;
                 }
             }
         } else if (action.startsWith("HEAL:")) {
             try {
                 double amount = Double.parseDouble(action.substring("HEAL:".length()));
                 state.heal(amount);
-            } catch (Exception e) {
-            }
+                actionTriggered = true;
+            } catch (Exception e) {}
         } else if (action.startsWith("ADD_QI:")) {
             try {
                 double amount = Double.parseDouble(action.substring("ADD_QI:".length()));
+                state.getPlayer().setMaxQi(state.getPlayer().getMaxQi() + amount);
                 state.getPlayer().restoreQi(amount);
                 state.addNotification("Spirit Power + " + (int) amount);
-            } catch (Exception e) {
-            }
+                actionTriggered = true;
+            } catch (Exception e) {}
         } else if (action.startsWith("ADD_HP:")) {
             try {
                 double amount = Double.parseDouble(action.substring("ADD_HP:".length()));
                 state.getPlayer().getStats().setMaxHp(state.getPlayer().getMaxHp() + amount);
                 state.getPlayer().heal(amount);
                 state.addNotification("Constitution + " + (int) amount);
-            } catch (Exception e) {
-            }
+                actionTriggered = true;
+            } catch (Exception e) {}
         } else if (action.startsWith("ADD_STR:")) {
             try {
                 double amount = Double.parseDouble(action.substring("ADD_STR:".length()));
                 state.getPlayer().getStats().setStrength(state.getPlayer().getStats().getStrength() + amount);
                 state.addNotification("Strength + " + (int) amount);
-            } catch (Exception e) {
-            }
+                actionTriggered = true;
+            } catch (Exception e) {}
+        }
+
+        if (actionTriggered && activeDialogue.getType() == InteractableEntity.Type.STELE) {
+            activeDialogue.setHasGivenReward(true);
         }
     }
 

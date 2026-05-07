@@ -115,6 +115,31 @@ public class PlayUIManager {
         drawQuests(gc, state);
         drawHotbar(gc, state);
         drawActiveSkill(gc, state);
+        drawInteractionPrompt(gc, state);
+    }
+
+    private void drawInteractionPrompt(GraphicsContext gc, PlayState state) {
+        org.example.logic.Interactable best = state.getNearestInteractable();
+        if (best == null || state.getDialogManager().isActive() || state.isInventoryOpen()) return;
+
+        double w = state.getScreenWidth();
+        double h = state.getScreenHeight();
+        String prompt = best.getPrompt();
+
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+        javafx.scene.text.Text text = new javafx.scene.text.Text(prompt);
+        text.setFont(gc.getFont());
+        double textWidth = text.getLayoutBounds().getWidth();
+
+        double px = (w - textWidth) / 2.0;
+        double py = h - 160;
+
+        // Draw background for prompt
+        gc.setFill(Color.rgb(0, 0, 0, 0.6));
+        gc.fillRoundRect(px - 10, py - 20, textWidth + 20, 30, 10, 10);
+
+        gc.setFill(Color.GOLD);
+        gc.fillText(prompt, px, py);
     }
     
     private void drawQuests(GraphicsContext gc, PlayState state) {
@@ -172,6 +197,20 @@ public class PlayUIManager {
                 double ex = x + (e.getX() / ts) * scale;
                 double ey = y + (e.getY() / ts) * scale;
                 gc.fillOval(ex - 1.5, ey - 1.5, 3, 3);
+            }
+
+            gc.setFill(Color.AQUAMARINE);
+            for (org.example.entity.InteractableEntity ie : state.getCurrentLevel().interactables) {
+                double ix = x + (ie.getX() / ts) * scale;
+                double iy = y + (ie.getY() / ts) * scale;
+                gc.fillOval(ix - 1.5, iy - 1.5, 3, 3);
+            }
+
+            if (state.getCurrentLevel().gate != null) {
+                gc.setFill(Color.CYAN);
+                double gx = x + (state.getCurrentLevel().gate.getX() / ts) * scale;
+                double gy = y + (state.getCurrentLevel().gate.getY() / ts) * scale;
+                gc.fillOval(gx - 2.5, gy - 2.5, 5, 5);
             }
 
             gc.setFill(Color.WHITE);
@@ -505,6 +544,20 @@ public class PlayUIManager {
                 double ex = x + (e.getX() / ts) * scale;
                 double ey = y + (e.getY() / ts) * scale;
                 gc.fillOval(ex - 2, ey - 2, 4, 4);
+            }
+
+            gc.setFill(Color.AQUAMARINE);
+            for (org.example.entity.InteractableEntity ie : state.getCurrentLevel().interactables) {
+                double ix = x + (ie.getX() / ts) * scale;
+                double iy = y + (ie.getY() / ts) * scale;
+                gc.fillOval(ix - 3, iy - 3, 6, 6);
+            }
+
+            if (state.getCurrentLevel().gate != null) {
+                gc.setFill(Color.CYAN);
+                double gx = x + (state.getCurrentLevel().gate.getX() / ts) * scale;
+                double gy = y + (state.getCurrentLevel().gate.getY() / ts) * scale;
+                gc.fillOval(gx - 5, gy - 5, 10, 10);
             }
 
             gc.setFill(Color.WHITE);

@@ -165,5 +165,11 @@
     "frames": 1,
     "width": 32,
     "height": 32
+  },
+  "gate_portal": {
+    "path": "/textures/gate_portal.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
   }
 }

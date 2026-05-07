@@ -37,7 +37,7 @@
     "speed": 0.9,
     "size": 42.0,
     "color": "#FFD700",
-    "spriteId": "archer_01",
+    "spriteId": "bat_01",
     "isRanged": true,
     "attackRange": 200.0,
     "projectileType": "FIREBALL"

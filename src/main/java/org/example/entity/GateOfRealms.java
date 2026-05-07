@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import org.example.AssetRegistry;
 import org.example.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -44,9 +45,16 @@ public class GateOfRealms implements Interactable {
         gc.setFill(gradient);
         gc.fillOval(sx + 6 - radius, sy + 6 - radius, radius * 2, radius * 2);
 
-        // Core of the portal
-        gc.setFill(Color.WHITE);
-        gc.fillOval(sx + 6 - 5, sy + 6 - 5, 10, 10);
+        // Draw the high-quality portal texture
+        javafx.scene.image.Image portalImg = AssetRegistry.getSprite("gate_portal", 0);
+        if (portalImg != null) {
+            double imgSize = 80 * pulse;
+            gc.drawImage(portalImg, sx + 6 - imgSize/2, sy + 6 - imgSize/2, imgSize, imgSize);
+        } else {
+            // Core fallback if texture fails
+            gc.setFill(Color.WHITE);
+            gc.fillOval(sx + 6 - 5, sy + 6 - 5, 10, 10);
+        }
         
         // Label
         gc.setFill(Color.WHITE);
@@ -59,7 +67,7 @@ public class GateOfRealms implements Interactable {
             GameLogger.info("[Gate] The Realm Token resonates! Entering the Gate of Realms...");
             state.setVictory();
         } else {
-            GameLogger.info("[Gate] The gate remains sealed. You sense it requires a 'Realm Token'.");
+            state.addNotification("THE GATE IS SEALED: Requires 'Realm Token'");
         }
     }
 

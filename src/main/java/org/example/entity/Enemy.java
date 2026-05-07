@@ -94,6 +94,8 @@ public class Enemy extends LivingEntity {
         this.isRanged = true;
         this.attackRange = range;
         this.projectileConfig = config;
+        // Ensure detection range is at least as large as attack range
+        this.detectionRange = Math.max(this.detectionRange, range + 20);
     }
 
 
