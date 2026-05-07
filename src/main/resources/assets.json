@@ -143,11 +143,27 @@
   "item_hammer_obsidian": { "path": "/textures/items/hammer_obsidian.png" },
   "item_flute_celestial": { "path": "/textures/items/flute_celestial.png" },
   "bat_01": {
-    "path": "/textures/enemies/bat_sheet.png",
-    "frames": 12,
-    "width": 64,
-    "height": 64,
-    "cols": 4,
-    "frameDuration": 0.1
+    "path": "/textures/enemies/bat.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "zombie_01": {
+    "path": "/textures/enemies/wight.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "guard_01": {
+    "path": "/textures/enemies/sentinel.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "archer_01": {
+    "path": "/textures/enemies/archer.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
   }
 }

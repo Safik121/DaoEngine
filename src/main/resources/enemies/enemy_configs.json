@@ -5,7 +5,7 @@
     "hp": 20.0,
     "damage": 8.0,
     "speed": 1.5,
-    "size": 18.0,
+    "size": 32.0,
     "color": "#8A2BE2",
     "spriteId": "bat_01"
   },
@@ -15,9 +15,9 @@
     "hp": 60.0,
     "damage": 15.0,
     "speed": 0.6,
-    "size": 28.0,
+    "size": 48.0,
     "color": "#2F4F4F",
-    "spriteId": "tile_vein"
+    "spriteId": "zombie_01"
   },
   "guard_01": {
     "name": "Ghostly Sentinel",
@@ -25,9 +25,9 @@
     "hp": 120.0,
     "damage": 25.0,
     "speed": 1.1,
-    "size": 32.0,
+    "size": 56.0,
     "color": "#CD5C5C",
-    "spriteId": "player_idle"
+    "spriteId": "guard_01"
   },
   "archer_01": {
     "name": "Spectral Archer",
@@ -35,9 +35,9 @@
     "hp": 40.0,
     "damage": 12.0,
     "speed": 0.9,
-    "size": 24.0,
+    "size": 42.0,
     "color": "#FFD700",
-    "spriteId": "projectile_fireball",
+    "spriteId": "archer_01",
     "isRanged": true,
     "attackRange": 200.0,
     "projectileType": "FIREBALL"
