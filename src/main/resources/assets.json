@@ -171,5 +171,89 @@
     "frames": 1,
     "width": 1024,
     "height": 1024
+  },
+  "tile_border": {
+    "path": "/textures/tile_border.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_border": {
+    "path": "/textures/tile_ice_border.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_border": {
+    "path": "/textures/tile_fire_border.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_grass": {
+    "path": "/textures/tile_ice_grass.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_ice": {
+    "path": "/textures/tile_ice_ice.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_vein": {
+    "path": "/textures/tile_ice_vein.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_variety": {
+    "path": "/textures/tile_ice_variety.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_ice_bridge": {
+    "path": "/textures/tile_ice_bridge.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_grass": {
+    "path": "/textures/tile_fire_grass.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_lava": {
+    "path": "/textures/tile_fire_lava.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_vein": {
+    "path": "/textures/tile_fire_vein.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_variety": {
+    "path": "/textures/tile_fire_variety.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "tile_fire_bridge": {
+    "path": "/textures/tile_fire_bridge.png",
+    "frames": 1,
+    "width": 32,
+    "height": 32
+  },
+  "spirit_stele": {
+    "path": "/textures/spirit_stele.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
   }
 }

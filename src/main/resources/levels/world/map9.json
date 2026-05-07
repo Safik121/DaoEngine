@@ -23,6 +23,24 @@
   "enemyPool": ["guard_01", "archer_01"],
   "interactables": [
     {
+      "name": "God of Death Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_wang_lin",
+      "count": 2
+    },
+    {
+      "name": "Ancient Dao Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_xuan_luo",
+      "count": 1
+    },
+    {
+      "name": "Supreme Stele of Defiance",
+      "type": "STELE",
+      "dialogueTreeId": "stele_defiance_high",
+      "count": 2
+    },
+    {
       "name": "Heavenly Guardian",
       "type": "NPC",
       "dialogueTreeId": "npc_guardian_final",

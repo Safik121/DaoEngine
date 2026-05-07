@@ -23,10 +23,16 @@
   "enemyPool": ["archer_01", "guard_01"],
   "interactables": [
     {
-      "name": "Frozen Stele",
+      "name": "Sword Intent Stele",
       "type": "STELE",
-      "dialogueTreeId": "stele_yang",
-      "count": 5
+      "dialogueTreeId": "stele_bo_qing",
+      "count": 2
+    },
+    {
+      "name": "Stele of Loneliness",
+      "type": "STELE",
+      "dialogueTreeId": "stele_loneliness",
+      "count": 3
     }
   ],
   "initialWorldItems": ["pill_yang", "jade_leaf_01"]

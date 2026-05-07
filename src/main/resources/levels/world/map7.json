@@ -23,9 +23,27 @@
   "enemyPool": ["guard_01", "archer_01", "bat_01"],
   "interactables": [
     {
-      "name": "Celestial Ancestor",
-      "type": "NPC",
-      "dialogueTreeId": "npc_celestial_01",
+      "name": "Ancient God Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_tu_si",
+      "count": 1
+    },
+    {
+      "name": "Paradise Earth Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_paradise_earth",
+      "count": 1
+    },
+    {
+      "name": "Fate-Seer Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_all_seer",
+      "count": 2
+    },
+    {
+      "name": "Stele of Karma",
+      "type": "STELE",
+      "dialogueTreeId": "stele_karma",
       "count": 1
     }
   ],

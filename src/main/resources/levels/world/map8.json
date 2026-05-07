@@ -23,10 +23,16 @@
   "enemyPool": ["guard_01", "archer_01"],
   "interactables": [
     {
-      "name": "Nirvana Altar",
+      "name": "Rain-Waiting Stele",
       "type": "STELE",
-      "dialogueTreeId": "stele_nirvana",
-      "count": 6
+      "dialogueTreeId": "stele_zhou_yi",
+      "count": 3
+    },
+    {
+      "name": "Enlightenment Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_final",
+      "count": 3
     }
   ],
   "initialWorldItems": ["pill_nirvana_cleanser", "pill_nirvana_shatterer"]

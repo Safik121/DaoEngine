@@ -33,7 +33,7 @@ public enum Biome {
                 base = "grass";
                 break;
             case 1:
-                base = "wall";
+                base = "border";
                 break;
             case 2:
                 base = this == FIRE ? "lava" : (this == ICE ? "ice" : "water");

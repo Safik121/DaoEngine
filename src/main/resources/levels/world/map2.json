@@ -29,10 +29,22 @@
       "count": 1
     },
     {
-      "name": "Ancient Mine Stele",
+      "name": "Mine Foundation Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_zhu_ji",
-      "count": 3
+      "count": 1
+    },
+    {
+      "name": "Stele of Loneliness",
+      "type": "STELE",
+      "dialogueTreeId": "stele_loneliness",
+      "count": 1
+    },
+    {
+      "name": "Stele of Karma",
+      "type": "STELE",
+      "dialogueTreeId": "stele_karma",
+      "count": 1
     }
   ],
   "initialWorldItems": ["pill_hp_01", "iron_ore_01", "mat_hammer_01"]

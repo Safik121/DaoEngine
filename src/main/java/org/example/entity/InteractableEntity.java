@@ -2,6 +2,7 @@ package org.example.entity;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.example.AssetRegistry;
 import org.example.item.Item;
 import org.example.logic.Interactable;
 import org.example.state.PlayState;
@@ -75,11 +76,21 @@ public class InteractableEntity implements Interactable {
             // Simple "head"
             gc.strokeRect(x - camX, y - camY, 16, 16);
         } else {
-            gc.setFill(Color.SLATEGRAY);
-            gc.fillRect(x - camX, y - camY, 12, 24);
-            gc.setStroke(Color.WHITE);
-            gc.setLineWidth(0.5);
-            gc.strokeRect(x - camX, y - camY, 12, 24);
+            // Draw the high-quality Spirit Stele texture
+            javafx.scene.image.Image steleImg = AssetRegistry.getSprite("spirit_stele", 0);
+            if (steleImg != null) {
+                double drawWidth = 96;
+                double drawHeight = 144;
+                // Center horizontally, and ground it vertically (bottom of the 24px placeholder)
+                gc.drawImage(steleImg, x - camX + (12 - drawWidth) / 2, y - camY + 24 - drawHeight, drawWidth, drawHeight);
+            } else {
+                // Fallback grey pillar
+                gc.setFill(Color.SLATEGRAY);
+                gc.fillRect(x - camX, y - camY, 12, 24);
+                gc.setStroke(Color.WHITE);
+                gc.setLineWidth(0.5);
+                gc.strokeRect(x - camX, y - camY, 12, 24);
+            }
         }
     }
 

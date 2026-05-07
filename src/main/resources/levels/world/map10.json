@@ -23,6 +23,24 @@
   "enemyPool": ["guard_01", "archer_01"],
   "interactables": [
     {
+      "name": "Immortal Stele of the Great Love",
+      "type": "STELE",
+      "dialogueTreeId": "stele_fang_yuan_immortal",
+      "count": 2
+    },
+    {
+      "name": "True Sword Saint Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_bo_qing_true",
+      "count": 2
+    },
+    {
+      "name": "Stele of Heartless Heavens",
+      "type": "STELE",
+      "dialogueTreeId": "stele_dao_nature",
+      "count": 2
+    },
+    {
       "name": "Dao Ancestor",
       "type": "NPC",
       "dialogueTreeId": "npc_dao_01",

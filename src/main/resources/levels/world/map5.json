@@ -23,10 +23,28 @@
   "enemyPool": ["guard_01", "archer_01", "zombie_01"],
   "interactables": [
     {
-      "name": "Ancient Altar",
+      "name": "Giant Demon Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_chi_hu",
+      "count": 1
+    },
+    {
+      "name": "Spectral Soul Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_spectral_soul",
+      "count": 1
+    },
+    {
+      "name": "Ancient Devil Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_ta_ji",
+      "count": 2
+    },
+    {
+      "name": "Yin Altar",
       "type": "STELE",
       "dialogueTreeId": "stele_yin",
-      "count": 4
+      "count": 2
     }
   ],
   "initialWorldItems": ["pill_yin", "iron_ore_01", "fire_essence_01"]

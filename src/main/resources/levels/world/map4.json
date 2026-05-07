@@ -29,10 +29,22 @@
       "count": 1
     },
     {
+      "name": "Spectacular Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_bai_ning_bing",
+      "count": 2
+    },
+    {
+      "name": "Shadowed Stele",
+      "type": "STELE",
+      "dialogueTreeId": "stele_fang_zheng",
+      "count": 2
+    },
+    {
       "name": "Celestial Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_final",
-      "count": 5
+      "count": 2
     }
   ],
   "initialWorldItems": ["pill_daoseed", "pill_heavenly_tribulation", "jade_leaf_01"]

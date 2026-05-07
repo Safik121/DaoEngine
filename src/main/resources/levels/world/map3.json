@@ -29,10 +29,34 @@
       "count": 1
     },
     {
-      "name": "Crimson Stele",
+      "name": "Crimson Heart Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_jie_dan",
-      "count": 4
+      "count": 1
+    },
+    {
+      "name": "Stele of Regret",
+      "type": "STELE",
+      "dialogueTreeId": "stele_red_lotus",
+      "count": 1
+    },
+    {
+      "name": "Stele of Eternal Interest",
+      "type": "STELE",
+      "dialogueTreeId": "stele_fang_yuan",
+      "count": 1
+    },
+    {
+      "name": "Stele of Heartless Heavens",
+      "type": "STELE",
+      "dialogueTreeId": "stele_dao_nature",
+      "count": 1
+    },
+    {
+      "name": "Insatiable Stele of Greed",
+      "type": "STELE",
+      "dialogueTreeId": "stele_greed",
+      "count": 1
     }
   ],
   "initialWorldItems": ["pill_spirit_01", "fire_essence_01", "pill_core"]

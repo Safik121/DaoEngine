@@ -57,37 +57,37 @@
   "stele_ning_qi": {
     "id": "stele_ning_qi",
     "text": "The stone hums with the energy of the first breath. You absorb a fragment of its ancient power.",
-    "action": "ADD_QI:100",
+    "action": "ADD_QI:200",
     "choices": []
   },
   "stele_zhu_ji": {
     "id": "stele_zhu_ji",
     "text": "This stele contains the secrets of Foundation. Your body feels heavier and more durable.",
-    "action": "ADD_HP:50",
+    "action": "ADD_HP:500",
     "choices": []
   },
   "stele_jie_dan": {
     "id": "stele_jie_dan",
     "text": "A crimson glow emanates from the surface. Your spiritual power surges!",
-    "action": "ADD_QI:1000",
+    "action": "ADD_QI:5000",
     "choices": []
   },
   "stele_final": {
     "id": "stele_final",
     "text": "'Heaven is but a step, the Dao is the path.' You feel enlightened.",
-    "action": "HEAL:1000",
+    "action": "HEAL:10000",
     "choices": []
   },
   "stele_yin": {
     "id": "stele_yin",
     "text": "The Yin energy is cold and mysterious. It strengthens your internal foundation.",
-    "action": "ADD_HP:100",
+    "action": "ADD_HP:5000",
     "choices": []
   },
   "stele_yang": {
     "id": "stele_yang",
     "text": "The Yang energy burns with fierce intensity. Your strength grows boundlessly!",
-    "action": "ADD_STR:20",
+    "action": "ADD_STR:200",
     "choices": []
   },
   "npc_guardian_final": {
@@ -101,6 +101,144 @@
     "id": "npc_guardian_accept",
     "text": "Very well. Take the Void Gate Pill and face your destiny.",
     "action": "GIVE_QUEST:final_ascension",
+    "choices": []
+  },
+  "stele_defiance": {
+    "id": "stele_defiance",
+    "text": "'If the Heavens want me dead, I shall destroy the Heavens! If the Earth wants me buried, I shall shatter the Earth!' You feel a surge of rebellious power.",
+    "action": "ADD_STR:100",
+    "choices": []
+  },
+  "stele_defiance_high": {
+    "id": "stele_defiance_high",
+    "text": "'Even the Heavens must bow before my resolve!' Your strength transcends mortal limits.",
+    "action": "ADD_STR:1000",
+    "choices": []
+  },
+  "stele_loneliness": {
+    "id": "stele_loneliness",
+    "text": "'The Path to Immortality is a path of loneliness. Friends fall, empires crumble, but the Dao remains.' Your soul hardens against the world.",
+    "action": "ADD_HP:2000",
+    "choices": []
+  },
+  "stele_karma": {
+    "id": "stele_karma",
+    "text": "'Karma is a thread that binds the soul. To reach the peak, one must cut all mortal ties.' You feel lighter, as if a weight has been lifted.",
+    "action": "ADD_QI:10000",
+    "choices": []
+  },
+  "stele_dao_nature": {
+    "id": "stele_dao_nature",
+    "text": "'Heaven and Earth are heartless, treating all living things as straw dogs.' You begin to see the true, cold nature of the world.",
+    "action": "ADD_QI:100000",
+    "choices": []
+  },
+  "stele_bo_qing": {
+    "id": "stele_bo_qing",
+    "text": "'One sword to pierce the heavens, one breath to freeze the nine netherworlds.' You feel the residue of Bo Qing's peerless sword intent.",
+    "action": "ADD_STR:500",
+    "choices": []
+  },
+  "stele_bo_qing_true": {
+    "id": "stele_bo_qing_true",
+    "text": "'My sword is the Dao, and the Dao is my sword.' The true sword intent of a Sword Immortal shatters your limitations.",
+    "action": "ADD_STR:5000",
+    "choices": []
+  },
+  "stele_red_lotus": {
+    "id": "stele_red_lotus",
+    "text": "'Regret is just a Gu. Even if I fail ten thousand times, I shall never stop struggling in the river of time.' The legacy of Red Lotus warms your soul.",
+    "action": "HEAL:5000",
+    "choices": []
+  },
+  "stele_fang_yuan": {
+    "id": "stele_fang_yuan",
+    "text": "'There are no eternal enemies, only eternal interests.' You feel the ruthless logic of the Great Love Immortal Venerable.",
+    "action": "ADD_QI:20000",
+    "choices": []
+  },
+  "stele_fang_yuan_immortal": {
+    "id": "stele_fang_yuan_immortal",
+    "text": "'I struggle to survive in the river of time, for the sake of eternal life.' You absorb the essence of the Great Love Immortal Venerable.",
+    "action": "ADD_QI:5000000",
+    "choices": []
+  },
+  "stele_situ_nan": {
+    "id": "stele_situ_nan",
+    "text": "'You little brat! Your cultivation is so low it makes me want to puke. Go back into the bead and practice for another thousand years!' Situ Nan's voice echoes in your mind.",
+    "action": "ADD_STR:50",
+    "choices": []
+  },
+  "stele_wang_lin": {
+    "id": "stele_wang_lin",
+    "text": "'My life is my own, not the Heavens'! I am the God of Death, and I shall walk this path alone until the end of time.' You feel the iron resolve of Wang Lin.",
+    "action": "ADD_HP:100000",
+    "choices": []
+  },
+  "stele_bai_ning_bing": {
+    "id": "stele_bai_ning_bing",
+    "text": "'To live a spectacular life, even if it lasts but a moment... that is my Dao.' You feel the cold, fleeting beauty of Bai Ning Bing's soul.",
+    "action": "ADD_STR:300",
+    "choices": []
+  },
+  "stele_fang_zheng": {
+    "id": "stele_fang_zheng",
+    "text": "'Big brother, why must you always be the one? I shall rise from your shadow and show the world my worth!' You feel a mix of burning jealousy and resolve.",
+    "action": "ADD_QI:5000",
+    "choices": []
+  },
+  "stele_chi_hu": {
+    "id": "stele_chi_hu",
+    "text": "'My Giant Demon Clan knows no retreat. One punch to shatter the earth, one shout to deafen the gods!' You feel the raw, brute force of the Giant Demon lineage.",
+    "action": "ADD_STR:1000",
+    "choices": []
+  },
+  "stele_tu_si": {
+    "id": "stele_tu_si",
+    "text": "'The body of an Ancient God can carry the weight of the heavens. I am Tu Si, and my lineage is eternal.' You absorb a drop of Ancient God blood essence.",
+    "action": "ADD_HP:50000",
+    "choices": []
+  },
+  "stele_ta_ji": {
+    "id": "stele_ta_ji",
+    "text": "'Ancient Devil blood runs through my veins. In this world, cruelty is the only law and power is the only truth.' You feel a dark, demonic chill.",
+    "action": "ADD_STR:800",
+    "choices": []
+  },
+  "stele_all_seer": {
+    "id": "stele_all_seer",
+    "text": "'I have seen the threads of fate. Everything, from the fall of a leaf to the death of a god, is but a game in my palm.' You feel watched by an infinite gaze.",
+    "action": "ADD_QI:100000",
+    "choices": []
+  },
+  "stele_zhou_yi": {
+    "id": "stele_zhou_yi",
+    "text": "'Even if the entire world is against me, I shall wait for the rain... for her.' You feel a deep, eternal sorrow and unwavering love.",
+    "action": "HEAL:50000",
+    "choices": []
+  },
+  "stele_greed": {
+    "id": "stele_greed",
+    "text": "'I am Greed! I shall swallow the heavens and the earth! Everything in this world is mine to take!' You feel a hunger for power that cannot be satiated.",
+    "action": "ADD_QI:30000",
+    "choices": []
+  },
+  "stele_xuan_luo": {
+    "id": "stele_xuan_luo",
+    "text": "'The Ancient Dao is eternal. Even if the stars fall and the world ends, the blood of the Ancient remains.' You feel the pride of the Ancient Dao lineage.",
+    "action": "ADD_HP:200000",
+    "choices": []
+  },
+  "stele_paradise_earth": {
+    "id": "stele_paradise_earth",
+    "text": "'Kindness is the true path. Let us create a world without suffering... but even kindness needs the strength to protect it.' You feel a profound sense of peace.",
+    "action": "HEAL:100000",
+    "choices": []
+  },
+  "stele_spectral_soul": {
+    "id": "stele_spectral_soul",
+    "text": "'Kill. Kill. Kill. To kill is to cultivate. The souls of the weak are but a feast for the strong.' You feel a terrifying, murderous intent.",
+    "action": "ADD_STR:1500",
     "choices": []
   }
 }
