@@ -136,7 +136,7 @@ public class CombatManager {
             case LIGHTNING_BOLT -> org.example.logic.SoundManager.playSound("lightning");
             case BEAM -> org.example.logic.SoundManager.playSound("beam");
             case AOE_ZONE -> org.example.logic.SoundManager.playSound("aoe_zone");
-            default -> org.example.logic.SoundManager.playSound("fireball_wshot");
+            default -> org.example.logic.SoundManager.playSound("fireball_shot");
         }
     }
 
