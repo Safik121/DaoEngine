@@ -193,6 +193,7 @@ Vaše osobní encyklopedie dostupná z menu:
 - **Bestiář**: Statistiky a chování všech objevených monster.
 - **Atlas předmětů**: Detaily o každém nalezeném itemu.
 - **Recepty**: Přehled všech vašich řemeslných znalostí.
+- **Kultivace**: Přehled všech kultivačních úrovní.
 
 ![Karta v Lexiconu s detailním popisem nepřítele](doc_screens/lexicon_screen.png)
 
