@@ -288,6 +288,10 @@ public class DaoEngineApp extends Application {
         SoundManager.loadSound("click", "/sounds/click_effect.mp3");
         SoundManager.loadSound("inventory", "/sounds/inventory_effect.mp3");
         SoundManager.loadSound("pickup", "/sounds/item_pickup.mp3");
+        SoundManager.loadSound("sword_shot", "/sounds/sword_shot.mp3");
+        SoundManager.loadSound("fireball_shot", "/sounds/fireball_shot.mp3");
+        SoundManager.loadSound("enemy_hit", "/sounds/enemy_hit.mp3");
+        SoundManager.loadSound("player_hit", "/sounds/player_hit.mp3");
     }
 
     /**

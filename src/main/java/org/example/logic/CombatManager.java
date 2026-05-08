@@ -122,6 +122,13 @@ public class CombatManager {
                 state.getProjectiles().add(new Projectile(px, py, currentAngle, config, state.getPlayer(), true));
             }
         }
+
+        // Play shoot sound
+        if (config.projectileType == WeaponConfig.ProjectileType.FLYING_SWORD) {
+            org.example.logic.SoundManager.playSound("sword_shot");
+        } else {
+            org.example.logic.SoundManager.playSound("fireball_shot");
+        }
     }
 
     /**
@@ -184,10 +191,25 @@ public class CombatManager {
      */
     private void applyDamage(Projectile p, LivingEntity target, double deltaTime) {
         double damage = p.getDamage();
-        if (p.getType() == WeaponConfig.ProjectileType.BEAM || p.getType() == WeaponConfig.ProjectileType.AOE_ZONE) {
+        boolean isContinuous = (p.getType() == WeaponConfig.ProjectileType.BEAM || p.getType() == WeaponConfig.ProjectileType.AOE_ZONE);
+        
+        if (isContinuous) {
             damage *= deltaTime;
         }
+        
+        boolean wasAlive = target.getHp() > 0;
         target.takeDamage(damage);
+        
+        // Play hit sound (rate limited for beams/AOE by only playing if not already recently hit or just for single hits)
+        if (wasAlive) {
+            if (!isContinuous) {
+                if (p.isFriendly()) org.example.logic.SoundManager.playSound("enemy_hit");
+                else org.example.logic.SoundManager.playSound("player_hit");
+            } else {
+                // For continuous, we could use a timer, but for now let's just play it once per 0.5s or similar
+                // For simplicity, we just won't play continuous hit sounds here to avoid spam.
+            }
+        }
     }
 
     /**
@@ -266,6 +288,7 @@ public class CombatManager {
         
         if (distSqP < radiusSq) {
             state.getPlayer().takeDamage(bal.lightningPlayerDamage);
+            org.example.logic.SoundManager.playSound("player_hit");
         }
 
         // Enemy damage
@@ -276,6 +299,7 @@ public class CombatManager {
             
             if (distSqE < radiusSq) {
                 e.takeDamage(bal.lightningEnemyDamage);
+                org.example.logic.SoundManager.playSound("enemy_hit");
             }
         }
     }
