@@ -487,8 +487,6 @@ public class PlayState implements GameState {
         handleToggles();
 
         // --- World & Combat Logic ---
-        handleHotbarSelection();
-        handleWorldInteraction();
 
         // --- UI Interactions ---
         if (inventoryOpen) {
@@ -498,6 +496,9 @@ public class PlayState implements GameState {
 
         if (dialogManager.isActive()) {
             handleDialogueInteraction();
+        } else {
+            handleWorldInteraction();
+            handleHotbarSelection();
         }
 
         if (cultivationMenuOpen) {
@@ -608,6 +609,8 @@ public class PlayState implements GameState {
      * Now triggered by the 'E' key and uses proximity check for the nearest item.
      */
     private void handleWorldInteraction() {
+        if (dialogManager.isActive()) return;
+
         nearestInteractable = null;
         double minDist = Double.MAX_VALUE;
 
