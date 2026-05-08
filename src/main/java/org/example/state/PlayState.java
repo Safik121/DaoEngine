@@ -111,10 +111,14 @@ public class PlayState implements GameState {
 
     /** The currently active NPC/Stele dialogue, if any. */
     private DialogManager dialogManager;
-    /** Whether the ultimate goal of the current level was met. */
     private boolean levelVictoryAchieved = false;
-    /** Whether the cultivation/meditation menu is currently open. */
     private boolean cultivationMenuOpen = false;
+    /** Whether the player has died and the game over screen should be shown. */
+    private boolean gameOverRequested = false;
+    /** Whether the player has won and requested transition to the next level. */
+    private boolean nextLevelRequested = false;
+    /** Current scroll offset for the inventory grid. */
+    private double inventoryScrollY = 0;
 
     /** Simple notification tracking. */
     public static class Notification {
@@ -190,6 +194,14 @@ public class PlayState implements GameState {
     private CombatManager combatManager;
 
     private boolean pauseRequested = false;
+
+    public boolean isGameOverRequested() {
+        return gameOverRequested;
+    }
+
+    public boolean isNextLevelRequested() {
+        return nextLevelRequested;
+    }
 
     private void initManagers() {
         this.worldRenderer = new WorldRenderer();
@@ -291,11 +303,20 @@ public class PlayState implements GameState {
 
         // Restore World Timers
         maxTime = currentLevelConfig.tribulationTime;
-        tribulationTimer = new TribulationTimer(data.currentTime, () -> Platform.runLater(() -> combatManager.triggerTribulation(this)));
+        double startTime = data.currentTime;
+        if (startTime < 0) startTime = maxTime; // Reset for new levels
+
+        tribulationTimer = new TribulationTimer(startTime, () -> Platform.runLater(() -> combatManager.triggerTribulation(this)));
         if (data.inTribulationFlag == 1) {
             inTribulation = true;
         } else {
             tribulationTimer.start();
+        }
+
+        // --- FIXED: Reposition player if coordinates are default (-1 or 0) ---
+        if (data.playerX <= 0 || data.playerY <= 0) {
+            player.setX(currentLevel.width * currentLevel.tileSize / 2.0);
+            player.setY(currentLevel.height * currentLevel.tileSize / 2.0);
         }
 
         // Restore Entities
@@ -441,13 +462,12 @@ public class PlayState implements GameState {
         handleToggles();
 
         // --- World & Combat Logic ---
-        // We handle these BEFORE UI so that a click closing a UI element 
-        // doesn't immediately trigger a world action in the same frame.
         handleHotbarSelection();
         handleWorldInteraction();
 
         // --- UI Interactions ---
         if (inventoryOpen) {
+            handleInventoryScrolling();
             handleInventoryInteraction();
         }
 
@@ -487,7 +507,7 @@ public class PlayState implements GameState {
      */
     private void handleVictoryInputs() {
         if (Input.isKeyPressed(KeyCode.SPACE)) {
-            nextLevel();
+            nextLevelRequested = true;
         }
     }
 
@@ -737,7 +757,7 @@ public class PlayState implements GameState {
      */
     private void handleGameplayLogic(double deltaTime) {
         if (player.getHp() <= 0) {
-            resetLevel();
+            gameOverRequested = true;
             return;
         }
 
@@ -784,9 +804,9 @@ public class PlayState implements GameState {
         // enemies remain.
         if (enemyDied && !levelVictoryAchieved && inTribulation) {
             if (countLivingTribulationEnemies() == 0) {
-                GameLogger.info("[EVENT] Final Tribulation enemy defeated! Victory Achieved.");
+                GameLogger.info("[EVENT] Final Tribulation enemy defeated! Ascending to the next realm...");
                 levelVictoryAchieved = true;
-                currentMode = PlayMode.VICTORY;
+                nextLevelRequested = true; // Immediate transition to loading screen
             }
         }
 
@@ -884,8 +904,14 @@ public class PlayState implements GameState {
         // -- Right Click to Use --
         if (rmbPressed && !rmbWasPressed && draggedItem == null) {
             // Main slots
-            for (int i = 0; i < 25; i++) {
-                double sx = startX + (i % 5) * (slotSize + padding), sy = startY + (i / 5) * (slotSize + padding);
+            int mainCount = player.getInventory().getMainSlotsCount();
+            for (int i = 0; i < mainCount; i++) {
+                double sx = startX + (i % 5) * (slotSize + padding);
+                double sy = startY + (i / 5) * (slotSize + padding) - inventoryScrollY;
+                
+                // Only allow interaction if slot is within the visible area (startY to startY + 350)
+                if (sy < startY - 10 || sy > startY + 340) continue;
+
                 if (isInside(mx, my, sx, sy, slotSize)) {
                     Item item = player.getInventory().getMainInventory()[i];
                     if (item != null) {
@@ -912,8 +938,14 @@ public class PlayState implements GameState {
         // -- Left Click to Drag --
         if (lmbPressed && !lmbWasPressed && draggedItem == null) {
             // Main slots
-            for (int i = 0; i < 25; i++) {
-                double sx = startX + (i % 5) * (slotSize + padding), sy = startY + (i / 5) * (slotSize + padding);
+            int mainCount = player.getInventory().getMainSlotsCount();
+            for (int i = 0; i < mainCount; i++) {
+                double sx = startX + (i % 5) * (slotSize + padding);
+                double sy = startY + (i / 5) * (slotSize + padding) - inventoryScrollY;
+
+                // Only allow interaction if slot is within the visible area
+                if (sy < startY - 10 || sy > startY + 340) continue;
+
                 if (isInside(mx, my, sx, sy, slotSize)) {
                     draggedItem = player.getInventory().getMainInventory()[i];
                     if (draggedItem != null) {
@@ -973,6 +1005,19 @@ public class PlayState implements GameState {
         }
     }
 
+    private void handleInventoryScrolling() {
+        double scroll = Input.getScrollAndReset();
+        if (scroll != 0) {
+            inventoryScrollY -= scroll * 0.5; // Sensitivity
+            
+            // Bounds check
+            int rows = (int) Math.ceil(player.getInventory().getMainSlotsCount() / 5.0);
+            double maxScroll = Math.max(0, rows * (70 + 12) - 350); 
+            if (inventoryScrollY < 0) inventoryScrollY = 0;
+            if (inventoryScrollY > maxScroll) inventoryScrollY = maxScroll;
+        }
+    }
+
     public void addNotification(String message) {
         notifications.add(new Notification(message, 3.5)); // Display for 3.5 seconds
         if (notifications.size() > 5)
@@ -1018,8 +1063,15 @@ public class PlayState implements GameState {
         Item[] wrapper = new Item[] { draggedItem };
 
         // Main Inventory Slots
-        for (int i = 0; i < 25; i++) {
-            if (isInside(mx, my, sx + (i % 5) * (ss + pd), sy + (i / 5) * (ss + pd), ss)) {
+        int mainCount = player.getInventory().getMainSlotsCount();
+        for (int i = 0; i < mainCount; i++) {
+            double slotX = sx + (i % 5) * (ss + pd);
+            double slotY = sy + (i / 5) * (ss + pd) - inventoryScrollY;
+
+            // Only drop if within visible area
+            if (slotY < sy - 10 || slotY > sy + 340) continue;
+
+            if (isInside(mx, my, slotX, slotY, ss)) {
                 player.getInventory().swapSlots(wrapper, 0, player.getInventory().getMainInventory(), i);
                 dropped = true;
                 break;
@@ -1048,15 +1100,33 @@ public class PlayState implements GameState {
             }
         }
 
+        // --- NEW: TRASH AND WORLD DROP ---
+        if (!dropped) {
+            // Trash check (matching UI position: panelX + panelW - 100, panelY + panelH - 80, 60, 60)
+            if (isInside(mx, my, px + pw - 100, py + ph - 80, 60, 60)) {
+                GameLogger.info("Item destroyed: " + draggedItem.getName());
+                dropped = true;
+                // Leave wrapper[0] as the item, but we won't put it back anywhere.
+                // To actually destroy, we just set dropped=true and don't return it to source.
+                draggedItem = null;
+            } else if (!isInside(mx, my, px, py, pw, ph)) {
+                // Dropped outside the panel -> Spawn on ground
+                GameLogger.info("Item dropped on ground: " + draggedItem.getName());
+                itemsOnGround.add(new WorldItem(draggedItem, player.getX(), player.getY()));
+                dropped = true;
+                draggedItem = null;
+            }
+        }
+
         if (dropped) {
-            Item swappedOut = wrapper[0];
-            if (swappedOut != null) {
-                // If there was an item in the target slot, move it back to the source or
-                // backpack
-                if (sourceArr != null) {
-                    sourceArr[sourceIdx] = swappedOut;
-                } else {
-                    player.getInventory().addItem(swappedOut); // From crafting result back to inventory
+            if (draggedItem != null) { // This handles swaps
+                Item swappedOut = wrapper[0];
+                if (swappedOut != null) {
+                    if (sourceArr != null) {
+                        sourceArr[sourceIdx] = swappedOut;
+                    } else {
+                        player.getInventory().addItem(swappedOut);
+                    }
                 }
             }
         } else {
@@ -1205,13 +1275,18 @@ public class PlayState implements GameState {
         player.setActiveHotbarSlot(data.activeHotbarSlot);
 
         // Restore Inventory
-        for (int i = 0; i < 25; i++) {
-            String itemId = data.inventoryItemIds.get(i);
-            player.getInventory().getMainInventory()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+        int mainCount = player.getInventory().getMainSlotsCount();
+        for (int i = 0; i < mainCount; i++) {
+            if (i < data.inventoryItemIds.size()) {
+                String itemId = data.inventoryItemIds.get(i);
+                player.getInventory().getMainInventory()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+            }
         }
         for (int i = 0; i < 5; i++) {
-            String itemId = data.hotbarItemIds.get(i);
-            player.getInventory().getHotbar()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+            if (i < data.hotbarItemIds.size()) {
+                String itemId = data.hotbarItemIds.get(i);
+                player.getInventory().getHotbar()[i] = (itemId != null) ? ItemRegistry.createItem(itemId) : null;
+            }
         }
         // Restore World Progress
         this.tribulationTimer.reset(data.currentTime);
@@ -1308,8 +1383,52 @@ public class PlayState implements GameState {
     }
 
     /**
-     * Restores the player's Qi by a specific amount, up to max Qi.
+     * Creates a SaveData snapshot for transitioning to the next level.
+     * Increments the level index and scales difficulty.
      */
+    public SaveData getNextLevelTransitionData() {
+        SaveData data = new SaveData();
+        data.inventoryItemIds = new java.util.ArrayList<>();
+        data.hotbarItemIds = new java.util.ArrayList<>();
+
+        // Carry over player stats
+        data.hp = player.getHp();
+        data.maxHp = player.getMaxHp();
+        data.qi = player.getQi();
+        data.maxQi = player.getMaxQi();
+        data.activeHotbarSlot = player.getActiveHotbarSlot();
+        data.cultivationIndex = player.getCultivationManager().getCurrentRankIndex();
+        
+        // Signal new position needed
+        data.playerX = -1;
+        data.playerY = -1;
+        
+        // Carry over inventory
+        for (Item it : player.getInventory().getMainInventory()) {
+            data.inventoryItemIds.add(it != null ? it.getId() : null);
+        }
+        for (Item it : player.getInventory().getHotbar()) {
+            data.hotbarItemIds.add(it != null ? it.getId() : null);
+        }
+        
+        // Carry over world progress
+        data.mapLevel = this.mapLevel + 1;
+        data.currentLevelIndex = (this.currentLevelIndex + 1) % worldManifest.size();
+        data.levelConfigPath = "/levels/world/" + worldManifest.get(data.currentLevelIndex);
+        data.mapSeed = new Random().nextLong();
+
+        // Scale tribulation intensity
+        int baseTrib = currentLevelConfig.tribulationTotalEnemies;
+        // Increase count by 1 every map level (or use a factor)
+        data.tribulationSpawnLimit = baseTrib + (data.mapLevel - 1);
+        
+        // Reset world specific states
+        data.currentTime = -1; // Reset to config default
+        data.inTribulationFlag = 0;
+        data.victoryAchievedFlag = 0;
+        
+        return data;
+    }
     public void restoreQi(double amount) {
         if (player.getQi() + amount > player.getMaxQi()) {
             player.setStats(player.getHp(), player.getMaxHp(), player.getMaxQi(), player.getMaxQi());
@@ -1449,6 +1568,10 @@ public class PlayState implements GameState {
 
     public List<LightningStrike> getActiveStrikes() {
         return activeStrikes;
+    }
+
+    public double getInventoryScrollY() {
+        return inventoryScrollY;
     }
 
     public List<CombatManager.BurstTracker> getPendingBursts() {

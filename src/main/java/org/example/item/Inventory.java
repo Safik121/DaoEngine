@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Inventory {
     /** Number of slots in the main inventory grid. */
-    private static final int MAIN_SLOTS = 25;
+    private static final int MAIN_SLOTS = 30;
     /** Number of slots in the quick-access hotbar. */
     private static final int HOTBAR_SLOTS = 5;
 

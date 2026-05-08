@@ -192,9 +192,21 @@ public class CombatManager {
     public void triggerTribulation(PlayState state) {
         state.setInTribulation(true);
 
-        // Spawn the entire Tribulation wave immediately
-        for (int i = 0; i < state.getCurrentLevelConfig().tribulationTotalEnemies; i++) {
-            double[] pos = state.getGameMap().getRandomFreePositionAwayFrom(24, state.getPlayer().getX(), state.getPlayer().getY(), 250);
+        // Spawn the entire Tribulation wave
+        int targetCount = state.getCurrentLevelConfig().tribulationTotalEnemies;
+        for (int i = 0; i < targetCount; i++) {
+            double[] pos = null;
+            // Try to find a position away from player
+            for (int attempt = 0; attempt < 5; attempt++) {
+                pos = state.getGameMap().getRandomFreePositionAwayFrom(24, state.getPlayer().getX(), state.getPlayer().getY(), 300 - attempt * 50);
+                if (pos != null) break;
+            }
+            
+            // Fallback to any free position if still null
+            if (pos == null) {
+                pos = state.getGameMap().getRandomFreePosition(24);
+            }
+
             if (pos != null) {
                 String enemyId = state.getCurrentLevelConfig().enemyPool
                         .get(random.nextInt(state.getCurrentLevelConfig().enemyPool.size()));

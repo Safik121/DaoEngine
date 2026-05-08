@@ -342,12 +342,31 @@ public class PlayUIManager {
 
         double slotSize = 70, padding = 12;
         double startX = panelX + 40, startY = panelY + 80;
+        double scrollY = state.getInventoryScrollY();
 
-        for (int i = 0; i < 25; i++) {
+        // Clipping area for the inventory grid to prevent overlapping
+        gc.save();
+        gc.beginPath();
+        gc.rect(startX - 5, startY - 5, (slotSize + padding) * 5 + 10, 350); // Visible area for 4-5 rows
+        gc.clip();
+
+        for (int i = 0; i < 30; i++) {
             double sx = startX + (i % 5) * (slotSize + padding);
-            double sy = startY + (i / 5) * (slotSize + padding);
+            double sy = startY + (i / 5) * (slotSize + padding) - scrollY;
             drawSlot(gc, sx, sy, slotSize, state.getPlayer().getInventory().getItemInMain(i), Color.web("#444444"));
         }
+        gc.restore();
+
+        // Trash Icon
+        double trashX = panelX + panelW - 100;
+        double trashY = panelY + panelH - 80;
+        gc.setFill(Color.rgb(60, 20, 20));
+        gc.setStroke(Color.RED);
+        gc.fillRoundRect(trashX, trashY, 60, 60, 10, 10);
+        gc.strokeRoundRect(trashX, trashY, 60, 60, 10, 10);
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        gc.fillText("TRASH", trashX + 10, trashY + 35);
 
         double cX = panelX + 530, cY1 = panelY + 120, cY2 = panelY + 320, resX = panelX + 680, resY = panelY + 220;
         drawSlot(gc, cX, cY1, slotSize, state.getPlayer().getInventory().getCraftingInputs()[0], Color.web("#d4af37"));
@@ -727,7 +746,7 @@ public class PlayUIManager {
         gc.fillText(sub, w / 2.0, h / 2.0 + 60);
 
         gc.setFont(Font.font("Inter", 18));
-        gc.fillText("Press 'ESC' for Main Menu", w / 2.0, h / 2.0 + 120);
+        gc.fillText("Press 'SPACE' to Ascend to the Next Realm", w / 2.0, h / 2.0 + 120);
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 

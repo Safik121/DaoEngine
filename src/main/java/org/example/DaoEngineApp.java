@@ -22,6 +22,7 @@ import org.example.state.LoadingState;
 import org.example.logic.CultivationRegistry;
 import org.example.logic.CultivationRank;
 import org.example.logic.SkillRegistry;
+import org.example.state.GameOverState;
 
 /**
  * The main application class for DaoEngine: Path to Immortality.
@@ -169,7 +170,11 @@ public class DaoEngineApp extends Application {
                     }
                 }
             } else if (currentState instanceof PlayState play) {
-                if (play.isPauseRequested()) {
+                if (play.isGameOverRequested()) {
+                    currentState = new GameOverState();
+                } else if (play.isNextLevelRequested()) {
+                    currentState = new LoadingState(new PlayState(play.getNextLevelTransitionData()));
+                } else if (play.isPauseRequested()) {
                     play.setPauseRequested(false);
                     currentState = new PauseState(play);
                 }
@@ -187,6 +192,12 @@ public class DaoEngineApp extends Application {
             } else if (currentState instanceof LoadingState loading) {
                 if (loading.isFinished()) {
                     currentState = loading.getTargetState();
+                }
+            } else if (currentState instanceof GameOverState gameOver) {
+                if (gameOver.isTryAgainRequested()) {
+                    currentState = new LoadingState(new PlayState());
+                } else if (gameOver.isReturnToMenuRequested()) {
+                    currentState = new MenuState();
                 }
             }
         }
