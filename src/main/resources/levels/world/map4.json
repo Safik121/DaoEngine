@@ -26,24 +26,29 @@
       "name": "Ancestor Wang",
       "type": "NPC",
       "dialogueTreeId": "npc_wang_01",
+      "giveQuestId": "final_ascension",
+      "spriteId": "npc_wang",
       "count": 1
     },
     {
       "name": "Spectacular Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_bai_ning_bing",
+      "spriteId": "spirit_stele",
       "count": 2
     },
     {
       "name": "Shadowed Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_fang_zheng",
+      "spriteId": "spirit_stele",
       "count": 2
     },
     {
       "name": "Celestial Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_final",
+      "spriteId": "spirit_stele",
       "count": 2
     }
   ],

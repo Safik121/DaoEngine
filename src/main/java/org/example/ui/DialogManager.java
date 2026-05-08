@@ -39,6 +39,16 @@ public class DialogManager {
             return;
         }
 
+        // Check if the player is currently on a quest given by this NPC
+        if (entity.getGiveQuestId() != null && state.getQuestManager().isQuestActive(entity.getGiveQuestId())) {
+            String activeTreeId = treeId + "_active";
+            DialogueNode activeNode = DialogueRegistry.getNode(activeTreeId);
+            if (activeNode != null) {
+                treeId = activeTreeId;
+                org.example.GameLogger.info("Switching to active quest dialogue for " + entity.getName());
+            }
+        }
+
         DialogueNode startNode = DialogueRegistry.getNode(treeId);
         if (startNode == null) {
             GameLogger.error("Dialogue tree not found: " + treeId);

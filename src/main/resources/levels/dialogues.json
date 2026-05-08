@@ -13,6 +13,11 @@
     "action": "GIVE_QUEST:tutorial_han",
     "choices": []
   },
+  "npc_han_01_active": {
+    "id": "npc_han_01_active",
+    "text": "Still lingering here, little friend? The Dao of speed is not your forte, I see. Until those 5 Spirit Bats are extinguished, the path ahead remains sealed to you.",
+    "choices": [{ "text": "I will not fail you, Senior.", "nextNodeId": "exit" }]
+  },
   "npc_mo_01": {
     "id": "npc_mo_01",
     "text": "Cough... this old kotlík is falling apart! I need Iron Ore for my refinement. 10 pieces should do.",
@@ -20,6 +25,11 @@
       { "text": "I'll find the ore for you.", "nextNodeId": "npc_mo_accept" },
       { "text": "Good luck with your kotlík.", "nextNodeId": "exit" }
     ]
+  },
+  "npc_mo_01_active": {
+    "id": "npc_mo_01_active",
+    "text": "Cough... the heat of the forge fades! If you do not bring those 10 pieces of Iron Ore soon, this refinement will be but a heap of dross. Do not waste an old man's remaining years!",
+    "choices": [{ "text": "I'm on it, Elder Mo!", "nextNodeId": "exit" }]
   },
   "npc_mo_accept": {
     "id": "npc_mo_accept",
@@ -35,6 +45,11 @@
       { "text": "I need more time.", "nextNodeId": "exit" }
     ]
   },
+  "npc_shen_01_active": {
+    "id": "npc_shen_01_active",
+    "text": "Your sword intent is flickering like a candle in the wind. 10 Inferno Guards still draw breath... go! Either sharpen your resolve or perish in the flames.",
+    "choices": [{ "text": "My sword will be ready.", "nextNodeId": "exit" }]
+  },
   "npc_shen_accept": {
     "id": "npc_shen_accept",
     "text": "Then face the Inferno Guards! 10 of them must fall by your hand.",
@@ -47,6 +62,11 @@
     "choices": [
       { "text": "I will complete my path.", "nextNodeId": "npc_wang_accept" }
     ]
+  },
+  "npc_wang_01_active": {
+    "id": "npc_wang_01_active",
+    "text": "The Heavens are watching. 20 Archers still bar your path to the peak. If you cannot trample even these minor obstacles, how do you hope to attain the Great Dao?",
+    "choices": [{ "text": "I will trample them all.", "nextNodeId": "exit" }]
   },
   "npc_wang_accept": {
     "id": "npc_wang_accept",

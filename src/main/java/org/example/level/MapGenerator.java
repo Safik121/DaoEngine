@@ -147,6 +147,9 @@ public class MapGenerator {
                     if (ic.giveQuestId != null && !ic.giveQuestId.isEmpty()) {
                         entity.setGiveQuestId(ic.giveQuestId);
                     }
+                    if (ic.spriteId != null && !ic.spriteId.isEmpty()) {
+                        entity.setSpriteId(ic.spriteId);
+                    }
                     level.interactables.add(entity);
                 }
             }

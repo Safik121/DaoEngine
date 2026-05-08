@@ -26,36 +26,43 @@
       "name": "Sword Saint Shen",
       "type": "NPC",
       "dialogueTreeId": "npc_shen_01",
+      "giveQuestId": "trial_of_fire",
+      "spriteId": "npc_shen",
       "count": 1
     },
     {
       "name": "Crimson Heart Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_jie_dan",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Regret",
       "type": "STELE",
       "dialogueTreeId": "stele_red_lotus",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Eternal Interest",
       "type": "STELE",
       "dialogueTreeId": "stele_fang_yuan",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Heartless Heavens",
       "type": "STELE",
       "dialogueTreeId": "stele_dao_nature",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Insatiable Stele of Greed",
       "type": "STELE",
       "dialogueTreeId": "stele_greed",
+      "spriteId": "spirit_stele",
       "count": 1
     }
   ],

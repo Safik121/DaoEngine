@@ -26,24 +26,28 @@
       "name": "Immortal Stele of the Great Love",
       "type": "STELE",
       "dialogueTreeId": "stele_fang_yuan_immortal",
+      "spriteId": "spirit_stele",
       "count": 2
     },
     {
       "name": "True Sword Saint Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_bo_qing_true",
+      "spriteId": "spirit_stele",
       "count": 2
     },
     {
       "name": "Stele of Heartless Heavens",
       "type": "STELE",
       "dialogueTreeId": "stele_dao_nature",
+      "spriteId": "spirit_stele",
       "count": 2
     },
     {
       "name": "Dao Ancestor",
       "type": "NPC",
       "dialogueTreeId": "npc_dao_01",
+      "spriteId": "npc_dao",
       "count": 1
     }
   ],

@@ -255,5 +255,41 @@
     "frames": 1,
     "width": 1024,
     "height": 1024
+  },
+  "npc_han": {
+    "path": "/textures/disciple_han.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
+  },
+  "npc_mo": {
+    "path": "/textures/elder_mo.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
+  },
+  "npc_shen": {
+    "path": "/textures/sword_saint_shen.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
+  },
+  "npc_wang": {
+    "path": "/textures/ancestor_wang.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
+  },
+  "npc_guardian": {
+    "path": "/textures/heavenly_guardian.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
+  },
+  "npc_dao": {
+    "path": "/textures/dao_ancestor.png",
+    "frames": 1,
+    "width": 1024,
+    "height": 1024
   }
 }

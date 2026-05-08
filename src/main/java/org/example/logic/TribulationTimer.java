@@ -13,12 +13,7 @@ import org.example.GameLogger;
  */
 public class TribulationTimer {
 
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread t = new Thread(r, "TribulationTimerThread");
-        t.setDaemon(true);
-        return t;
-    });
-
+    private ScheduledExecutorService scheduler;
     private double remainingSeconds;
     private final AtomicBoolean active = new AtomicBoolean(false);
     private Runnable onExpireCallback;
@@ -26,6 +21,15 @@ public class TribulationTimer {
     public TribulationTimer(double durationSeconds, Runnable onExpire) {
         this.remainingSeconds = durationSeconds;
         this.onExpireCallback = onExpire;
+        initScheduler();
+    }
+
+    private void initScheduler() {
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "TribulationTimerThread");
+            t.setDaemon(true);
+            return t;
+        });
     }
 
     /**
@@ -34,13 +38,17 @@ public class TribulationTimer {
     public void start() {
         if (active.getAndSet(true)) return;
         
+        if (scheduler == null || scheduler.isShutdown()) {
+            initScheduler();
+        }
+        
         GameLogger.info("Starting independent Tribulation timer: " + remainingSeconds + "s");
         scheduler.scheduleAtFixedRate(() -> {
             if (!active.get()) return;
 
             remainingSeconds -= 1.0;
             if (remainingSeconds <= 0) {
-                stop();
+                active.set(false);
                 if (onExpireCallback != null) {
                     onExpireCallback.run();
                 }
@@ -68,15 +76,25 @@ public class TribulationTimer {
      */
     public void reset(double durationSeconds) {
         this.remainingSeconds = durationSeconds;
+        this.active.set(false); // Stop old cycle
         start();
     }
 
     /**
-     * Stops the timer and shuts down the thread pool.
+     * Stops the timer logic without killing the thread pool.
      */
     public void stop() {
         active.set(false);
-        scheduler.shutdown();
+    }
+
+    /**
+     * Permanently shuts down the thread pool.
+     */
+    public void shutdown() {
+        active.set(false);
+        if (scheduler != null) {
+            scheduler.shutdown();
+        }
     }
 
     public double getRemainingSeconds() {

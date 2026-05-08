@@ -22,11 +22,17 @@ public class InteractableEntity implements Interactable {
     private String giveQuestId;
     private boolean hasGivenReward = false;
 
+    private String spriteId;
+
     public InteractableEntity(double x, double y, String name, Type type) {
         this.x = x;
         this.y = y;
         this.name = name;
         this.type = type;
+    }
+
+    public void setSpriteId(String spriteId) {
+        this.spriteId = spriteId;
     }
 
     public void setDialogueTreeId(String dialogueTreeId) {
@@ -37,13 +43,12 @@ public class InteractableEntity implements Interactable {
         return dialogueTreeId;
     }
 
-    /**
-     * Sets an optional item to be granted upon completing the dialogue.
-     * 
-     * @param item The reward item.
-     */
     public void setRewardItem(Item item) {
         this.rewardItem = item;
+    }
+
+    public void setGiveQuestId(String giveQuestId) {
+        this.giveQuestId = giveQuestId;
     }
 
     @Override
@@ -63,7 +68,6 @@ public class InteractableEntity implements Interactable {
 
     /**
      * Renders the interactable entity on the canvas.
-     * NPCs appear as green squares, while Steles appear as grey pillars.
      * 
      * @param gc   The GraphicsContext used for drawing.
      * @param camX Current camera X offset.
@@ -71,13 +75,22 @@ public class InteractableEntity implements Interactable {
      */
     public void render(GraphicsContext gc, double camX, double camY) {
         if (type == Type.NPC) {
-            gc.setFill(Color.MEDIUMSPRINGGREEN);
-            gc.fillRect(x - camX, y - camY, 16, 16);
-            // Simple "head"
-            gc.strokeRect(x - camX, y - camY, 16, 16);
+            javafx.scene.image.Image npcImg = (spriteId != null) ? AssetRegistry.getSprite(spriteId, 0) : null;
+
+            if (npcImg != null) {
+                double drawWidth = 64;
+                double drawHeight = 64;
+                gc.drawImage(npcImg, x - camX + (16 - drawWidth) / 2, y - camY + (16 - drawHeight) / 2, drawWidth, drawHeight);
+            } else {
+                // Fallback green square
+                gc.setFill(Color.MEDIUMSPRINGGREEN);
+                gc.fillRect(x - camX, y - camY, 16, 16);
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(1);
+                gc.strokeRect(x - camX, y - camY, 16, 16);
+            }
         } else {
-            // Draw the high-quality Spirit Stele texture
-            javafx.scene.image.Image steleImg = AssetRegistry.getSprite("spirit_stele", 0);
+            javafx.scene.image.Image steleImg = (spriteId != null) ? AssetRegistry.getSprite(spriteId, 0) : null;
             if (steleImg != null) {
                 double drawWidth = 96;
                 double drawHeight = 144;
@@ -101,7 +114,6 @@ public class InteractableEntity implements Interactable {
     public Type getType() { return type; }
     public Item getRewardItem() { return rewardItem; }
     public String getGiveQuestId() { return giveQuestId; }
-    public void setGiveQuestId(String id) { this.giveQuestId = id; }
     public boolean hasGivenReward() { return hasGivenReward; }
     public void setHasGivenReward(boolean val) { this.hasGivenReward = val; }
 }

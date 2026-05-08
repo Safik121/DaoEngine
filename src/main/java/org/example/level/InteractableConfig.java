@@ -19,6 +19,8 @@ public class InteractableConfig {
     public String rewardItemId;
     /** Optional Quest ID to be granted upon interacting with this entity. */
     public String giveQuestId;
+    /** Optional Sprite ID defined in assets.json for custom rendering. */
+    public String spriteId;
     /** How many instances to spawn of this specific configuration. */
     public int count = 1;
 

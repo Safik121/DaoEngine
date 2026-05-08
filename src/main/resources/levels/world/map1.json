@@ -29,24 +29,29 @@
       "name": "Disciple Han",
       "type": "NPC",
       "dialogueTreeId": "npc_han_01",
+      "giveQuestId": "tutorial_han",
+      "spriteId": "npc_han",
       "count": 1
     },
     {
       "name": "Faded Spirit Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_ning_qi",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Arrogant Spirit Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_situ_nan",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Defiance",
       "type": "STELE",
       "dialogueTreeId": "stele_defiance",
+      "spriteId": "spirit_stele",
       "count": 1
     }
   ],

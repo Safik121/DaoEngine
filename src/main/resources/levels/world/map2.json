@@ -26,24 +26,29 @@
       "name": "Elder Mo",
       "type": "NPC",
       "dialogueTreeId": "npc_mo_01",
+      "giveQuestId": "iron_elder_mo",
+      "spriteId": "npc_mo",
       "count": 1
     },
     {
       "name": "Mine Foundation Stele",
       "type": "STELE",
       "dialogueTreeId": "stele_zhu_ji",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Loneliness",
       "type": "STELE",
       "dialogueTreeId": "stele_loneliness",
+      "spriteId": "spirit_stele",
       "count": 1
     },
     {
       "name": "Stele of Karma",
       "type": "STELE",
       "dialogueTreeId": "stele_karma",
+      "spriteId": "spirit_stele",
       "count": 1
     }
   ],
