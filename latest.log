@@ -1,18 +1,25 @@
-[2026-04-28 13:39:11] [INFO] Log file 'latest.log' initialized.
-[2026-04-28 13:39:11] [INFO] Loaded global game config: DaoEngine: Path to Immortality
-[2026-04-28 13:39:11] [INFO] Logger initialized with level: INFO
-[2026-04-28 13:39:11] [INFO] Loaded 13 weapon configurations.
-[2026-04-28 13:39:11] [INFO] Loaded 59 items from JSON.
-[2026-04-28 13:39:11] [INFO] Loaded 27 crafting recipes from JSON.
-[2026-04-28 13:39:11] [INFO] Loaded 4 enemy configurations.
-[2026-04-28 13:39:11] [INFO] Loaded 75 sprite definitions.
-[2026-04-28 13:39:11] [INFO] Loaded 4 loot tables.
-[2026-04-28 13:39:11] [INFO] Loaded 5 quests.
-[2026-04-28 13:39:11] [INFO] Loaded 16 dialogue nodes.
-[2026-04-28 13:39:11] [INFO] Loaded 20 cultivation stages.
-[2026-04-28 13:39:11] [INFO] Loaded 5 techniques from JSON.
-[2026-04-28 13:39:12] [INFO] Starting independent Tribulation timer: 60.0s
-[2026-04-28 13:39:34] [INFO] Restored 100.0 Qi.
-[2026-04-28 13:39:34] [INFO] Increased max Qi by 25.0
-[2026-04-28 13:39:35] [INFO] Restored 100.0 Qi.
-[2026-04-28 13:39:35] [INFO] Increased max Qi by 25.0
+[2026-05-08 12:03:14] [INFO] Log file 'latest.log' initialized.
+[2026-05-08 12:03:14] [INFO] Loaded global game config: DaoEngine: Path to Immortality
+[2026-05-08 12:03:14] [INFO] Logger initialized with level: INFO
+[2026-05-08 12:03:14] [INFO] Loaded 13 weapon configurations.
+[2026-05-08 12:03:14] [INFO] Loaded 59 items from JSON.
+[2026-05-08 12:03:14] [INFO] Loaded 27 crafting recipes from JSON.
+[2026-05-08 12:03:14] [INFO] Loaded 4 enemy configurations.
+[2026-05-08 12:03:14] [INFO] Loaded 99 sprite definitions.
+[2026-05-08 12:03:14] [INFO] Loaded 4 loot tables.
+[2026-05-08 12:03:14] [INFO] Loaded 5 quests.
+[2026-05-08 12:03:14] [INFO] Loaded 43 dialogue nodes.
+[2026-05-08 12:03:14] [INFO] Loaded 20 cultivation stages.
+[2026-05-08 12:03:14] [INFO] Loaded 5 techniques from JSON.
+[2026-05-08 12:03:15] [INFO] Starting independent Tribulation timer: 60.0s
+[2026-05-08 12:03:29] [INFO] Started dialogue tree [stele_situ_nan] with Arrogant Spirit Stele
+[2026-05-08 12:03:35] [INFO] Started dialogue tree [stele_ning_qi] with Faded Spirit Stele
+[2026-05-08 12:03:47] [INFO] Started dialogue tree [stele_defiance] with Stele of Defiance
+[2026-05-08 12:04:22] [INFO] Started dialogue tree [npc_han_01] with Disciple Han
+[2026-05-08 12:04:23] [INFO] [DIALOGUE] Selected choice index: 0 (I will clear them out.)
+[2026-05-08 12:04:23] [INFO] Dialogue Choice Selected: I will clear them out. -> npc_han_accept
+[2026-05-08 12:04:23] [INFO] [Quest] Added: Clearing the Valley
+[2026-05-08 12:04:24] [INFO] Switching to active quest dialogue for Disciple Han
+[2026-05-08 12:04:24] [INFO] Started dialogue tree [npc_han_01_active] with Disciple Han
+[2026-05-08 12:04:25] [INFO] [DIALOGUE] Selected choice index: 0 (I will not fail you, Senior.)
+[2026-05-08 12:04:25] [INFO] Dialogue Choice Selected: I will not fail you, Senior. -> exit

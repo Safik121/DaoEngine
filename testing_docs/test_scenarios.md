@@ -43,53 +43,53 @@ Technika Pairwise Testing zajišťuje, že jsou otestovány všechny kombinace d
 ---
 
 ## 2.2 Testy průchodů (Process Testing)
-V této sekci analyzujeme dva klíčové procesy v aplikaci pomocí procesních diagramů a techniky TDL 2 (Test Design Language level 2 - pokrytí všech hran).
+V této sekci analyzujeme komplexní proces aplikace poškození v souboji. Tento proces byl vybrán pro svou netrivialitu a vysoký počet rozhodovacích bodů (5+), což umožňuje hloubkovou analýzu logiky enginu.
 
-### 2.2.1 Proces A: Dokončení questu (Quest Completion)
-Tento proces popisuje interakci mezi smrtí nepřítele a progresivním systémem.
-
-```mermaid
-graph TD
-    A[Začátek: Nepřítel zabit] --> B[CombatManager detekuje smrt]
-    B --> C[QuestManager.notifyEvent 'KILL', enemyId]
-    C --> D{Má hráč aktivní quest na tento cíl?}
-    D -- Ne --> E[Konec: Žádná změna]
-    D -- Ano --> F[Quest.addProgress 1]
-    F --> G{Je quest dokončen?}
-    G -- Ne --> H[Zobrazení notifikace o postupu]
-    G -- Ano --> I[QuestManager.completeQuest]
-    I --> J[Přidání odměn do inventáře]
-    I --> K[Nastavení WorldState flagu]
-    K --> L[Zobrazení notifikace o dokončení]
-    L --> M[Konec]
-```
-
-**Testovací průchody (TDL 2):**
-1.  **P1 (Negative path)**: Zabití nepřítele, který není v žádném questu. (Hrany: A-B, B-C, C-D, D-E)
-2.  **P2 (Partial progress)**: Zabití nepřítele, inkrementace counteru, ale quest pokračuje. (Hrany: D-F, F-G, G-H, H-M)
-3.  **P3 (Complete path)**: Poslední zabití vedoucí k dokončení a předání odměn. (Hrany: G-I, I-J, J-K, K-L, L-M)
-
-### 2.2.2 Proces B: Soubojový cyklus (Combat Cycle)
-Proces popisující aplikaci poškození a stavových efektů při zásahu.
+### 2.2.1 Komplexní proces: Výpočet a aplikace poškození (Combat Damage Flow)
+Tento proces popisuje cestu od dopadu útoku na cíl až po vyhodnocení smrti a generování lootu.
 
 ```mermaid
 graph TD
-    S[Start: Projektil zasáhl cíl] --> Hit[CombatManager.applyDamage]
-    Hit --> Calc[Výpočet Damage dle Atributů]
-    Calc --> SE{Má projektil efekt?}
-    SE -- Ano --> AddE[StatusEffectManager.addEffect]
-    SE -- Ne --> RedHP[Snížení HP LivingEntity]
-    AddE --> RedHP
-    RedHP --> Dead{HP <= 0?}
-    Dead -- Ano --> Notify[Zavolání OnDeath Eventu]
-    Dead -- Ne --> End[Konec cyklu]
-    Notify --> End
+    A[Start: Útok dopadl na cíl] --> D1{Zásah: Accuracy > Dodge?}
+    D1 -- Ne --> B[Konec: Útok minul]
+    D1 -- Ano --> D2{Kritický zásah: Rand < Crit?}
+    
+    D2 -- Ano --> C[Zvýšení dmg o 50%]
+    D2 -- Ne --> D[Základní výpočet dmg]
+    
+    C --> D3{Cíl má rezistenci na daný element?}
+    D --> D3
+    
+    D3 -- Ano --> E[Snížení dmg o 25%]
+    D3 -- Ne --> F[Výpočet výsledného poškození]
+    
+    E --> F
+    F --> D4{Má útok sekundární efekt?}
+    
+    D4 -- Ano --> G[StatusEffectManager.addEffect]
+    D4 -- Ne --> H[Snížení HP LivingEntity]
+    
+    G --> H
+    H --> D5{HP entity <= 0?}
+    
+    D5 -- Ano --> I[Trigger OnDeath Event & Loot]
+    D5 -- Ne --> J[Konec: Cíl přežil]
+    
+    I --> K[Konec]
+    J --> K
 ```
 
-**Testovací průchody (TDL 2):**
-1.  **P4 (Simple Hit)**: Zásah bez efektu, cíl přežije. (Hrany: S-Hit, Hit-Calc, Calc-SE, SE-RedHP, RedHP-Dead, Dead-End)
-2.  **P5 (Effect Hit)**: Zásah s efektem (např. oheň), cíl přežije. (Hrany: SE-AddE, AddE-RedHP)
-3.  **P6 (Lethal Hit)**: Zásah, který sníží HP na 0 a vyvolá smrt. (Hrany: Dead-Notify, Notify-End)
+### 2.2.2 Analýza průchodů (TDL 2)
+Technika TDL 2 (Test Design Language level 2) vyžaduje pokrytí všech hran v grafu. Pro tento komplexní proces byly definovány následující testovací průchody:
+
+| ID | Název průchodu | Popis cesty (Hrany / Rozhodnutí) | Očekávaný výsledek |
+| :--- | :--- | :--- | :--- |
+| **P1** | Miss Path | D1 (Ne) | Útok okamžitě končí bez efektu na cíl. |
+| **P2** | Normal Hit (Survival) | D1 (Ano) -> D2 (Ne) -> D3 (Ne) -> D4 (Ne) -> D5 (Ne) | Standardní poškození, žádný efekt, cíl přežije. |
+| **P3** | Critical Resistance Hit | D1 (Ano) -> D2 (Ano) -> D3 (Ano) -> D4 (Ne) -> D5 (Ne) | Kritický zásah, ale snížený rezistencí, cíl přežije. |
+| **P4** | Effect Application | D1 (Ano) -> D2 (Ne) -> D3 (Ne) -> D4 (Ano) -> D5 (Ne) | Zásah s aplikací stavového efektu (např. oheň). |
+| **P5** | Lethal Critical Hit | D1 (Ano) -> D2 (Ano) -> D3 (Ne) -> D4 (Ne) -> D5 (Ano) | Kritický zásah bez rezistence, který zabije cíl a vyvolá loot. |
+| **P6** | Minimal Survivable Hit | D1 (Ano) -> D2 (Ne) -> D3 (Ano) -> D4 (Ano) -> D5 (Ne) | Nejslabší zásah (rezistence + efekt), který cíl těsně přežije. |
 
 ---
 
