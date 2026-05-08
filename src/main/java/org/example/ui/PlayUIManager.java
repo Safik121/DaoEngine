@@ -27,6 +27,7 @@ import org.example.logic.DialogueChoice;
 public class PlayUIManager {
     private static final Color GOLD = Color.web("#D4AF37");
     private static final Color DARK_INK = Color.web("#1A1A1A");
+    private Item hoveredItem = null;
 
     /**
      * Main rendering entry point for all UI overlays.
@@ -34,6 +35,7 @@ public class PlayUIManager {
      * @param state The current game state.
      */
     public void render(GraphicsContext gc, PlayState state) {
+        hoveredItem = null; // Reset every frame
         renderHUD(gc, state);
         renderMinimap(gc, state);
 
@@ -59,6 +61,10 @@ public class PlayUIManager {
             renderGameOverScreen(gc, state);
 
         renderDraggedItem(gc, state);
+        
+        if (hoveredItem != null) {
+            renderTooltip(gc, hoveredItem, Input.getMouseX(), Input.getMouseY());
+        }
     }
 
     /**
@@ -270,8 +276,7 @@ public class PlayUIManager {
             gc.strokeRect(sx, startY, slotSize, slotSize);
 
             Item item = state.getPlayer().getInventory().getItemInHotbar(i);
-            if (item != null)
-                drawItemIcon(gc, sx, startY, slotSize, item, Color.SKYBLUE);
+            drawSlot(gc, sx, startY, slotSize, item, isActive ? Color.web(ui.activeSlotHighlight) : Color.WHITE, Input.getMouseX(), Input.getMouseY());
 
             gc.setFill(Color.LIGHTGRAY);
             gc.setFont(Font.font("Arial", 12));
@@ -305,9 +310,23 @@ public class PlayUIManager {
         if (skill != null) {
             // Skill Icon (placeholder or text for now)
             gc.setFill(Color.web("#AEEEEE"));
-            gc.setFont(Font.font("Serif", FontWeight.BOLD, 12));
+            gc.setFont(Font.font("Serif", FontWeight.BOLD, 10)); // Smaller font for long names
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText(skill.getName().toUpperCase(), x + slotSize / 2, y + slotSize / 2);
+            
+            String name = skill.getName().toUpperCase();
+            if (name.contains(" ")) {
+                String[] parts = name.split(" ");
+                // If it has "Technique" or "Art" or "Slash" as the last word, we can handle it
+                if (parts.length >= 3) {
+                   gc.fillText(parts[0] + " " + parts[1], x + slotSize / 2, y + slotSize / 2 - 5);
+                   gc.fillText(parts[2], x + slotSize / 2, y + slotSize / 2 + 7);
+                } else {
+                   gc.fillText(parts[0], x + slotSize / 2, y + slotSize / 2 - 5);
+                   gc.fillText(parts[1], x + slotSize / 2, y + slotSize / 2 + 7);
+                }
+            } else {
+                gc.fillText(name, x + slotSize / 2, y + slotSize / 2);
+            }
 
             // Qi Cost
             gc.setFill(GOLD);
@@ -381,7 +400,12 @@ public class PlayUIManager {
         for (int i = 0; i < 30; i++) {
             double sx = startX + (i % 5) * (slotSize + padding);
             double sy = startY + (i / 5) * (slotSize + padding) - scrollY;
-            drawSlot(gc, sx, sy, slotSize, state.getPlayer().getInventory().getItemInMain(i), Color.web("#444444"));
+            
+            // Only draw and check hover if within the vertical clipping area
+            boolean visible = (sy >= startY - 5 && sy <= startY + 345);
+            Item item = state.getPlayer().getInventory().getItemInMain(i);
+            
+            drawSlot(gc, sx, sy, slotSize, item, Color.web("#444444"), visible ? Input.getMouseX() : -1000, visible ? Input.getMouseY() : -1000);
         }
         gc.restore();
 
@@ -397,10 +421,10 @@ public class PlayUIManager {
         gc.fillText("TRASH", trashX + 10, trashY + 35);
 
         double cX = panelX + 530, cY1 = panelY + 120, cY2 = panelY + 320, resX = panelX + 680, resY = panelY + 220;
-        drawSlot(gc, cX, cY1, slotSize, state.getPlayer().getInventory().getCraftingInputs()[0], Color.web("#d4af37"));
-        drawSlot(gc, cX, cY2, slotSize, state.getPlayer().getInventory().getCraftingInputs()[1], Color.web("#d4af37"));
+        drawSlot(gc, cX, cY1, slotSize, state.getPlayer().getInventory().getCraftingInputs()[0], Color.web("#d4af37"), Input.getMouseX(), Input.getMouseY());
+        drawSlot(gc, cX, cY2, slotSize, state.getPlayer().getInventory().getCraftingInputs()[1], Color.web("#d4af37"), Input.getMouseX(), Input.getMouseY());
         drawSlot(gc, resX, resY, slotSize + 15, state.getPlayer().getInventory().getCraftingResult(),
-                Color.web("#2ecc71"));
+                Color.web("#2ecc71"), Input.getMouseX(), Input.getMouseY());
 
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
@@ -495,14 +519,21 @@ public class PlayUIManager {
     /**
      * Helper to draw a single inventory slot frame.
      */
-    private void drawSlot(GraphicsContext gc, double x, double y, double size, Item item, Color borderColor) {
-        gc.setFill(Color.rgb(40, 40, 45));
+    private void drawSlot(GraphicsContext gc, double x, double y, double size, Item item, Color borderColor, double mx, double my) {
+        boolean hover = (mx >= x && mx <= x + size && my >= y && my <= y + size);
+        
+        gc.setFill(hover ? Color.rgb(60, 60, 70) : Color.rgb(40, 40, 45));
         gc.fillRect(x, y, size, size);
-        gc.setStroke(borderColor);
-        gc.setLineWidth((borderColor == Color.GOLD || borderColor.equals(Color.web("#2ecc71"))) ? 3 : 1);
+        gc.setStroke(hover ? Color.WHITE : borderColor);
+        gc.setLineWidth((borderColor == Color.GOLD || borderColor.equals(Color.web("#2ecc71")) || hover) ? 3 : 1);
         gc.strokeRect(x, y, size, size);
-        if (item != null)
+        
+        if (item != null) {
             drawItemIcon(gc, x, y, size, item, Color.ORANGE);
+            if (hover) {
+                hoveredItem = item;
+            }
+        }
     }
 
     /**
@@ -918,5 +949,55 @@ public class PlayUIManager {
         gc.setStroke(Color.WHITE);
         gc.strokeRect(mx - s / 2, my - s / 2, s, s);
         gc.setGlobalAlpha(1.0);
+    }
+
+    /**
+     * Renders a detailed tooltip for the hovered item.
+     */
+    private void renderTooltip(GraphicsContext gc, Item item, double x, double y) {
+        double width = 220;
+        double tx = x + 15;
+        double ty = y + 15;
+
+        // Keep on screen
+        if (tx + width > gc.getCanvas().getWidth()) tx = x - width - 15;
+        
+        String name = item.getName();
+        String desc = item.getDescription();
+        String typeStr = item.getType().toString();
+
+        // Calculate height based on description
+        double descHeight = 40;
+        if (desc != null && desc.length() > 30) descHeight = 60;
+        double height = 70 + descHeight;
+
+        // Background
+        gc.setFill(Color.rgb(20, 20, 25, 0.95));
+        gc.setStroke(GOLD);
+        gc.setLineWidth(2);
+        gc.fillRoundRect(tx, ty, width, height, 10, 10);
+        gc.strokeRoundRect(tx, ty, width, height, 10, 10);
+
+        // Name
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        gc.fillText(name, tx + 10, ty + 25);
+
+        // Type
+        gc.setFill(Color.AQUAMARINE);
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 11));
+        gc.fillText(typeStr, tx + 10, ty + 42);
+
+        // Separator
+        gc.setStroke(Color.rgb(100, 100, 100, 0.5));
+        gc.setLineWidth(1);
+        gc.strokeLine(tx + 10, ty + 50, tx + width - 10, ty + 50);
+
+        // Description
+        gc.setFill(Color.LIGHTGRAY);
+        gc.setFont(Font.font("Arial", 13));
+        if (desc != null) {
+            gc.fillText(desc, tx + 10, ty + 68, width - 20);
+        }
     }
 }

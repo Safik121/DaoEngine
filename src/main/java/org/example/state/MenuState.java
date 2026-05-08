@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import org.example.AssetRegistry;
 import org.example.ConfigManager;
 import org.example.Input;
+import org.example.logic.SoundManager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -66,11 +67,22 @@ public class MenuState implements GameState {
         int width = ConfigManager.getInstance().getConfig().engine.width;
         double centerX = width / 2.0 - btnWidth / 2.0;
 
-        buttons.add(new MenuButton("PLAY", centerX, startY, btnWidth, btnHeight, () -> startGameRequested = true));
-        buttons.add(new MenuButton("LOAD", centerX, startY + spacing, btnWidth, btnHeight, () -> loadRequested = true));
-        buttons.add(new MenuButton("BOOK OF KNOWLEDGE", centerX, startY + spacing * 2, btnWidth, btnHeight,
-                () -> lexiconRequested = true));
-        buttons.add(new MenuButton("EXIT", centerX, startY + spacing * 3, btnWidth, btnHeight, () -> System.exit(0)));
+        buttons.add(new MenuButton("PLAY", centerX, startY, btnWidth, btnHeight, () -> {
+            SoundManager.playSound("click");
+            startGameRequested = true;
+        }));
+        buttons.add(new MenuButton("LOAD", centerX, startY + spacing, btnWidth, btnHeight, () -> {
+            SoundManager.playSound("click");
+            loadRequested = true;
+        }));
+        buttons.add(new MenuButton("BOOK OF KNOWLEDGE", centerX, startY + spacing * 2, btnWidth, btnHeight, () -> {
+            SoundManager.playSound("click");
+            lexiconRequested = true;
+        }));
+        buttons.add(new MenuButton("EXIT", centerX, startY + spacing * 3, btnWidth, btnHeight, () -> {
+            SoundManager.playSound("click");
+            System.exit(0);
+        }));
     }
 
     @Override

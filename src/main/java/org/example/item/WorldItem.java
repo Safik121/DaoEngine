@@ -61,6 +61,7 @@ public class WorldItem implements Interactable {
         if (state.getPlayer().getInventory().addItem(this.item)) {
             state.getItemsOnGround().remove(this);
             GameLogger.info("[Item] Picked up: " + item.getName());
+            org.example.logic.SoundManager.playSound("pickup");
             
             // Trigger Pickup Event
             state.getEventManager().triggerEvent(GameEvent.ITEM_PICKUP, item.getId(), 1, state);

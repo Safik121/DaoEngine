@@ -8,6 +8,7 @@ import org.example.logic.CombatManager;
 import org.example.logic.TribulationTimer;
 import org.example.ConfigManager;
 import org.example.Input;
+import org.example.logic.SoundManager;
 import org.example.SaveData;
 import org.example.entity.Enemy;
 import org.example.entity.Player;
@@ -573,6 +574,7 @@ public class PlayState implements GameState {
                     // Check if mouse is over this choice line (expanded area)
                     if (mx >= x + 10 && mx <= x + width - 10 && my >= choiceY - 18 && my <= choiceY + 12) {
                         GameLogger.info("[DIALOGUE] Selected choice index: " + i + " (" + choices.get(i).getText() + ")");
+                        SoundManager.playSound("click");
                         dialogManager.selectChoice(i, this);
                         return;
                     }
@@ -582,6 +584,7 @@ public class PlayState implements GameState {
         } else {
             // Mouse click support for advancing dialogue when no choices are present
             if (lmbPressed && !lmbWasPressed) {
+                SoundManager.playSound("click");
                 dialogManager.advance(this);
             }
         }
@@ -631,6 +634,7 @@ public class PlayState implements GameState {
         boolean invIsPressed = Input.isKeyPressed(KeyCode.I);
         if (invIsPressed && !inventoryWasPressed) {
             inventoryOpen = !inventoryOpen;
+            SoundManager.playSound("inventory");
             if (!inventoryOpen && draggedItem != null && sourceArr != null) {
                 sourceArr[sourceIdx] = draggedItem;
                 draggedItem = null;
@@ -641,12 +645,15 @@ public class PlayState implements GameState {
         boolean qIsPressed = Input.isKeyPressed(KeyCode.Q);
         if (qIsPressed && !questLogWasPressed) {
             questLogOpen = !questLogOpen;
+            SoundManager.playSound("inventory");
         }
         questLogWasPressed = qIsPressed;
 
         boolean mapIsPressed = Input.isKeyPressed(KeyCode.M);
-        if (mapIsPressed && !mapWasPressed)
+        if (mapIsPressed && !mapWasPressed) {
             showFullMap = !showFullMap;
+            SoundManager.playSound("inventory");
+        }
         mapWasPressed = mapIsPressed;
 
         // --- CULTIVATION MENU TOGGLE ---
@@ -1127,6 +1134,7 @@ public class PlayState implements GameState {
             // Trash check (matching UI position: panelX + panelW - 100, panelY + panelH - 80, 60, 60)
             if (isInside(mx, my, px + pw - 100, py + ph - 80, 60, 60)) {
                 GameLogger.info("Item destroyed: " + draggedItem.getName());
+                SoundManager.playSound("click");
                 dropped = true;
                 // Leave wrapper[0] as the item, but we won't put it back anywhere.
                 // To actually destroy, we just set dropped=true and don't return it to source.

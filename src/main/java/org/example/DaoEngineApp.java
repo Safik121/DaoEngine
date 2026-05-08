@@ -18,6 +18,7 @@ import org.example.logic.SkillRegistry;
 import org.example.logic.LootRegistry;
 import org.example.logic.QuestRegistry;
 import org.example.logic.DialogueRegistry;
+import org.example.logic.SoundManager;
 
 /**
  * The main application class for DaoEngine: Path to Immortality.
@@ -270,9 +271,6 @@ public class DaoEngineApp extends Application {
     }
 
     /**
-     * Loads all static game data registries from JSON.
-     */
-    /**
      * Initializes all game registries (items, enemies, quests, etc.) from JSON.
      */
     private void initRegistries() {
@@ -280,11 +278,16 @@ public class DaoEngineApp extends Application {
         ItemRegistry.loadData("/items/items.json", "/items/recipes.json");
         EnemyRegistry.loadConfigs("/enemies/enemy_configs.json");
         AssetRegistry.loadAssets("/assets.json");
-        org.example.logic.LootRegistry.loadConfigs("/levels/loot_tables.json");
-        org.example.logic.QuestRegistry.loadQuests("/levels/quests.json");
-        org.example.logic.DialogueRegistry.loadDialogues("/levels/dialogues.json");
+        LootRegistry.loadConfigs("/levels/loot_tables.json");
+        QuestRegistry.loadQuests("/levels/quests.json");
+        DialogueRegistry.loadDialogues("/levels/dialogues.json");
         CultivationRegistry.loadConfigs("/levels/cultivation.json");
         SkillRegistry.loadSkills("/levels/skills.json");
+
+        // Load Sounds
+        SoundManager.loadSound("click", "/sounds/click_effect.mp3");
+        SoundManager.loadSound("inventory", "/sounds/inventory_effect.mp3");
+        SoundManager.loadSound("pickup", "/sounds/item_pickup.mp3");
     }
 
     /**

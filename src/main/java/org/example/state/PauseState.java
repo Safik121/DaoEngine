@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import org.example.GameLogger;
 import org.example.Input;
 import org.example.SaveManager;
+import org.example.logic.SoundManager;
 
 /**
  * A dedicated game state for the Pause Menu.
@@ -54,11 +55,11 @@ public class PauseState implements GameState {
         double centerX = backgroundState.getScreenWidth() / 2.0;
 
         if (backgroundState.getCurrentPauseState() == PlayState.PauseMenuState.MAIN) {
-            if (PlayState.isInside(mx, my, centerX - 150, 260, 300, 50)) resumeRequested = true;
-            if (PlayState.isInside(mx, my, centerX - 150, 320, 300, 50)) lexiconRequested = true;
-            if (PlayState.isInside(mx, my, centerX - 150, 380, 300, 50)) backgroundState.setCurrentPauseState(PlayState.PauseMenuState.SAVE_SELECT);
-            if (PlayState.isInside(mx, my, centerX - 150, 440, 300, 50)) backgroundState.setCurrentPauseState(PlayState.PauseMenuState.LOAD_SELECT);
-            if (PlayState.isInside(mx, my, centerX - 150, 500, 300, 50)) returnToMenuRequested = true;
+            if (PlayState.isInside(mx, my, centerX - 150, 260, 300, 50)) { resumeRequested = true; SoundManager.playSound("click"); }
+            if (PlayState.isInside(mx, my, centerX - 150, 320, 300, 50)) { lexiconRequested = true; SoundManager.playSound("click"); }
+            if (PlayState.isInside(mx, my, centerX - 150, 380, 300, 50)) { backgroundState.setCurrentPauseState(PlayState.PauseMenuState.SAVE_SELECT); SoundManager.playSound("click"); }
+            if (PlayState.isInside(mx, my, centerX - 150, 440, 300, 50)) { backgroundState.setCurrentPauseState(PlayState.PauseMenuState.LOAD_SELECT); SoundManager.playSound("click"); }
+            if (PlayState.isInside(mx, my, centerX - 150, 500, 300, 50)) { returnToMenuRequested = true; SoundManager.playSound("click"); }
         } else {
             // Save/Load slot selection
             for (int i = 1; i <= 5; i++) {
@@ -75,7 +76,10 @@ public class PauseState implements GameState {
                     }
                 }
             }
-            if (PlayState.isInside(mx, my, centerX - 150, 600, 300, 60)) backgroundState.setCurrentPauseState(PlayState.PauseMenuState.MAIN);
+            if (PlayState.isInside(mx, my, centerX - 150, 600, 300, 60)) {
+                backgroundState.setCurrentPauseState(PlayState.PauseMenuState.MAIN);
+                SoundManager.playSound("click");
+            }
         }
     }
 

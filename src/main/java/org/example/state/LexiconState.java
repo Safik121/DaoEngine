@@ -38,6 +38,7 @@ public class LexiconState implements GameState {
     // Scrolling state
     private double scrollOffset = 0;
     private double maxScroll = 0;
+    private boolean clickWasPressed = false;
 
     // UI Constants
     private final int width = ConfigManager.getInstance().getConfig().engine.width;
@@ -106,14 +107,16 @@ public class LexiconState implements GameState {
         boolean click = Input.isLmbPressed();
 
         // Check Back Button
-        if (click && mx >= 20 && mx <= 120 && my >= height - 60 && my <= height - 20) {
+        if (click && !clickWasPressed && mx >= 20 && mx <= 120 && my >= height - 60 && my <= height - 20) {
+            org.example.logic.SoundManager.playSound("click");
             returnRequested = true;
         }
 
         // Check Tabs
         for (int i = 0; i < Tab.values().length; i++) {
             double tx = width / 2.0 - 310 + i * 155;
-            if (click && mx >= tx && mx <= tx + 140 && my >= 10 && my <= tabHeight) {
+            if (click && !clickWasPressed && mx >= tx && mx <= tx + 140 && my >= 10 && my <= tabHeight) {
+                org.example.logic.SoundManager.playSound("click");
                 currentTab = Tab.values()[i];
                 autoSelectFirst();
                 scrollOffset = 0;
@@ -130,9 +133,12 @@ public class LexiconState implements GameState {
         }
 
         // Check Sidebar Selection
-        if (click && mx >= 20 && mx <= 20 + sidebarWidth && my >= sidebarStartY && my <= sidebarStartY + sidebarHeight) {
+        if (click && !clickWasPressed && mx >= 20 && mx <= 20 + sidebarWidth && my >= sidebarStartY && my <= sidebarStartY + sidebarHeight) {
+            org.example.logic.SoundManager.playSound("click");
             handleSidebarClick(mx, my);
         }
+
+        clickWasPressed = click;
     }
 
     private void handleSidebarClick(double mx, double my) {

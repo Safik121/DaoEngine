@@ -134,6 +134,9 @@ public class LoadState implements GameState {
             hovered = (mx >= x && mx <= x + w && my >= y && my <= y + h);
             
             if (hovered && lmb) {
+                if (!wasClicked) {
+                    org.example.logic.SoundManager.playSound("click");
+                }
                 wasClicked = true;
             } else if (!lmb && wasClicked) {
                 if (hovered) action.run();
