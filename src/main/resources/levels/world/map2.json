@@ -4,7 +4,7 @@
   "height": 150,
   "tileSize": 32,
   "biome": "ICE",
-  "veinCount": 20,
+  "veinCount": 5,
   "veinMinSize": 8,
   "veinMaxSize": 15,
   "hasLakes": false,

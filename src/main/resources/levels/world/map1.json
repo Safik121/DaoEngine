@@ -8,7 +8,7 @@
   "veinMinSize": 4,
   "veinMaxSize": 8,
   "hasLakes": true,
-  "lakeCount": 4,
+  "lakeCount": 2,
   "lakeSize": 15,
   "hasRivers": true,
   "riverCount": 2,
