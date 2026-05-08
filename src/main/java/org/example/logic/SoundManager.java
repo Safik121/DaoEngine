@@ -1,11 +1,13 @@
 package org.example.logic;
-
+ 
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import org.example.GameLogger;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
+ 
 /**
  * Manages the loading and playback of sound effects throughout the game.
  * Supports both instance-based and static access for convenience.
@@ -14,7 +16,10 @@ public class SoundManager {
     private static final Map<String, AudioClip> sounds = new HashMap<>();
     private static boolean isMuted = false;
     private static double volume = 0.5;
-
+    
+    private static MediaPlayer bgmPlayer;
+    private static String currentBgmPath;
+ 
     /**
      * Loads a sound effect from the resources folder.
      * 
@@ -35,7 +40,7 @@ public class SoundManager {
             e.printStackTrace();
         }
     }
-
+ 
     /**
      * Plays a previously loaded sound effect.
      * 
@@ -51,7 +56,7 @@ public class SoundManager {
             GameLogger.warning("Attempted to play unknown sound: " + id);
         }
     }
-
+ 
     /**
      * Immediately stops a playing sound effect.
      * @param id The identifier of the sound to stop.
@@ -62,7 +67,7 @@ public class SoundManager {
             clip.stop();
         }
     }
-
+ 
     /**
      * Triggers a one-shot sound effect (Instance wrapper for playSound).
      * @param soundId Resource name or ID.
@@ -73,26 +78,62 @@ public class SoundManager {
     
     /**
      * Starts looping background music.
-     * @param trackId Resource name without extension.
+     * @param path Resource path (e.g., "/sounds/background_1.mp3").
      */
-    public void playBgm(String trackId) {
+    public static void playBgm(String path) {
         if (isMuted) return;
-        GameLogger.info("[BGM] Playing track: " + trackId);
-        // Background music implementation (Media/MediaPlayer) could go here
+        if (path.equals(currentBgmPath) && bgmPlayer != null) return; // Already playing
+        
+        try {
+            stopBgm(); // Stop previous if any
+            
+            URL resource = SoundManager.class.getResource(path);
+            if (resource == null) {
+                GameLogger.error("BGM file not found: " + path);
+                return;
+            }
+            
+            Media media = new Media(resource.toExternalForm());
+            bgmPlayer = new MediaPlayer(media);
+            bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            bgmPlayer.setVolume(volume * 0.7); // Music should be slightly quieter than SFX
+            bgmPlayer.play();
+            
+            currentBgmPath = path;
+            GameLogger.info("[BGM] Playing track: " + path);
+        } catch (Exception e) {
+            GameLogger.error("Failed to play BGM: " + path);
+            e.printStackTrace();
+        }
     }
-
+ 
+    /**
+     * Stops current background music.
+     */
+    public static void stopBgm() {
+        if (bgmPlayer != null) {
+            bgmPlayer.stop();
+            bgmPlayer = null;
+            currentBgmPath = null;
+        }
+    }
+ 
     /** @param muted Whether to silence all audio. */
     public void setMuted(boolean muted) {
         isMuted = muted;
+        if (muted) stopBgm();
     }
-
+ 
     /** @return true if audio is muted. */
     public static boolean isMuted() {
         return isMuted;
     }
-
+ 
     /** @param v Volume level (0.0 to 1.0). */
     public static void setVolume(double v) {
         volume = Math.max(0, Math.min(1.0, v));
+        if (bgmPlayer != null) {
+            bgmPlayer.setVolume(volume * 0.7);
+        }
     }
 }

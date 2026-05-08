@@ -14,7 +14,8 @@ import org.example.GameConfig;
 import java.util.Random;
 
 /**
- * Manages all combat-related logic, including weapon fire, projectile lifecycles,
+ * Manages all combat-related logic, including weapon fire, projectile
+ * lifecycles,
  * collision detection, and environmental hazards (Lightning Strikes).
  */
 public class CombatManager {
@@ -40,7 +41,8 @@ public class CombatManager {
 
     /**
      * Updates all active combat entities and effects.
-     * @param state Current game state.
+     * 
+     * @param state     Current game state.
      * @param deltaTime Time elapsed since last frame.
      */
     public void update(PlayState state, double deltaTime) {
@@ -51,10 +53,12 @@ public class CombatManager {
 
     /**
      * Processes player input for firing weapons and using techniques.
+     * 
      * @param state Current game state.
      */
     public void handleFiring(PlayState state) {
-        if (state.isInventoryOpen() || state.isShowingFullMap() || state.isPaused() || state.getDialogManager().isActive())
+        if (state.isInventoryOpen() || state.isShowingFullMap() || state.isPaused()
+                || state.getDialogManager().isActive())
             return;
 
         if (Input.isLmbPressed() && state.getPlayer().canAttack()) {
@@ -70,7 +74,7 @@ public class CombatManager {
                 }
             }
         }
-        
+
         if (Input.isRmbPressed() && state.getPlayer().canUseSkill()) {
             org.example.logic.Skill activeSkill = state.getPlayer().getActiveSkill();
             if (activeSkill != null) {
@@ -84,8 +88,9 @@ public class CombatManager {
 
     /**
      * Triggers a weapon or skill activation, potentially starting a burst.
+     * 
      * @param wConfig The configuration to use.
-     * @param state Reference to PlayState.
+     * @param state   Reference to PlayState.
      */
     private void fireWeaponOrSkill(WeaponConfig wConfig, PlayState state) {
         double mx = Input.getMouseX() + state.getCameraX();
@@ -101,9 +106,10 @@ public class CombatManager {
 
     /**
      * Spawns a single projectile or a fan of projectiles based on configuration.
-     * @param config The weapon configuration.
+     * 
+     * @param config    The weapon configuration.
      * @param baseAngle The central direction of fire.
-     * @param state Reference to PlayState.
+     * @param state     Reference to PlayState.
      */
     public void fireShot(WeaponConfig config, double baseAngle, PlayState state) {
         double px = state.getPlayer().getX() + 6;
@@ -130,7 +136,7 @@ public class CombatManager {
             case LIGHTNING_BOLT -> org.example.logic.SoundManager.playSound("lightning");
             case BEAM -> org.example.logic.SoundManager.playSound("beam");
             case AOE_ZONE -> org.example.logic.SoundManager.playSound("aoe_zone");
-            default -> org.example.logic.SoundManager.playSound("fireball_shot");
+            default -> org.example.logic.SoundManager.playSound("fireball_wshot");
         }
     }
 
@@ -165,9 +171,11 @@ public class CombatManager {
                 for (Enemy enemy : state.getEnemies()) {
                     if (p.checkCollision(enemy)) {
                         applyDamage(p, enemy, deltaTime);
-                        state.getParticleManager().spawnHitSpark(enemy.getX() + enemy.getSize() / 2, enemy.getY() + enemy.getSize() / 2);
+                        state.getParticleManager().spawnHitSpark(enemy.getX() + enemy.getSize() / 2,
+                                enemy.getY() + enemy.getSize() / 2);
 
-                        if (p.getType() != WeaponConfig.ProjectileType.BEAM && p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
+                        if (p.getType() != WeaponConfig.ProjectileType.BEAM
+                                && p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
                             p.deactivate();
                             break;
                         }
@@ -177,7 +185,8 @@ public class CombatManager {
                 // Collision with player
                 if (p.checkCollision(state.getPlayer())) {
                     applyDamage(p, state.getPlayer(), deltaTime);
-                    if (p.getType() != WeaponConfig.ProjectileType.BEAM && p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
+                    if (p.getType() != WeaponConfig.ProjectileType.BEAM
+                            && p.getType() != WeaponConfig.ProjectileType.AOE_ZONE) {
                         p.deactivate();
                     }
                 }
@@ -190,26 +199,32 @@ public class CombatManager {
     }
 
     /**
-     * Applies damage from a projectile to a target, considering frame-time for beams/zones.
+     * Applies damage from a projectile to a target, considering frame-time for
+     * beams/zones.
      */
     private void applyDamage(Projectile p, LivingEntity target, double deltaTime) {
         double damage = p.getDamage();
-        boolean isContinuous = (p.getType() == WeaponConfig.ProjectileType.BEAM || p.getType() == WeaponConfig.ProjectileType.AOE_ZONE);
-        
+        boolean isContinuous = (p.getType() == WeaponConfig.ProjectileType.BEAM
+                || p.getType() == WeaponConfig.ProjectileType.AOE_ZONE);
+
         if (isContinuous) {
             damage *= deltaTime;
         }
-        
+
         boolean wasAlive = target.getHp() > 0;
         target.takeDamage(damage);
-        
-        // Play hit sound (rate limited for beams/AOE by only playing if not already recently hit or just for single hits)
+
+        // Play hit sound (rate limited for beams/AOE by only playing if not already
+        // recently hit or just for single hits)
         if (wasAlive) {
             if (!isContinuous) {
-                if (p.isFriendly()) org.example.logic.SoundManager.playSound("enemy_hit");
-                else org.example.logic.SoundManager.playSound("player_hit");
+                if (p.isFriendly())
+                    org.example.logic.SoundManager.playSound("enemy_hit");
+                else
+                    org.example.logic.SoundManager.playSound("player_hit");
             } else {
-                // For continuous, we could use a timer, but for now let's just play it once per 0.5s or similar
+                // For continuous, we could use a timer, but for now let's just play it once per
+                // 0.5s or similar
                 // For simplicity, we just won't play continuous hit sounds here to avoid spam.
             }
         }
@@ -219,16 +234,20 @@ public class CombatManager {
      * Updates environmental hazards and triggers random lightning strikes.
      */
     private void updateHazards(PlayState state, double deltaTime) {
-        if (!state.isInTribulation()) return;
+        if (!state.isInTribulation())
+            return;
 
         double timer = state.getLightningTimer() - deltaTime;
         if (timer <= 0) {
-            GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().ui != null ? ConfigManager.getInstance().getConfig().balance : new GameConfig.BalanceConfig(); // Safety check
+            GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().ui != null
+                    ? ConfigManager.getInstance().getConfig().balance
+                    : new GameConfig.BalanceConfig(); // Safety check
             double lx = state.getPlayer().getX() + 6;
             double ly = state.getPlayer().getY() + 6;
             state.getActiveStrikes().add(new LightningStrike(lx, ly));
             org.example.logic.SoundManager.playSound("thunder");
-            timer = bal.lightningIntervalMin + random.nextDouble() * (bal.lightningIntervalMax - bal.lightningIntervalMin);
+            timer = bal.lightningIntervalMin
+                    + random.nextDouble() * (bal.lightningIntervalMax - bal.lightningIntervalMin);
         }
         state.setLightningTimer(timer);
 
@@ -249,6 +268,7 @@ public class CombatManager {
 
     /**
      * Initiates the Tribulation phase, spawning a wave of enemies.
+     * 
      * @param state Current game state.
      */
     public void triggerTribulation(PlayState state) {
@@ -260,10 +280,12 @@ public class CombatManager {
             double[] pos = null;
             // Try to find a position away from player
             for (int attempt = 0; attempt < 5; attempt++) {
-                pos = state.getGameMap().getRandomFreePositionAwayFrom(24, state.getPlayer().getX(), state.getPlayer().getY(), 300 - attempt * 50);
-                if (pos != null) break;
+                pos = state.getGameMap().getRandomFreePositionAwayFrom(24, state.getPlayer().getX(),
+                        state.getPlayer().getY(), 300 - attempt * 50);
+                if (pos != null)
+                    break;
             }
-            
+
             // Fallback to any free position if still null
             if (pos == null) {
                 pos = state.getGameMap().getRandomFreePosition(24);
@@ -284,12 +306,12 @@ public class CombatManager {
     private void handleStrikeDamage(PlayState state, LightningStrike strike) {
         GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
         double radiusSq = Math.pow(strike.getRadius(), 2);
-        
+
         // Player damage
         double dxP = strike.getX() - state.getPlayer().getX();
         double dyP = strike.getY() - state.getPlayer().getY();
         double distSqP = dxP * dxP + dyP * dyP;
-        
+
         if (distSqP < radiusSq) {
             state.getPlayer().takeDamage(bal.lightningPlayerDamage);
             org.example.logic.SoundManager.playSound("player_hit");
@@ -300,7 +322,7 @@ public class CombatManager {
             double dxE = strike.getX() - e.getX();
             double dyE = strike.getY() - e.getY();
             double distSqE = dxE * dxE + dyE * dyE;
-            
+
             if (distSqE < radiusSq) {
                 e.takeDamage(bal.lightningEnemyDamage);
                 org.example.logic.SoundManager.playSound("enemy_hit");

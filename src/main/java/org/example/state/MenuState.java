@@ -37,6 +37,7 @@ public class MenuState implements GameState {
     public MenuState() {
         loadConfig();
         initButtons();
+        SoundManager.playBgm("/sounds/background_1.mp3");
     }
 
     /**
