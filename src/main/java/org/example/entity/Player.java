@@ -56,11 +56,50 @@ public class Player extends LivingEntity {
             ConfigManager.getInstance().getConfig().player.initialMaxHp, 
             ConfigManager.getInstance().getConfig().player.baseSpeed);
         
-        this.maxQi = ConfigManager.getInstance().getConfig().player.initialMaxQi;
+        GameConfig config = ConfigManager.getInstance().getConfig();
+        this.maxQi = config.player.initialMaxQi;
         this.qi = maxQi;
         this.inventory = new Inventory();
         this.cultivationManager = new org.example.logic.CultivationManager();
         this.activeSkill = org.example.logic.SkillRegistry.getSkill("fiery_palm");
+    }
+
+    /** @return Player's current Spiritual Energy (Qi). */
+    public double getQi() {
+        return qi;
+    }
+
+    /** Sets the player's remaining Qi, clamped between 0 and maxQi. */
+    public void setQi(double qi) {
+        this.qi = Math.max(0, Math.min(qi, maxQi));
+    }
+
+    /** @return Player's maximum Spiritual Energy capacity. */
+    public double getMaxQi() {
+        return maxQi;
+    }
+
+    /** @param maxQi new capacity. */
+    public void setMaxQi(double maxQi) {
+        this.maxQi = maxQi;
+    }
+
+    /**
+     * Attempts to spend a specific amount of Qi.
+     * @param amount The cost.
+     * @return true if successful.
+     */
+    public boolean spendQi(double amount) {
+        if (qi >= amount) {
+            qi -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    /** @return Manager for cultivation progression. */
+    public org.example.logic.CultivationManager getCultivationManager() {
+        return cultivationManager;
     }
 
 
@@ -79,6 +118,10 @@ public class Player extends LivingEntity {
         this.maxQi = maxQi;
     }
 
+    /**
+     * Toggles the player's meditation state.
+     * @param meditating true to begin Qi recovery.
+     */
     public void setMeditating(boolean meditating) {
         this.isMeditating = meditating;
     }
@@ -217,13 +260,9 @@ public class Player extends LivingEntity {
             spriteId = "player_walk";
         }
 
-        // Calculate frame index
-        int frameCount = 1;
-        if (spriteId.equals("player_idle")) frameCount = 6;
-        else if (spriteId.equals("player_walk")) frameCount = 6;
-        else if (spriteId.equals("player_meditate")) frameCount = 2;
-        
-        int frameIndex = (int) (animationTimer / 0.15) % frameCount;
+        // Calculate frame index dynamically from registry
+        int frameCount = AssetRegistry.getFrameCount(spriteId);
+        int frameIndex = (int) (animationTimer / 0.15) % Math.max(1, frameCount);
 
         javafx.scene.image.Image sprite = AssetRegistry.getSprite(spriteId, frameIndex);
         if (sprite != null) {
@@ -273,30 +312,6 @@ public class Player extends LivingEntity {
 
     // Health and Status methods are now handled by LivingEntity/AttributeSet
 
-    /** @return Player's current Spiritual Energy (Qi). */
-    public double getQi() {
-        return qi;
-    }
-
-    /** Sets the player's remaining Qi, clamped between 0 and maxQi. */
-    public void setQi(double qi) {
-        this.qi = Math.max(0, Math.min(qi, maxQi));
-    }
-
-    /** @return Player's maximum Spiritual Energy capacity. */
-    public double getMaxQi() {
-        return maxQi;
-    }
-    
-    public org.example.logic.CultivationManager getCultivationManager() {
-        return cultivationManager;
-    }
-
-    /** Sets the player's maximum Qi. */
-    public void setMaxQi(double val) {
-        this.maxQi = val;
-    }
-
     /** @return true if the player is currently in a meditation state. */
     public boolean isMeditating() {
         return isMeditating;
@@ -318,20 +333,6 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * Spends Qi to perform an action.
-     * 
-     * @param amount The amount of Qi to spend.
-     * @return true if player had enough Qi, false otherwise.
-     */
-    public boolean spendQi(double amount) {
-        if (qi >= amount) {
-            qi -= amount;
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Checks if the player is ready to attack.
      * 
      * @return true if cooldown is zero.
@@ -340,6 +341,7 @@ public class Player extends LivingEntity {
         return attackCooldown <= 0;
     }
 
+    /** @return true if the skill is off cooldown. */
     public boolean canUseSkill() {
         return skillCooldown <= 0;
     }
@@ -347,30 +349,41 @@ public class Player extends LivingEntity {
     /**
      * Sets the attack cooldown based on weapon properties.
      * 
-     * @param seconds Cooldown time in seconds.
+     * @param cooldown Cooldown time in seconds.
      */
     public void setAttackCooldown(double cooldown) {
         this.attackCooldown = cooldown * 60.0;
         this.maxAttackCooldown = Math.max(1, this.attackCooldown);
     }
 
+    /**
+     * Sets the skill cooldown.
+     * @param cooldown Time in seconds.
+     */
     public void setSkillCooldown(double cooldown) {
         this.skillCooldown = cooldown * 60.0;
         this.maxSkillCooldown = Math.max(1, this.skillCooldown);
     }
     
+    /** @return 0.0 to 1.0 representing attack readiness. */
     public double getAttackCooldownRatio() {
         return Math.max(0, Math.min(1.0, attackCooldown / maxAttackCooldown));
     }
 
+    /** @return 0.0 to 1.0 representing skill readiness. */
     public double getSkillCooldownRatio() {
         return Math.max(0, Math.min(1.0, skillCooldown / maxSkillCooldown));
     }
     
+    /** @return Player's currently equipped active technique. */
     public org.example.logic.Skill getActiveSkill() {
         return activeSkill;
     }
     
+    /**
+     * Sets the player's active technique.
+     * @param skill The new technique.
+     */
     public void setActiveSkill(org.example.logic.Skill skill) {
         this.activeSkill = skill;
     }
@@ -408,8 +421,6 @@ public class Player extends LivingEntity {
      * Restores the player's Qi by a specific amount, up to max Qi.
      */
     public void restoreQi(double amount) {
-        this.qi += amount;
-        if (this.qi > maxQi)
-            this.qi = maxQi;
+        this.qi = Math.min(this.qi + amount, maxQi);
     }
 }

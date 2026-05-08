@@ -38,6 +38,9 @@ public class MenuState implements GameState {
         initButtons();
     }
 
+    /**
+     * Loads the game title from the global configuration file.
+     */
     private void loadConfig() {
         try (InputStream is = getClass().getResourceAsStream("/game_config.json")) {
             if (is != null) {
@@ -52,6 +55,9 @@ public class MenuState implements GameState {
         }
     }
 
+    /**
+     * Creates and positions all interactive menu buttons.
+     */
     private void initButtons() {
         double startY = 350;
         double spacing = 60;
@@ -88,6 +94,9 @@ public class MenuState implements GameState {
         }
     }
 
+    /**
+     * Renders the decorative menu background.
+     */
     private void drawBackground(GraphicsContext gc) {
         int width = ConfigManager.getInstance().getConfig().engine.width;
         int height = ConfigManager.getInstance().getConfig().engine.height;
@@ -110,6 +119,9 @@ public class MenuState implements GameState {
         }
     }
 
+    /**
+     * Renders the game logo and title text.
+     */
     private void drawTitle(GraphicsContext gc) {
         int width = ConfigManager.getInstance().getConfig().engine.width;
         gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
@@ -130,26 +142,32 @@ public class MenuState implements GameState {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
     }
 
+    /** @return true if the user clicked PLAY. */
     public boolean isStartGameRequested() {
         return startGameRequested;
     }
 
+    /** @param val State of play request. */
     public void setStartGameRequested(boolean val) {
         this.startGameRequested = val;
     }
 
+    /** @return true if the user clicked LOAD. */
     public boolean isLoadRequested() {
         return loadRequested;
     }
 
+    /** @param val State of load request. */
     public void setLoadRequested(boolean val) {
         this.loadRequested = val;
     }
 
+    /** @return true if the user clicked LEXICON. */
     public boolean isLexiconRequested() {
         return lexiconRequested;
     }
 
+    /** @param val State of lexicon request. */
     public void setLexiconRequested(boolean val) {
         this.lexiconRequested = val;
     }

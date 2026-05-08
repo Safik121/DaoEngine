@@ -17,6 +17,11 @@ import org.example.state.PlayState;
  */
 public class WorldRenderer {
 
+    /**
+     * Renders the entire game world, including the map, entities, and lighting effects.
+     * @param gc The GraphicsContext to draw on.
+     * @param state The current game state.
+     */
     public void render(GraphicsContext gc, PlayState state) {
         // 0. Clear background
         gc.setFill(Color.BLACK);
@@ -71,6 +76,11 @@ public class WorldRenderer {
         renderLighting(gc, state);
     }
     
+    /**
+     * Applies ambient and dynamic lighting effects to the scene.
+     * @param gc Graphics context.
+     * @param state Current state.
+     */
     private void renderLighting(GraphicsContext gc, PlayState state) {
         double w = state.getScreenWidth();
         double h = state.getScreenHeight();

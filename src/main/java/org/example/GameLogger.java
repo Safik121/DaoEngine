@@ -49,18 +49,25 @@ public class GameLogger {
         }
     }
 
+    /** @param message Descriptive text to log. */
     public static void info(String message) {
         log(Level.INFO, message, null);
     }
 
+    /** @param message Warning text to log. */
     public static void warning(String message) {
         log(Level.WARNING, message, null);
     }
 
+    /** @param message Error text to log. */
     public static void error(String message) {
         log(Level.ERROR, message, null);
     }
 
+    /**
+     * @param message Error text.
+     * @param t Exception to log.
+     */
     public static void error(String message, Throwable t) {
         log(Level.ERROR, message, t);
     }

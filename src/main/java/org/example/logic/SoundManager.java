@@ -9,6 +9,10 @@ public class SoundManager {
     
     private boolean isMuted = false;
 
+    /**
+     * Triggers a one-shot sound effect.
+     * @param soundId Resource name without extension.
+     */
     public void playSfx(String soundId) {
         if (isMuted) return;
         // In a real implementation:
@@ -17,11 +21,16 @@ public class SoundManager {
         GameLogger.info("[SFX] Playing: " + soundId);
     }
     
+    /**
+     * Starts looping background music.
+     * @param trackId Resource name without extension.
+     */
     public void playBgm(String trackId) {
         if (isMuted) return;
         GameLogger.info("[BGM] Playing track: " + trackId);
     }
 
+    /** @param muted Whether to silence all audio. */
     public void setMuted(boolean muted) {
         this.isMuted = muted;
     }

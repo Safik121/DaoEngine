@@ -8,6 +8,11 @@ import org.example.state.PlayState;
  * Specialized class for consumable items that restore player stats or grant buffs.
  */
 public class ConsumableItem extends Item {
+    /**
+     * @param id Unique ID.
+     * @param name Display name.
+     * @param description Brief text.
+     */
     public ConsumableItem(String id, String name, String description) {
         super(id, name, description, Type.CONSUMABLE);
     }

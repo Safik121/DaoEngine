@@ -21,6 +21,9 @@ public class PauseState implements GameState {
     private boolean escWasPressed = true; 
     private boolean lmbWasPressed = true;
 
+    /**
+     * @param playState The active gameplay session to freeze in the background.
+     */
     public PauseState(PlayState playState) {
         this.backgroundState = playState;
         GameLogger.info("Entered PauseState.");
@@ -90,26 +93,32 @@ public class PauseState implements GameState {
         backgroundState.getUiManager().renderPauseMenu(gc, backgroundState);
     }
 
+    /** @return true if the game should resume. */
     public boolean isResumeRequested() {
         return resumeRequested;
     }
 
+    /** @param resumeRequested New state of resume request. */
     public void setResumeRequested(boolean resumeRequested) {
         this.resumeRequested = resumeRequested;
     }
 
+    /** @return true if returning to title screen. */
     public boolean isReturnToMenuRequested() {
         return returnToMenuRequested;
     }
 
+    /** @return The frozen gameplay session. */
     public PlayState getBackgroundState() {
         return backgroundState;
     }
 
+    /** @return true if the lexicon was opened. */
     public boolean isLexiconRequested() {
         return lexiconRequested;
     }
 
+    /** @param lexiconRequested New state of lexicon request. */
     public void setLexiconRequested(boolean lexiconRequested) {
         this.lexiconRequested = lexiconRequested;
     }

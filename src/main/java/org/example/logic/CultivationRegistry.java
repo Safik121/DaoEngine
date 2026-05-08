@@ -32,6 +32,10 @@ public class CultivationRegistry {
         public Integer requiredItemCount;
     }
 
+    /**
+     * Loads cultivation data from a JSON resource.
+     * @param resourcePath Path to cultivation_configs.json.
+     */
     public static void loadConfigs(String resourcePath) {
         try {
             InputStream is = CultivationRegistry.class.getResourceAsStream(resourcePath);
@@ -66,6 +70,7 @@ public class CultivationRegistry {
         }
     }
 
+    /** @return Defensive copy of the full cultivation path. */
     public static List<CultivationRank> getFullProgressionPath() {
         return new ArrayList<>(fullProgressionPath);
     }

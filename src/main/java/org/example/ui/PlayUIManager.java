@@ -28,6 +28,11 @@ public class PlayUIManager {
     private static final Color GOLD = Color.web("#D4AF37");
     private static final Color DARK_INK = Color.web("#1A1A1A");
 
+    /**
+     * Main rendering entry point for all UI overlays.
+     * @param gc The GraphicsContext to draw on.
+     * @param state The current game state.
+     */
     public void render(GraphicsContext gc, PlayState state) {
         renderHUD(gc, state);
         renderMinimap(gc, state);
@@ -56,6 +61,11 @@ public class PlayUIManager {
         renderDraggedItem(gc, state);
     }
 
+    /**
+     * Renders the Heads-Up Display (HP, Qi, Cooldowns).
+     * @param gc Graphics context.
+     * @param state Current state.
+     */
     private void renderHUD(GraphicsContext gc, PlayState state) {
         Player player = state.getPlayer();
         GameConfig.UIConfig ui = ConfigManager.getInstance().getConfig().ui;
@@ -118,6 +128,9 @@ public class PlayUIManager {
         drawInteractionPrompt(gc, state);
     }
 
+    /**
+     * Draws the floating prompt for the nearest interactable entity.
+     */
     private void drawInteractionPrompt(GraphicsContext gc, PlayState state) {
         org.example.logic.Interactable best = state.getNearestInteractable();
         if (best == null || state.getDialogManager().isActive() || state.isInventoryOpen()) return;
@@ -142,6 +155,9 @@ public class PlayUIManager {
         gc.fillText(prompt, px, py);
     }
     
+    /**
+     * Renders a small list of active quests on the HUD.
+     */
     private void drawQuests(GraphicsContext gc, PlayState state) {
         java.util.List<org.example.logic.Quest> activeQuests = state.getQuestManager().getActiveQuests();
         if (activeQuests.isEmpty()) return;
@@ -169,6 +185,9 @@ public class PlayUIManager {
         }
     }
 
+    /**
+     * Renders a small radar-like minimap in the top right.
+     */
     private void renderMinimap(GraphicsContext gc, PlayState state) {
         GameConfig.UIConfig ui = ConfigManager.getInstance().getConfig().ui;
         double w = state.getScreenWidth();
@@ -220,6 +239,9 @@ public class PlayUIManager {
         }
     }
 
+    /**
+     * Renders the item hotbar at the bottom center.
+     */
     private void drawHotbar(GraphicsContext gc, PlayState state) {
         GameConfig.UIConfig ui = ConfigManager.getInstance().getConfig().ui;
         double w = state.getScreenWidth();
@@ -257,6 +279,9 @@ public class PlayUIManager {
         }
     }
 
+    /**
+     * Renders the equipped technique icon and cooldown.
+     */
     private void drawActiveSkill(GraphicsContext gc, PlayState state) {
         Player player = state.getPlayer();
         org.example.logic.Skill skill = player.getActiveSkill();
@@ -311,6 +336,9 @@ public class PlayUIManager {
         gc.fillText("ACTIVE TECHNIQUE [RMB]", x, y - 10);
     }
 
+    /**
+     * Renders the large full-screen inventory and crafting panel.
+     */
     private void drawInventory(GraphicsContext gc, PlayState state) {
         double w = state.getScreenWidth();
         double h = state.getScreenHeight();
@@ -380,6 +408,9 @@ public class PlayUIManager {
         gc.fillText("=", cX + slotSize + 30, resY + 55);
     }
 
+    /**
+     * Renders a dedicated full-screen panel for active and completed quests.
+     */
     private void renderQuestLog(GraphicsContext gc, PlayState state) {
         double w = state.getScreenWidth();
         double h = state.getScreenHeight();
@@ -461,6 +492,9 @@ public class PlayUIManager {
         gc.fillText("Press [Q] or [ESC] to return to your journey.", panelX + 50, panelY + panelH - 25);
     }
 
+    /**
+     * Helper to draw a single inventory slot frame.
+     */
     private void drawSlot(GraphicsContext gc, double x, double y, double size, Item item, Color borderColor) {
         gc.setFill(Color.rgb(40, 40, 45));
         gc.fillRect(x, y, size, size);
@@ -471,6 +505,9 @@ public class PlayUIManager {
             drawItemIcon(gc, x, y, size, item, Color.ORANGE);
     }
 
+    /**
+     * Renders a premium item icon with rounded corners and high-quality textures.
+     */
     private void drawItemIcon(GraphicsContext gc, double x, double y, double size, Item item, Color fallbackColor) {
         // --- 1. Background / Slot Frame ---
         gc.setFill(Color.web("#1a1a1a", 0.8));
@@ -525,6 +562,9 @@ public class PlayUIManager {
         gc.strokeRoundRect(x + 5, y + 5, size - 10, size - 10, 5, 5);
     }
 
+    /**
+     * Renders a large full-screen map overlay.
+     */
     private void renderFullMap(GraphicsContext gc, PlayState state) {
         double w = gc.getCanvas().getWidth();
         double h = gc.getCanvas().getHeight();
@@ -586,6 +626,9 @@ public class PlayUIManager {
         }
     }
 
+    /**
+     * Renders the interactive dialogue box at the bottom.
+     */
     private void renderDialogue(GraphicsContext gc, PlayState state) {
         double width = 800, height = 180; // slightly taller to fit choices
         double x = (state.getScreenWidth() - width) / 2.0;
@@ -687,6 +730,9 @@ public class PlayUIManager {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /**
+     * Renders a stylized button for menus.
+     */
     private void drawMenuButton(GraphicsContext gc, String text, double x, double y, double w, double h,
             Color baseColor) {
         double mx = Input.getMouseX(), my = Input.getMouseY();
@@ -727,10 +773,16 @@ public class PlayUIManager {
         renderOverlayMessage(gc, state, "LEVEL CLEARED!", "You survived the tribulation.", Color.GOLD);
     }
 
+    /**
+     * Renders the game over screen.
+     */
     private void renderGameOverScreen(GraphicsContext gc, PlayState state) {
         renderOverlayMessage(gc, state, "DEFEAT", "Your spirit fades away...", Color.DARKRED);
     }
 
+    /**
+     * Helper to render a full-screen overlay message (Victory/Defeat).
+     */
     private void renderOverlayMessage(GraphicsContext gc, PlayState state, String title, String sub, Color color) {
         double w = state.getScreenWidth(), h = state.getScreenHeight();
         gc.setFill(Color.rgb(0, 0, 0, 0.7));
@@ -820,6 +872,9 @@ public class PlayUIManager {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /**
+     * Renders a stack of temporary on-screen notifications.
+     */
     private void renderNotifications(GraphicsContext gc, PlayState state) {
         java.util.List<PlayState.Notification> notes = state.getNotifications();
         if (notes.isEmpty()) return;
@@ -848,6 +903,9 @@ public class PlayUIManager {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /**
+     * Draws the item currently being dragged by the mouse.
+     */
     private void renderDraggedItem(GraphicsContext gc, PlayState state) {
         Item item = state.getDraggedItem();
         if (item == null)

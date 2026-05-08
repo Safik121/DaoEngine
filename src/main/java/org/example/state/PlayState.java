@@ -143,6 +143,11 @@ public class PlayState implements GameState {
     /** Current map level (1-20) for scaling difficulty and rewards. */
     private int mapLevel = 1;
 
+    /** Global flags for story and world state persistence. */
+    private java.util.Map<String, Boolean> worldFlags = new java.util.HashMap<>();
+    /** Global counters for tracking kill counts or quest progress. */
+    private java.util.Map<String, Integer> worldCounters = new java.util.HashMap<>();
+
     /** Cached image of the map background for performance. */
     private WritableImage mapCache;
 
@@ -195,14 +200,19 @@ public class PlayState implements GameState {
 
     private boolean pauseRequested = false;
 
+    /** @return true if the game is over (player died). */
     public boolean isGameOverRequested() {
         return gameOverRequested;
     }
 
+    /** @return true if the next level has been requested (victory). */
     public boolean isNextLevelRequested() {
         return nextLevelRequested;
     }
 
+    /**
+     * Initializes all specialized game managers.
+     */
     private void initManagers() {
         this.worldRenderer = new WorldRenderer();
         this.combatManager = new CombatManager();
@@ -225,6 +235,9 @@ public class PlayState implements GameState {
         }
     }
 
+    /**
+     * Default constructor for a new game.
+     */
     public PlayState() {
         initManagers();
 
@@ -277,6 +290,8 @@ public class PlayState implements GameState {
         
         this.mapLevel = data.mapLevel;
         this.currentLevelIndex = data.currentLevelIndex;
+        this.worldFlags = data.worldFlags != null ? data.worldFlags : new java.util.HashMap<>();
+        this.worldCounters = data.worldCounters != null ? data.worldCounters : new java.util.HashMap<>();
 
         gameMap = new GameMap(currentLevel);
 
@@ -365,6 +380,13 @@ public class PlayState implements GameState {
 
         activeStrikes = new ArrayList<>();
         projectiles = new ArrayList<>();
+
+        // If this is a fresh level transition (indicated by negative currentTime),
+        // we must populate the world from the level configuration.
+        if (data.currentTime < 0) {
+            spawnInitialEnemies();
+            spawnInitialItems();
+        }
 
         generateMapCache();
         uiManager = new PlayUIManager();
@@ -1427,6 +1449,10 @@ public class PlayState implements GameState {
         data.inTribulationFlag = 0;
         data.victoryAchievedFlag = 0;
         
+        // Carry over global world state
+        data.worldFlags = new java.util.HashMap<>(this.worldFlags);
+        data.worldCounters = new java.util.HashMap<>(this.worldCounters);
+        
         return data;
     }
     public void restoreQi(double amount) {
@@ -1438,42 +1464,52 @@ public class PlayState implements GameState {
     }
 
     // --- GETTERS FOR UI & REFACTORING ---
+    /** @return The central combat manager. */
     public CombatManager getCombatManager() {
         return combatManager;
     }
 
+    /** @return The visual effect particle manager. */
     public org.example.logic.ParticleManager getParticleManager() {
         return particleManager;
     }
 
+    /** @return The audio/sfx manager. */
     public org.example.logic.SoundManager getSoundManager() {
         return soundManager;
     }
 
+    /** @return The global event communication hub. */
     public org.example.logic.event.EventManager getEventManager() {
         return eventManager;
     }
 
+    /** @return The quest progression manager. */
     public org.example.logic.QuestManager getQuestManager() {
         return questManager;
     }
 
+    /** @return The player entity instance. */
     public Player getPlayer() {
         return player;
     }
 
+    /** @return List of all living enemies in the current level. */
     public List<Enemy> getEnemies() {
         return enemies;
     }
 
+    /** @return List of all items currently lying on the ground. */
     public List<WorldItem> getItemsOnGround() {
         return itemsOnGround;
     }
 
+    /** @return true if the world is currently in a state of Tribulation. */
     public boolean isInTribulation() {
         return inTribulation;
     }
 
+    /** @return Remaining time until Tribulation or current survival time. */
     public double getCurrentTime() {
         return tribulationTimer.getRemainingSeconds();
     }
@@ -1482,126 +1518,160 @@ public class PlayState implements GameState {
         return currentPauseState;
     }
 
+    /** @param state New menu state. */
     public void setCurrentPauseState(PauseMenuState state) {
         this.currentPauseState = state;
     }
 
+    /** @return The centralized UI manager for gameplay. */
     public PlayUIManager getUiManager() {
         return uiManager;
     }
 
+    /** @return The branching dialogue manager. */
     public DialogManager getDialogManager() {
         return dialogManager;
     }
 
+    /** @return true if the user has requested a pause. */
     public boolean isPauseRequested() {
         return pauseRequested;
     }
 
+    /**
+     * Sets the pause request flag.
+     * @param pauseRequested new flag value.
+     */
     public void setPauseRequested(boolean pauseRequested) {
         this.pauseRequested = pauseRequested;
     }
 
+    /** @return true if the current level's victory conditions are met. */
     public boolean isLevelVictoryAchieved() {
         return levelVictoryAchieved;
     }
 
+    /** @return true if inventory is open. */
     public boolean isInventoryOpen() {
         return inventoryOpen;
     }
 
+    /** @return true if quest log is open. */
     public boolean isQuestLogOpen() {
         return questLogOpen;
     }
 
+    /** @return The item being dragged by mouse. */
     public Item getDraggedItem() {
         return draggedItem;
     }
 
+    /** @return Nearest interactable object. */
     public org.example.logic.Interactable getNearestInteractable() {
         return nearestInteractable;
     }
 
+    /** @return Screen width. */
     public int getScreenWidth() {
         return screenWidth;
     }
 
+    /** @return Screen height. */
     public int getScreenHeight() {
         return screenHeight;
     }
 
+    /** @return Camera X scroll. */
     public double getCameraX() {
         return cameraX;
     }
 
+    /** @return Camera Y scroll. */
     public double getCameraY() {
         return cameraY;
     }
 
+    /** @return Active level data. */
     public Level getCurrentLevel() {
         return currentLevel;
     }
 
+    /** @return Timer for water/tile animations. */
     public double getMapAnimationTimer() {
         return mapAnimationTimer;
     }
 
+    /** @return Pre-rendered map image. */
     public WritableImage getMapCache() {
         return mapCache;
     }
 
+    /** @return PLAYING, VICTORY, or GAMEOVER. */
     public PlayMode getCurrentMode() {
         return currentMode;
     }
 
+    /** @return true if logic is paused. */
     public boolean isPaused() {
         return isPaused;
     }
 
+    /** @return true if full-screen map is toggled. */
     public boolean isShowingFullMap() {
         return showFullMap;
     }
 
+    /** @return List of active projectiles. */
     public List<Projectile> getProjectiles() {
         return projectiles;
     }
 
+    /** @return List of active lightning strikes. */
     public List<LightningStrike> getActiveStrikes() {
         return activeStrikes;
     }
 
+    /** @return Inventory scroll offset. */
     public double getInventoryScrollY() {
         return inventoryScrollY;
     }
 
+    /** @return List of pending bursts. */
     public List<CombatManager.BurstTracker> getPendingBursts() {
         return pendingBursts;
     }
 
+    /** @return Active level config. */
     public LevelConfig getCurrentLevelConfig() {
         return currentLevelConfig;
     }
 
+    /** @return Active game map. */
     public GameMap getGameMap() {
         return gameMap;
     }
 
+    /** @return Current lightning timer. */
     public double getLightningTimer() {
         return lightningTimer;
     }
 
+    /** @param timer New lightning timer value. */
     public void setLightningTimer(double timer) {
         this.lightningTimer = timer;
     }
 
+    /** @return Last loaded config path. */
     public String getLastConfigPath() {
         return lastConfigPath;
     }
 
+    /** @return Current map seed. */
     public long getCurrentMapSeed() {
         return currentMapSeed;
     }
 
+    /** @return Time limit before tribulation. */
     public double getMaxTime() {
         return maxTime;
     }
@@ -1610,6 +1680,7 @@ public class PlayState implements GameState {
         this.inTribulation = val;
     }
 
+    /** @return Count of enemies that are part of the tribulation wave. */
     public int countLivingTribulationEnemies() {
         int count = 0;
         if (enemies != null) {
@@ -1619,5 +1690,10 @@ public class PlayState implements GameState {
             }
         }
         return count;
+    }
+
+    /** @param nextLevelRequested Flag to trigger transition. */
+    public void setNextLevelRequested(boolean nextLevelRequested) {
+        this.nextLevelRequested = nextLevelRequested;
     }
 }

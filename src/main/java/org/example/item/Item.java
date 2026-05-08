@@ -94,27 +94,43 @@ public abstract class Item {
     }
 
     // --- Getters and Setters for Effects ---
+    /** @return Amount of HP restored on use. */
     public double getHpRestore() { return hpRestore; }
+    /** @param val HP restoration amount. */
     public void setHpRestore(double val) { this.hpRestore = val; }
     
+    /** @return Amount of Qi restored on use. */
     public double getQiRestore() { return qiRestore; }
+    /** @param val Qi restoration amount. */
     public void setQiRestore(double val) { this.qiRestore = val; }
     
+    /** @return permanent Max HP bonus. */
     public double getMaxHpBoost() { return maxHpBoost; }
+    /** @param val Max HP boost. */
     public void setMaxHpBoost(double val) { this.maxHpBoost = val; }
     
+    /** @return permanent Max Qi bonus. */
     public double getMaxQiBoost() { return maxQiBoost; }
+    /** @param val Max Qi boost. */
     public void setMaxQiBoost(double val) { this.maxQiBoost = val; }
 
+    /** @return ID for weapon data lookup. */
     public String getWeaponConfigId() { return weaponConfigId; }
+    /** @param id Weapon config ID. */
     public void setWeaponConfigId(String id) { this.weaponConfigId = id; }
     
+    /** @return Sprite identifier in AssetRegistry. */
     public String getSpriteId() { return spriteId; }
+    /** @param spriteId The sprite ID. */
     public void setSpriteId(String spriteId) { this.spriteId = spriteId; }
     
+    /** @return Index of the frame in spritesheet. */
     public int getSpriteFrame() { return spriteFrame; }
+    /** @param spriteFrame The frame index. */
     public void setSpriteFrame(int spriteFrame) { this.spriteFrame = spriteFrame; }
 
+    /** @return The skill ID this item teaches. */
     public String getSkillId() { return skillId; }
+    /** @param skillId The skill ID. */
     public void setSkillId(String skillId) { this.skillId = skillId; }
 }

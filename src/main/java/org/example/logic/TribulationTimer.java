@@ -18,6 +18,10 @@ public class TribulationTimer {
     private final AtomicBoolean active = new AtomicBoolean(false);
     private Runnable onExpireCallback;
 
+    /**
+     * @param durationSeconds Initial countdown length.
+     * @param onExpire Action to take when time reaches zero.
+     */
     public TribulationTimer(double durationSeconds, Runnable onExpire) {
         this.remainingSeconds = durationSeconds;
         this.onExpireCallback = onExpire;
@@ -97,6 +101,7 @@ public class TribulationTimer {
         }
     }
 
+    /** @return Time left until expiration (clamped to 0). */
     public double getRemainingSeconds() {
         return Math.max(0, remainingSeconds);
     }

@@ -27,6 +27,10 @@ public class QuestRegistry {
         public String rewardSkillId;
     }
 
+    /**
+     * Loads quest templates from a JSON resource.
+     * @param resourcePath Path to quest_configs.json.
+     */
     public static void loadQuests(String resourcePath) {
         try {
             InputStream is = QuestRegistry.class.getResourceAsStream(resourcePath);
@@ -42,6 +46,11 @@ public class QuestRegistry {
         }
     }
 
+    /**
+     * Creates a fresh Quest instance from a template ID.
+     * @param id The template ID.
+     * @return A new Quest object, or null if ID missing.
+     */
     public static Quest createQuest(String id) {
         QuestConfig config = questTemplates.get(id);
         if (config == null) return null;

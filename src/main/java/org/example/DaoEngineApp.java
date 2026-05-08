@@ -9,20 +9,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-import org.example.state.GameState;
-import org.example.state.LoadState;
-import org.example.state.MenuState;
-import org.example.state.PlayState;
-import org.example.state.LexiconState;
+import org.example.state.*;
 import org.example.item.ItemRegistry;
 import org.example.item.WeaponRegistry;
 import org.example.entity.EnemyRegistry;
-import org.example.state.PauseState;
-import org.example.state.LoadingState;
 import org.example.logic.CultivationRegistry;
-import org.example.logic.CultivationRank;
 import org.example.logic.SkillRegistry;
-import org.example.state.GameOverState;
+import org.example.logic.LootRegistry;
+import org.example.logic.QuestRegistry;
+import org.example.logic.DialogueRegistry;
 
 /**
  * The main application class for DaoEngine: Path to Immortality.
@@ -134,72 +129,98 @@ public class DaoEngineApp extends Application {
     }
 
     /**
-     * Updates the current game state's logic.
+     * Updates the current game state's logic based on the active state.
+     * Manages transitions between states like Menu, Play, Pause, and Game Over.
      * 
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
     private void update(double deltaTime) {
-        // Delegate update call to the active state
-        if (currentState != null) {
-            currentState.update(deltaTime);
+        if (currentState == null) return;
 
-            // Handle transition from Menu to Play or Load
-            if (currentState instanceof MenuState menu) {
-                if (menu.isStartGameRequested()) {
-                    currentState = new LoadingState(new PlayState());
-                } else if (menu.isLoadRequested()) {
-                    currentState = new LoadState();
-                } else if (menu.isLexiconRequested()) {
-                    menu.setLexiconRequested(false);
-                    lastStateBeforeLexicon = currentState;
-                    currentState = new LexiconState();
-                }
-            } else if (currentState instanceof LoadState load) {
-                if (load.getSelectedSave() != null) {
-                    currentState = new LoadingState(new PlayState(load.getSelectedSave()));
-                } else if (load.isReturnToMenuRequested()) {
-                    currentState = new MenuState();
-                }
-            } else if (currentState instanceof LexiconState lexicon) {
-                if (lexicon.isReturnRequested()) {
-                    if (lastStateBeforeLexicon != null) {
-                        currentState = lastStateBeforeLexicon;
-                        lastStateBeforeLexicon = null;
-                    } else {
-                        currentState = new MenuState();
-                    }
-                }
-            } else if (currentState instanceof PlayState play) {
-                if (play.isGameOverRequested()) {
-                    currentState = new GameOverState();
-                } else if (play.isNextLevelRequested()) {
-                    currentState = new LoadingState(new PlayState(play.getNextLevelTransitionData()));
-                } else if (play.isPauseRequested()) {
-                    play.setPauseRequested(false);
-                    currentState = new PauseState(play);
-                }
-            } else if (currentState instanceof PauseState pause) {
-                if (pause.isResumeRequested()) {
-                    pause.setResumeRequested(false);
-                    currentState = pause.getBackgroundState();
-                } else if (pause.isReturnToMenuRequested()) {
-                    currentState = new MenuState();
-                } else if (pause.isLexiconRequested()) {
-                    pause.setLexiconRequested(false);
-                    lastStateBeforeLexicon = currentState;
-                    currentState = new LexiconState();
-                }
-            } else if (currentState instanceof LoadingState loading) {
-                if (loading.isFinished()) {
-                    currentState = loading.getTargetState();
-                }
-            } else if (currentState instanceof GameOverState gameOver) {
-                if (gameOver.isTryAgainRequested()) {
-                    currentState = new LoadingState(new PlayState());
-                } else if (gameOver.isReturnToMenuRequested()) {
-                    currentState = new MenuState();
-                }
+        currentState.update(deltaTime);
+
+        // --- STATE TRANSITION LOGIC ---
+        if (currentState instanceof MenuState menu) {
+            handleMenuTransitions(menu);
+        } else if (currentState instanceof LoadState load) {
+            handleLoadTransitions(load);
+        } else if (currentState instanceof LexiconState lexicon) {
+            handleLexiconTransitions(lexicon);
+        } else if (currentState instanceof PlayState play) {
+            handlePlayTransitions(play);
+        } else if (currentState instanceof PauseState pause) {
+            handlePauseTransitions(pause);
+        } else if (currentState instanceof LoadingState loading) {
+            if (loading.isFinished()) {
+                currentState = loading.getTargetState();
             }
+        } else if (currentState instanceof GameOverState gameOver) {
+            handleGameOverTransitions(gameOver);
+        }
+    }
+
+    /** @param menu The menu state to handle. */
+    private void handleMenuTransitions(MenuState menu) {
+        if (menu.isStartGameRequested()) {
+            currentState = new LoadingState(new PlayState());
+        } else if (menu.isLoadRequested()) {
+            currentState = new LoadState();
+        } else if (menu.isLexiconRequested()) {
+            menu.setLexiconRequested(false);
+            lastStateBeforeLexicon = currentState;
+            currentState = new LexiconState();
+        }
+    }
+
+    /** @param load The loading/save selection state to handle. */
+    private void handleLoadTransitions(LoadState load) {
+        if (load.getSelectedSave() != null) {
+            currentState = new LoadingState(new PlayState(load.getSelectedSave()));
+        } else if (load.isReturnToMenuRequested()) {
+            currentState = new MenuState();
+        }
+    }
+
+    /** @param lexicon The lexicon state to handle. */
+    private void handleLexiconTransitions(LexiconState lexicon) {
+        if (lexicon.isReturnRequested()) {
+            currentState = (lastStateBeforeLexicon != null) ? lastStateBeforeLexicon : new MenuState();
+            lastStateBeforeLexicon = null;
+        }
+    }
+
+    /** @param play The active gameplay state to handle. */
+    private void handlePlayTransitions(PlayState play) {
+        if (play.isGameOverRequested()) {
+            currentState = new GameOverState();
+        } else if (play.isNextLevelRequested()) {
+            currentState = new LoadingState(new PlayState(play.getNextLevelTransitionData()));
+        } else if (play.isPauseRequested()) {
+            play.setPauseRequested(false);
+            currentState = new PauseState(play);
+        }
+    }
+
+    /** @param pause The pause menu state to handle. */
+    private void handlePauseTransitions(PauseState pause) {
+        if (pause.isResumeRequested()) {
+            pause.setResumeRequested(false);
+            currentState = pause.getBackgroundState();
+        } else if (pause.isReturnToMenuRequested()) {
+            currentState = new MenuState();
+        } else if (pause.isLexiconRequested()) {
+            pause.setLexiconRequested(false);
+            lastStateBeforeLexicon = currentState;
+            currentState = new LexiconState();
+        }
+    }
+
+    /** @param gameOver The game over state to handle. */
+    private void handleGameOverTransitions(GameOverState gameOver) {
+        if (gameOver.isTryAgainRequested()) {
+            currentState = new LoadingState(new PlayState());
+        } else if (gameOver.isReturnToMenuRequested()) {
+            currentState = new MenuState();
         }
     }
 
@@ -250,6 +271,9 @@ public class DaoEngineApp extends Application {
 
     /**
      * Loads all static game data registries from JSON.
+     */
+    /**
+     * Initializes all game registries (items, enemies, quests, etc.) from JSON.
      */
     private void initRegistries() {
         WeaponRegistry.loadWeapons("/weapons/weapon_configs.json");

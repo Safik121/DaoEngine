@@ -12,6 +12,9 @@ public class CultivationManager {
     private List<CultivationRank> progressionPath;
     private int currentRankIndex = 0;
 
+    /**
+     * Initializes the manager and loads the progression path from the registry.
+     */
     public CultivationManager() {
         // Load the full path from the registry
         this.progressionPath = CultivationRegistry.getFullProgressionPath();
@@ -22,6 +25,7 @@ public class CultivationManager {
         }
     }
 
+    /** @return The current cultivation rank of the player. */
     public CultivationRank getCurrentRank() {
         if (currentRankIndex < progressionPath.size()) {
             return progressionPath.get(currentRankIndex);
@@ -29,6 +33,7 @@ public class CultivationManager {
         return progressionPath.get(progressionPath.size() - 1);
     }
     
+    /** @return The next achievable cultivation rank, or null if at max rank. */
     public CultivationRank getNextRank() {
         if (currentRankIndex + 1 < progressionPath.size()) {
             return progressionPath.get(currentRankIndex + 1);
@@ -86,6 +91,8 @@ public class CultivationManager {
     /**
      * Used for saving/loading state.
      */
+    /** @return Current position in the progression list. */
     public int getCurrentRankIndex() { return currentRankIndex; }
+    /** @param index New progression index (used during load). */
     public void setCurrentRankIndex(int index) { this.currentRankIndex = index; }
 }

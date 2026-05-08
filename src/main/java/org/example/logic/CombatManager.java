@@ -38,12 +38,21 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Updates all active combat entities and effects.
+     * @param state Current game state.
+     * @param deltaTime Time elapsed since last frame.
+     */
     public void update(PlayState state, double deltaTime) {
         updateBursts(state, deltaTime);
         updateProjectiles(state, deltaTime);
         updateHazards(state, deltaTime);
     }
 
+    /**
+     * Processes player input for firing weapons and using techniques.
+     * @param state Current game state.
+     */
     public void handleFiring(PlayState state) {
         if (state.isInventoryOpen() || state.isShowingFullMap() || state.isPaused() || state.getDialogManager().isActive())
             return;
@@ -73,6 +82,11 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Triggers a weapon or skill activation, potentially starting a burst.
+     * @param wConfig The configuration to use.
+     * @param state Reference to PlayState.
+     */
     private void fireWeaponOrSkill(WeaponConfig wConfig, PlayState state) {
         double mx = Input.getMouseX() + state.getCameraX();
         double my = Input.getMouseY() + state.getCameraY();
@@ -85,6 +99,12 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Spawns a single projectile or a fan of projectiles based on configuration.
+     * @param config The weapon configuration.
+     * @param baseAngle The central direction of fire.
+     * @param state Reference to PlayState.
+     */
     public void fireShot(WeaponConfig config, double baseAngle, PlayState state) {
         double px = state.getPlayer().getX() + 6;
         double py = state.getPlayer().getY() + 6;
@@ -104,6 +124,9 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Updates ongoing multi-shot bursts.
+     */
     private void updateBursts(PlayState state, double deltaTime) {
         for (int i = state.getPendingBursts().size() - 1; i >= 0; i--) {
             BurstTracker burst = state.getPendingBursts().get(i);
@@ -119,6 +142,9 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Updates all flying projectiles and checks for collisions.
+     */
     private void updateProjectiles(PlayState state, double deltaTime) {
         for (int i = state.getProjectiles().size() - 1; i >= 0; i--) {
             Projectile p = state.getProjectiles().get(i);
@@ -153,6 +179,9 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Applies damage from a projectile to a target, considering frame-time for beams/zones.
+     */
     private void applyDamage(Projectile p, LivingEntity target, double deltaTime) {
         double damage = p.getDamage();
         if (p.getType() == WeaponConfig.ProjectileType.BEAM || p.getType() == WeaponConfig.ProjectileType.AOE_ZONE) {
@@ -161,12 +190,15 @@ public class CombatManager {
         target.takeDamage(damage);
     }
 
+    /**
+     * Updates environmental hazards and triggers random lightning strikes.
+     */
     private void updateHazards(PlayState state, double deltaTime) {
         if (!state.isInTribulation()) return;
 
         double timer = state.getLightningTimer() - deltaTime;
         if (timer <= 0) {
-            GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
+            GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().ui != null ? ConfigManager.getInstance().getConfig().balance : new GameConfig.BalanceConfig(); // Safety check
             double lx = state.getPlayer().getX() + 6;
             double ly = state.getPlayer().getY() + 6;
             state.getActiveStrikes().add(new LightningStrike(lx, ly));
@@ -189,6 +221,10 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Initiates the Tribulation phase, spawning a wave of enemies.
+     * @param state Current game state.
+     */
     public void triggerTribulation(PlayState state) {
         state.setInTribulation(true);
 
@@ -216,6 +252,9 @@ public class CombatManager {
         }
     }
 
+    /**
+     * Checks for entities inside a lightning strike's radius and applies damage.
+     */
     private void handleStrikeDamage(PlayState state, LightningStrike strike) {
         GameConfig.BalanceConfig bal = ConfigManager.getInstance().getConfig().balance;
         double radiusSq = Math.pow(strike.getRadius(), 2);

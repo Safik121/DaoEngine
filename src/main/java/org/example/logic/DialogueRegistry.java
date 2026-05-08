@@ -28,6 +28,10 @@ public class DialogueRegistry {
         public String nextNodeId;
     }
 
+    /**
+     * Loads dialogue trees from a JSON resource.
+     * @param resourcePath Path to dialogue_configs.json.
+     */
     public static void loadDialogues(String resourcePath) {
         try {
             InputStream is = DialogueRegistry.class.getResourceAsStream(resourcePath);
@@ -56,6 +60,10 @@ public class DialogueRegistry {
         }
     }
 
+    /**
+     * @param id Node ID.
+     * @return The node, or null if missing.
+     */
     public static DialogueNode getNode(String id) {
         return dialogues.get(id);
     }

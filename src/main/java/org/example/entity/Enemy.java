@@ -252,7 +252,15 @@ public class Enemy extends LivingEntity {
     public void render(GraphicsContext gc, double cameraX, double cameraY) {
         // --- 1. Draw Sprite ---
         int frames = AssetRegistry.getFrameCount(id);
-        int frameIndex = (int) (animationTimer / 0.1) % frames;
+        int frameIndex = (int) (animationTimer / 0.1) % Math.max(1, frames);
+
+        // Draw a subtle aura for Tribulation enemies
+        if (isTribulation) {
+            gc.setGlobalAlpha(0.3);
+            gc.setFill(Color.PURPLE);
+            gc.fillOval(x - cameraX - 4, y - cameraY - 4, size + 8, size + 8);
+            gc.setGlobalAlpha(1.0);
+        }
 
         javafx.scene.image.Image sprite = AssetRegistry.getSprite(id, frameIndex);
         if (sprite != null) {

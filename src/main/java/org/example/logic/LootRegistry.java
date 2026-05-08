@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Manages drop tables and loot generation for defeated enemies.
+ * Decouples enemy definitions from their potential rewards.
+ */
 public class LootRegistry {
 
     public static class LootEntry {
@@ -22,6 +26,10 @@ public class LootRegistry {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Random random = new Random();
 
+    /**
+     * Loads loot tables from a JSON resource.
+     * @param resourcePath Path to loot_configs.json.
+     */
     public static void loadConfigs(String resourcePath) {
         try {
             InputStream is = LootRegistry.class.getResourceAsStream(resourcePath);
@@ -38,6 +46,11 @@ public class LootRegistry {
         }
     }
 
+    /**
+     * Calculates which items drop from a specific enemy.
+     * @param enemyId The registry ID of the enemy.
+     * @return List of item IDs successfully rolled.
+     */
     public static List<String> rollLoot(String enemyId) {
         List<String> drops = new ArrayList<>();
         List<LootEntry> table = lootTables.get(enemyId);

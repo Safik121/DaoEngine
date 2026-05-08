@@ -98,10 +98,12 @@ public class LoadState implements GameState {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /** @return The save data that was selected by the user, or null if none. */
     public SaveData getSelectedSave() {
         return selectedSave;
     }
 
+    /** @return true if the user clicked "BACK TO MENU". */
     public boolean isReturnToMenuRequested() {
         return returnToMenuRequested;
     }

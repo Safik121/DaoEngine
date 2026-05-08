@@ -103,6 +103,11 @@ public class DialogManager {
         return false;
     }
 
+    /**
+     * Processes a selected dialogue choice.
+     * @param index Index of the choice in current node.
+     * @param state Reference to PlayState.
+     */
     public void selectChoice(int index, PlayState state) {
         if (currentNode == null || index < 0 || index >= currentNode.getChoices().size()) return;
 
@@ -208,6 +213,7 @@ public class DialogManager {
         }
     }
 
+    /** Resets the dialogue state to null. */
     public void close() {
         this.activeDialogue = null;
         this.currentNode = null;
@@ -215,14 +221,17 @@ public class DialogManager {
         this.pendingSkillId = null;
     }
 
+    /** @return true if a conversation is ongoing. */
     public boolean isActive() {
         return activeDialogue != null;
     }
 
+    /** @return The NPC currently being spoken to. */
     public InteractableEntity getActiveDialogue() {
         return activeDialogue;
     }
 
+    /** @return The current active branch node. */
     public DialogueNode getCurrentNode() {
         return currentNode;
     }

@@ -156,6 +156,10 @@ public class MapGenerator {
         }
     }
 
+    /**
+     * Attempts to find a random grass tile and return its world pixel coordinates.
+     * @return [x, y] in pixels or null if failed.
+     */
     private static double[] findRandomGrass(Level level, Random random) {
         for (int attempt = 0; attempt < 100; attempt++) {
             int rx = random.nextInt(level.width);
@@ -167,6 +171,10 @@ public class MapGenerator {
         return null;
     }
 
+    /**
+     * Draws an irregular blob of a specific tile type on the map.
+     * Used for lakes and spirit veins.
+     */
     private static void drawBlob(Level level, int cx, int cy, int size, int type, Random random) {
         if (size <= 0) {
             if (cx >= 0 && cx < level.width && cy >= 0 && cy < level.height) {
@@ -190,6 +198,9 @@ public class MapGenerator {
         }
     }
 
+    /**
+     * Orchestrates river and bridge generation across the map.
+     */
     private static void generateRivers(Level level, LevelConfig config, Random random) {
         List<List<int[]>> allPaths = new ArrayList<>();
         List<Boolean> verticalFlags = new ArrayList<>();
@@ -238,7 +249,7 @@ public class MapGenerator {
         for (int i = 0; i < allPaths.size(); i++) {
             List<int[]> path = allPaths.get(i);
             boolean isOverallVertical = verticalFlags.get(i);
-            boolean[] inLake = inLakes.get(i);
+            boolean[][] inLake = { inLakes.get(i) }; // Wrapped for use but inLakes[i] is boolean[]
 
             int numBridges = config.bridgeMin + random.nextInt(config.bridgeMax - config.bridgeMin + 1);
             int attempts = 0;
@@ -248,13 +259,13 @@ public class MapGenerator {
                 if (path.size() < 40)
                     break;
                 int idx = 20 + random.nextInt(path.size() - 40);
-                if (idx < 0 || idx >= path.size() || inLake[idx])
+                if (idx < 0 || idx >= path.size() || inLakes.get(i)[idx])
                     continue;
 
                 boolean nearLake = false;
                 for (int win = -10; win <= 10; win++) {
                     int wIdx = idx + win;
-                    if (wIdx >= 0 && wIdx < inLake.length && inLake[wIdx]) {
+                    if (wIdx >= 0 && wIdx < inLakes.get(i).length && inLakes.get(i)[wIdx]) {
                         nearLake = true;
                         break;
                     }

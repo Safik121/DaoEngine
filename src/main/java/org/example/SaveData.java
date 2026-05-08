@@ -32,9 +32,9 @@ public class SaveData {
 
     // Inventory
     @JsonProperty("inventoryItemIds")
-    public List<String> inventoryItemIds;
+    public List<String> inventoryItemIds = new java.util.ArrayList<>();
     @JsonProperty("hotbarItemIds")
-    public List<String> hotbarItemIds;
+    public List<String> hotbarItemIds = new java.util.ArrayList<>();
 
     // World State
     @JsonProperty("levelConfigPath")

@@ -24,6 +24,12 @@ public class InteractableEntity implements Interactable {
 
     private String spriteId;
 
+    /**
+     * @param x World X pixel coordinate.
+     * @param y World Y pixel coordinate.
+     * @param name Display name.
+     * @param type NPC or Stele.
+     */
     public InteractableEntity(double x, double y, String name, Type type) {
         this.x = x;
         this.y = y;
@@ -31,22 +37,27 @@ public class InteractableEntity implements Interactable {
         this.type = type;
     }
 
+    /** @param spriteId The ID of the sprite in AssetRegistry. */
     public void setSpriteId(String spriteId) {
         this.spriteId = spriteId;
     }
 
+    /** @param dialogueTreeId The starting node for the conversation. */
     public void setDialogueTreeId(String dialogueTreeId) {
         this.dialogueTreeId = dialogueTreeId;
     }
 
+    /** @return The starting node ID. */
     public String getDialogueTreeId() {
         return dialogueTreeId;
     }
 
+    /** @param item The item granted after finishing dialogue. */
     public void setRewardItem(Item item) {
         this.rewardItem = item;
     }
 
+    /** @param giveQuestId The quest ID offered by this entity. */
     public void setGiveQuestId(String giveQuestId) {
         this.giveQuestId = giveQuestId;
     }
@@ -108,12 +119,20 @@ public class InteractableEntity implements Interactable {
     }
 
     // Getters
+    /** @return World X. */
     public double getX() { return x; }
+    /** @return World Y. */
     public double getY() { return y; }
+    /** @return Entity name. */
     public String getName() { return name; }
+    /** @return NPC or STELE. */
     public Type getType() { return type; }
+    /** @return The reward item. */
     public Item getRewardItem() { return rewardItem; }
+    /** @return The quest ID given. */
     public String getGiveQuestId() { return giveQuestId; }
+    /** @return true if reward was already taken. */
     public boolean hasGivenReward() { return hasGivenReward; }
+    /** @param val reward taken status. */
     public void setHasGivenReward(boolean val) { this.hasGivenReward = val; }
 }

@@ -9,6 +9,11 @@ import org.example.state.PlayState;
  * Typically do not have any on-use effects beyond triggering combat logic.
  */
 public class WeaponItem extends Item {
+    /**
+     * @param id Unique ID.
+     * @param name Display name.
+     * @param description Brief text.
+     */
     public WeaponItem(String id, String name, String description) {
         super(id, name, description, Type.WEAPON);
     }

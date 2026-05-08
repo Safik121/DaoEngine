@@ -18,6 +18,11 @@ public class QuestManager implements GameEventListener {
     private List<Quest> activeQuests = new ArrayList<>();
     private List<Quest> completedQuests = new ArrayList<>();
 
+    /**
+     * Adds a new active quest to the player's log.
+     * @param q The quest to add.
+     * @param state PlayState for notification.
+     */
     public void addQuest(Quest q, PlayState state) {
         if (!hasQuest(q.getId())) {
             activeQuests.add(q);
@@ -28,28 +33,54 @@ public class QuestManager implements GameEventListener {
         }
     }
 
+    /**
+     * Records a quest as completed (e.g. during state restoration).
+     * @param q The finished quest.
+     */
     public void addCompletedQuest(Quest q) {
         if (!isQuestCompleted(q.getId())) {
             completedQuests.add(q);
         }
     }
 
+    /**
+     * Checks if a quest is either active or completed.
+     * @param id Quest unique ID.
+     * @return true if known.
+     */
     public boolean hasQuest(String id) {
         for (Quest q : activeQuests) if (q.getId().equals(id)) return true;
         for (Quest q : completedQuests) if (q.getId().equals(id)) return true;
         return false;
     }
 
+    /**
+     * Checks if a quest is currently in progress.
+     * @param id Quest ID.
+     * @return true if active.
+     */
     public boolean isQuestActive(String id) {
         for (Quest q : activeQuests) if (q.getId().equals(id)) return true;
         return false;
     }
 
+    /**
+     * Checks if a quest has already been finished.
+     * @param id Quest ID.
+     * @return true if completed.
+     */
     public boolean isQuestCompleted(String id) {
         for (Quest q : completedQuests) if (q.getId().equals(id)) return true;
         return false;
     }
 
+    /**
+     * Implementation of GameEventListener. Maps world events to quest objectives.
+     * @param event The event type (KILL, COLLECT, etc).
+     * @param targetId The ID of the target (enemy ID or item ID).
+     * @param amount The quantity involved.
+     * @param state Reference to PlayState.
+     */
     @Override
     public void onGameEvent(GameEvent event, String targetId, int amount, PlayState state) {
         Quest.ObjectiveType mappedType = null;
@@ -83,6 +114,11 @@ public class QuestManager implements GameEventListener {
         }
     }
 
+    /**
+     * Finalizes a quest, moving it to the completed list and granting rewards.
+     * @param q The quest to finish.
+     * @param state PlayState for feedback and reward delivery.
+     */
     private void completeQuest(Quest q, PlayState state) {
         activeQuests.remove(q);
         completedQuests.add(q);
@@ -115,10 +151,12 @@ public class QuestManager implements GameEventListener {
         }
     }
 
+    /** @return List of current active quests. */
     public List<Quest> getActiveQuests() {
         return activeQuests;
     }
 
+    /** @return List of all successfully finished quests. */
     public List<Quest> getCompletedQuests() {
         return completedQuests;
     }

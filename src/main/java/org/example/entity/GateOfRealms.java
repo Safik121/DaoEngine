@@ -18,15 +18,29 @@ public class GateOfRealms implements Interactable {
     private double x, y;
     private double animationTimer = 0;
 
+    /**
+     * @param x Initial X pixel coordinate.
+     * @param y Initial Y pixel coordinate.
+     */
     public GateOfRealms(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Updates portal animations.
+     * @param dt Delta time.
+     */
     public void update(double dt) {
         animationTimer += dt;
     }
 
+    /**
+     * Renders the glowing portal and its label.
+     * @param gc Graphics context.
+     * @param cameraX Camera X.
+     * @param cameraY Camera Y.
+     */
     public void render(GraphicsContext gc, double cameraX, double cameraY) {
         double sx = x - cameraX;
         double sy = y - cameraY;
@@ -65,7 +79,7 @@ public class GateOfRealms implements Interactable {
     public void onInteract(PlayState state) {
         if (state.getPlayer().getInventory().consumeItem("realm_token")) {
             GameLogger.info("[Gate] The Realm Token resonates! Entering the Gate of Realms...");
-            state.setVictory();
+            state.setNextLevelRequested(true);
         } else {
             state.addNotification("THE GATE IS SEALED: Requires 'Realm Token'");
         }
@@ -81,6 +95,8 @@ public class GateOfRealms implements Interactable {
         return 60.0;
     }
 
+    /** @return World X. */
     public double getX() { return x; }
+    /** @return World Y. */
     public double getY() { return y; }
 }

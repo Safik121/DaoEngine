@@ -11,10 +11,14 @@ public enum Biome {
 
     private final String displayName;
 
+    /**
+     * @param displayName Human-readable name.
+     */
     Biome(String displayName) {
         this.displayName = displayName;
     }
 
+    /** @return The human-readable name of the biome. */
     public String getDisplayName() {
         return displayName;
     }

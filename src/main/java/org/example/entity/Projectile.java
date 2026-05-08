@@ -61,6 +61,11 @@ public class Projectile {
         this.vy = Math.sin(angle) * config.speed;
     }
 
+    /**
+     * Updates projectile position and lifespan.
+     * @param gameMap Map for wall collisions.
+     * @param deltaTime Time elapsed.
+     */
     public void update(GameMap gameMap, double deltaTime) {
         animationTimer += deltaTime;
         double dtFactor = deltaTime * 60.0;
@@ -82,6 +87,12 @@ public class Projectile {
         }
     }
 
+    /**
+     * Renders the projectile based on its type (Fireball, Sword, etc).
+     * @param gc Graphics context.
+     * @param camX Camera X.
+     * @param camY Camera Y.
+     */
     public void render(GraphicsContext gc, double camX, double camY) {
         if (!active) return;
         
@@ -132,6 +143,11 @@ public class Projectile {
         }
     }
 
+    /**
+     * Checks if this projectile overlaps with a living entity.
+     * @param target The entity to check against.
+     * @return true if hit.
+     */
     public boolean checkCollision(LivingEntity target) {
         double ex = target.getX() + target.getSize() / 2;
         double ey = target.getY() + target.getSize() / 2;
@@ -161,11 +177,18 @@ public class Projectile {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    /** @return true if still flying. */
     public boolean isActive() { return active; }
+    /** Forces the projectile to disappear. */
     public void deactivate() { this.active = false; }
+    /** @return Damage value. */
     public double getDamage() { return damage; }
+    /** @return true if targets enemies. */
     public boolean isFriendly() { return friendly; }
+    /** @return Current X. */
     public double getX() { return x; }
+    /** @return Current Y. */
     public double getY() { return y; }
+    /** @return Projectile shape type. */
     public org.example.item.WeaponConfig.ProjectileType getType() { return type; }
 }

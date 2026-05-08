@@ -9,6 +9,12 @@ import org.example.state.PlayState;
  * but are essential for crafting and commerce.
  */
 public class MaterialItem extends Item {
+    /**
+     * @param id Unique ID.
+     * @param name Display name.
+     * @param description Brief text.
+     * @param type Specific category (CRAFTING or MISC).
+     */
     public MaterialItem(String id, String name, String description, Type type) {
         super(id, name, description, type);
     }

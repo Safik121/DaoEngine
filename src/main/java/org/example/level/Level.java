@@ -23,8 +23,13 @@ public class Level {
     /** The configuration used to generate this level. */
     public LevelConfig config;
     /**
-     * The grid data representing the world layout (0 = grass, 1 = wall, 2 = water,
-     * 3 = spirit vein).
+     * The grid data representing the world layout:
+     * 0 = Grass/Free
+     * 1 = Wall/Border
+     * 2 = Water/Lake/River
+     * 3 = Spirit Vein (Qi Regen)
+     * 4 = Terrain Variation (Rocks/Decoration)
+     * 5 = Bridge
      */
     public List<List<Integer>> data;
     /** The gate to the next realm. */

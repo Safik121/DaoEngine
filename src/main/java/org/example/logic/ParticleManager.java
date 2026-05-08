@@ -42,6 +42,10 @@ public class ParticleManager {
 
     private List<Particle> particles = new ArrayList<>();
 
+    /**
+     * Updates all active particles and removes expired ones.
+     * @param dt Delta time.
+     */
     public void update(double dt) {
         for (int i = particles.size() - 1; i >= 0; i--) {
             Particle p = particles.get(i);
@@ -52,12 +56,23 @@ public class ParticleManager {
         }
     }
 
+    /**
+     * Renders all active particles.
+     * @param gc Graphics context.
+     * @param camX Camera X.
+     * @param camY Camera Y.
+     */
     public void render(GraphicsContext gc, double camX, double camY) {
         for (Particle p : particles) {
             p.render(gc, camX, camY);
         }
     }
     
+    /**
+     * Spawns yellow sparks at the location.
+     * @param x World X.
+     * @param y World Y.
+     */
     public void spawnHitSpark(double x, double y) {
         for (int i = 0; i < 5; i++) {
             double angle = Math.random() * Math.PI * 2;
@@ -66,6 +81,11 @@ public class ParticleManager {
         }
     }
 
+    /**
+     * Spawns cyan particles at the location.
+     * @param x World X.
+     * @param y World Y.
+     */
     public void spawnQiBurst(double x, double y) {
         for (int i = 0; i < 15; i++) {
             double angle = Math.random() * Math.PI * 2;
@@ -74,6 +94,11 @@ public class ParticleManager {
         }
     }
 
+    /**
+     * Spawns intense golden particles for breakthroughs.
+     * @param x World X.
+     * @param y World Y.
+     */
     public void spawnBreakthroughEffect(double x, double y) {
         for (int i = 0; i < 25; i++) {
             double angle = Math.random() * Math.PI * 2;

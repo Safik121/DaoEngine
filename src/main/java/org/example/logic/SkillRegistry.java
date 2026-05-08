@@ -17,6 +17,10 @@ public class SkillRegistry {
     private static final Map<String, Skill> skills = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Loads skill templates from a JSON resource.
+     * @param resourcePath Path to skills.json.
+     */
     public static void loadSkills(String resourcePath) {
         try {
             InputStream is = SkillRegistry.class.getResourceAsStream(resourcePath);
@@ -37,6 +41,10 @@ public class SkillRegistry {
         }
     }
 
+    /**
+     * @param id Skill ID.
+     * @return The skill template, or null if missing.
+     */
     public static Skill getSkill(String id) {
         return skills.get(id);
     }

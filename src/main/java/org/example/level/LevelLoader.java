@@ -39,6 +39,11 @@ public class LevelLoader {
         public java.util.List<String> maps;
     }
 
+    /**
+     * Loads the list of available maps from a world manifest JSON.
+     * @param filePath Path to the manifest.
+     * @return The manifest DTO or null.
+     */
     public static WorldManifest loadManifest(String filePath) {
         try {
             InputStream is = LevelLoader.class.getResourceAsStream(filePath);

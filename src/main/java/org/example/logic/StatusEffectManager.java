@@ -12,6 +12,9 @@ public class StatusEffectManager {
     private final LivingEntity owner;
     private final List<StatusEffect> activeEffects;
 
+    /**
+     * @param owner The entity whose effects are being managed.
+     */
     public StatusEffectManager(LivingEntity owner) {
         this.owner = owner;
         this.activeEffects = new ArrayList<>();
@@ -46,10 +49,12 @@ public class StatusEffectManager {
         }
     }
 
+    /** @return A copy of the list of currently active status effects. */
     public List<StatusEffect> getActiveEffects() {
         return new ArrayList<>(activeEffects);
     }
     
+    /** Clears all active effects and triggers their removal logic. */
     public void clear() {
         for (StatusEffect effect : activeEffects) {
             effect.onRemove(owner);

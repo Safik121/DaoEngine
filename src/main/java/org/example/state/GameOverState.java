@@ -104,6 +104,8 @@ public class GameOverState implements GameState {
         return text.length() * (fontSize * 0.48);
     }
 
+    /** @return true if the user clicked "Try Again". */
     public boolean isTryAgainRequested() { return tryAgainRequested; }
+    /** @return true if the user clicked "Main Menu". */
     public boolean isReturnToMenuRequested() { return returnToMenuRequested; }
 }

@@ -18,6 +18,7 @@ public class ConfigManager {
         loadConfig("/game_config.json");
     }
 
+    /** @return The singleton manager instance. */
     public static ConfigManager getInstance() {
         if (instance == null) {
             instance = new ConfigManager();
@@ -25,6 +26,10 @@ public class ConfigManager {
         return instance;
     }
 
+    /**
+     * Loads the configuration from a specific JSON path.
+     * @param path The resource path.
+     */
     private void loadConfig(String path) {
         try {
             InputStream is = ConfigManager.class.getResourceAsStream(path);
@@ -42,6 +47,9 @@ public class ConfigManager {
         }
     }
 
+    /**
+     * Creates a set of default configuration values if the file is missing or corrupt.
+     */
     private void createFallbackConfig() {
         config = new GameConfig();
         config.engine = new GameConfig.EngineConfig();
@@ -77,6 +85,7 @@ public class ConfigManager {
         }
     }
 
+    /** @return The currently loaded global configuration object. */
     public GameConfig getConfig() {
         return config;
     }

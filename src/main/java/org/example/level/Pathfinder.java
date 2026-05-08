@@ -20,6 +20,7 @@ public class Pathfinder {
         Node(int x, int y) {
             this.x = x;
             this.y = y;
+            this.gScore = Integer.MAX_VALUE;
         }
 
         @Override

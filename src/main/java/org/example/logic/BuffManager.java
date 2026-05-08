@@ -54,10 +54,15 @@ public class BuffManager {
         return activeBuffs.getOrDefault(type, 0.0) > 0;
     }
 
+    /**
+     * @param type The buff to check.
+     * @return Time remaining in seconds.
+     */
     public double getRemainingTime(BuffType type) {
         return activeBuffs.getOrDefault(type, 0.0);
     }
 
+    /** Clears all active buffs. */
     public void clear() {
         activeBuffs.clear();
     }

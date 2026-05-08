@@ -138,6 +138,8 @@ public class AssetRegistry {
 
     /**
      * Helper to get the total number of frames for a specific sprite ID.
+     * @param spriteId The ID to look up.
+     * @return Total frames available for animation.
      */
     public static int getFrameCount(String spriteId) {
         SpriteMetadata meta = spriteMap.get(spriteId);

@@ -17,6 +17,7 @@ public class WorldState {
         counters = new HashMap<>();
     }
 
+    /** @return The global singleton instance. */
     public static WorldState getInstance() {
         if (instance == null) {
             instance = new WorldState();
@@ -45,16 +46,25 @@ public class WorldState {
         counters.put(key, counters.getOrDefault(key, 0) + 1);
     }
 
+    /**
+     * Retrieves the current value of a global counter.
+     * @param key The counter name.
+     * @return The count, or 0 if missing.
+     */
     public int getCounter(String key) {
         return counters.getOrDefault(key, 0);
     }
 
     // --- Persistency Helpers ---
 
+    /** @return Defensive copy of all current flags. */
     public Map<String, Boolean> getFlags() { return new HashMap<>(flags); }
+    /** @param flags New map of flags to apply. */
     public void setFlags(Map<String, Boolean> flags) { this.flags = new HashMap<>(flags); }
 
+    /** @return Defensive copy of all current counters. */
     public Map<String, Integer> getCounters() { return new HashMap<>(counters); }
+    /** @param counters New map of counters to apply. */
     public void setCounters(Map<String, Integer> counters) { this.counters = new HashMap<>(counters); }
 
     /**

@@ -91,6 +91,9 @@ public class LoadingState implements GameState {
         drawLoadingText(gc);
     }
 
+    /**
+     * Renders the loading background, switching between images in a slideshow.
+     */
     private void drawBackground(GraphicsContext gc) {
         if (!bgImages.isEmpty() && currentImgIndex < bgImages.size()) {
             gc.drawImage(bgImages.get(currentImgIndex), 0, 0, width, height);
@@ -113,6 +116,9 @@ public class LoadingState implements GameState {
         gc.strokeRect(15, 15, width - 30, height - 30);
     }
 
+    /**
+     * Renders the animated progress bar at the center.
+     */
     private void drawProgressBar(GraphicsContext gc) {
         double barW = 400;
         double barH = 10;
@@ -134,6 +140,9 @@ public class LoadingState implements GameState {
         gc.setGlobalAlpha(1.0);
     }
 
+    /**
+     * Renders immersion-focused loading messages.
+     */
     private void drawLoadingText(GraphicsContext gc) {
         gc.setFill(GOLD);
         gc.setFont(Font.font("Serif", FontWeight.BOLD, 28));
@@ -147,10 +156,12 @@ public class LoadingState implements GameState {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /** @return true if the loading timer has elapsed. */
     public boolean isFinished() {
         return finished;
     }
 
+    /** @return The state to switch to after loading completes. */
     public GameState getTargetState() {
         return targetState;
     }

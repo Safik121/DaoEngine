@@ -18,6 +18,8 @@ public interface Interactable {
     /** @return Maximum distance for interaction. */
     double getInteractionRange();
 
+    /** @return World X coordinate. */
     double getX();
+    /** @return World Y coordinate. */
     double getY();
 }

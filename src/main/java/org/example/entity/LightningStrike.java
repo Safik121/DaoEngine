@@ -21,6 +21,10 @@ public class LightningStrike {
     private static final double STRIKE_DURATION = 0.1;
     private static final double FADE_DURATION = 0.2;
 
+    /**
+     * @param x Target X coordinate (ground).
+     * @param y Target Y coordinate (ground).
+     */
     public LightningStrike(double x, double y) {
         this.x = x;
         this.y = y;
@@ -28,6 +32,10 @@ public class LightningStrike {
         this.stage = Stage.WARNING;
     }
 
+    /**
+     * Advances the strike stage based on internal timers.
+     * @param dt Delta time.
+     */
     public void update(double dt) {
         timer -= dt;
         if (timer <= 0) {
@@ -43,6 +51,12 @@ public class LightningStrike {
         }
     }
 
+    /**
+     * Renders the warning circle or the flash.
+     * @param gc Graphics context.
+     * @param cameraX Camera X.
+     * @param cameraY Camera Y.
+     */
     public void render(GraphicsContext gc, double cameraX, double cameraY) {
         double sx = x - cameraX;
         double sy = y - cameraY;
@@ -67,27 +81,33 @@ public class LightningStrike {
         }
     }
 
+    /** @return true if the animation has finished. */
     public boolean isExpired() {
         return stage == null;
     }
 
+    /** @return true if it is the STRIKE stage and hasn't dealt damage yet. */
     public boolean isDealingDamage() {
         return stage == Stage.STRIKE && !damaged;
     }
 
+    /** Ensures damage is only applied once per strike. */
     public void markDamaged() {
         this.damaged = true;
     }
 
+    /** @return Target X. */
     public double getX() {
         return x;
     }
 
+    /** @return Target Y. */
     public double getY() {
         return y;
     }
 
+    /** @return Damage radius in pixels. */
     public double getRadius() {
         return 50.0;
-    } // Increased damage radius
+    }
 }

@@ -525,10 +525,12 @@ public class LexiconState implements GameState {
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 
+    /** @return true if the user clicked the BACK button. */
     public boolean isReturnRequested() {
         return returnRequested;
     }
 
+    /** @param returnRequested New state of return request. */
     public void setReturnRequested(boolean returnRequested) {
         this.returnRequested = returnRequested;
     }
