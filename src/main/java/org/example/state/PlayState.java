@@ -120,6 +120,8 @@ public class PlayState implements GameState {
     private boolean nextLevelRequested = false;
     /** Current scroll offset for the inventory grid. */
     private double inventoryScrollY = 0;
+    private boolean deathSoundPlayed = false;
+    private boolean meditationSoundPlayed = false;
 
     /** Simple notification tracking. */
     public static class Notification {
@@ -504,6 +506,17 @@ public class PlayState implements GameState {
         } else {
             player.setMeditating(false);
         }
+
+        // --- Meditation Sound Trigger ---
+        boolean manualMeditation = Input.isKeyPressed(KeyCode.SPACE);
+        boolean activelyMeditating = player.isMeditating() || manualMeditation;
+        if (activelyMeditating && !meditationSoundPlayed) {
+            org.example.logic.SoundManager.playSound("meditation");
+            meditationSoundPlayed = true;
+        } else if (!activelyMeditating && meditationSoundPlayed) {
+            org.example.logic.SoundManager.stopSound("meditation");
+            meditationSoundPlayed = false;
+        }
         handleGameplayLogic(deltaTime);
         updateCamera();
 
@@ -676,7 +689,6 @@ public class PlayState implements GameState {
                 System.out.println("BREAKTHROUGH SUCCESSFUL! New Rank: " + cm.getCurrentRank().getFullName());
                 particleManager.spawnQiBurst(player.getX() + player.getSize() / 2,
                         player.getY() + player.getSize() / 2);
-                soundManager.playSfx("breakthrough");
             } else {
                 if (cm.getNextRank() == null) {
                     System.out.println("Maximum Realm Achieved!");
@@ -786,6 +798,10 @@ public class PlayState implements GameState {
      */
     private void handleGameplayLogic(double deltaTime) {
         if (player.getHp() <= 0) {
+            if (!deathSoundPlayed) {
+                org.example.logic.SoundManager.playSound("death");
+                deathSoundPlayed = true;
+            }
             gameOverRequested = true;
             return;
         }
@@ -1072,7 +1088,6 @@ public class PlayState implements GameState {
                     boolean success = cm.attemptBreakthrough(player);
                     if (success) {
                         GameLogger.info("Breakthrough successful!");
-                        soundManager.playSfx("level_up");
                         // Spawn golden particles around player
                         particleManager.spawnBreakthroughEffect(player.getX() + player.getSize() / 2,
                                 player.getY() + player.getSize() / 2);

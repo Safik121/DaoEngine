@@ -53,6 +53,17 @@ public class SoundManager {
     }
 
     /**
+     * Immediately stops a playing sound effect.
+     * @param id The identifier of the sound to stop.
+     */
+    public static void stopSound(String id) {
+        AudioClip clip = sounds.get(id);
+        if (clip != null) {
+            clip.stop();
+        }
+    }
+
+    /**
      * Triggers a one-shot sound effect (Instance wrapper for playSound).
      * @param soundId Resource name or ID.
      */

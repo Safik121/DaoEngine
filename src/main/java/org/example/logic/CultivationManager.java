@@ -83,6 +83,7 @@ public class CultivationManager {
             // Breakthrough fully heals
             stats.heal(stats.getMaxHp());
             
+            org.example.logic.SoundManager.playSound("breakthrough");
             return true;
         }
         return false;
