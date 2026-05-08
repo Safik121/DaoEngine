@@ -49,6 +49,13 @@
       "dialogueTreeId": "npc_dao_01",
       "spriteId": "npc_dao",
       "count": 1
+    },
+    {
+      "name": "Cataclysmic Stele of Difuz",
+      "type": "STELE",
+      "dialogueTreeId": "stele_difuz",
+      "spriteId": "spirit_stele",
+      "count": 1
     }
   ],
   "initialWorldItems": ["pill_daoseed", "pill_heaven_bridge"]

@@ -260,5 +260,11 @@
     "text": "'Kill. Kill. Kill. To kill is to cultivate. The souls of the weak are but a feast for the strong.' You feel a terrifying, murderous intent.",
     "action": "ADD_STR:1500",
     "choices": []
+  },
+  "stele_difuz": {
+    "id": "stele_difuz",
+    "text": "'I am Difuz, the Void Glutton! My hunger is a black hole that will devour the sun and consume the stars. Nothing is enough!' You feel a terrifying pull as if your very soul is being swallowed.",
+    "action": "ADD_QI:50000",
+    "choices": []
   }
 }
