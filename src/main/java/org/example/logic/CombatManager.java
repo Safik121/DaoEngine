@@ -124,10 +124,13 @@ public class CombatManager {
         }
 
         // Play shoot sound
-        if (config.projectileType == WeaponConfig.ProjectileType.FLYING_SWORD) {
-            org.example.logic.SoundManager.playSound("sword_shot");
-        } else {
-            org.example.logic.SoundManager.playSound("fireball_shot");
+        switch (config.projectileType) {
+            case FLYING_SWORD -> org.example.logic.SoundManager.playSound("sword_shot");
+            case MAGIC_MISSILE -> org.example.logic.SoundManager.playSound("magic_missile");
+            case LIGHTNING_BOLT -> org.example.logic.SoundManager.playSound("lightning");
+            case BEAM -> org.example.logic.SoundManager.playSound("beam");
+            case AOE_ZONE -> org.example.logic.SoundManager.playSound("aoe_zone");
+            default -> org.example.logic.SoundManager.playSound("fireball_shot");
         }
     }
 
@@ -224,6 +227,7 @@ public class CombatManager {
             double lx = state.getPlayer().getX() + 6;
             double ly = state.getPlayer().getY() + 6;
             state.getActiveStrikes().add(new LightningStrike(lx, ly));
+            org.example.logic.SoundManager.playSound("thunder");
             timer = bal.lightningIntervalMin + random.nextDouble() * (bal.lightningIntervalMax - bal.lightningIntervalMin);
         }
         state.setLightningTimer(timer);
