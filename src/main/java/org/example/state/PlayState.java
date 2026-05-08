@@ -1282,9 +1282,20 @@ public class PlayState implements GameState {
                 data.completedQuestIds.add(q.getId());
             }
 
-            org.example.SaveManager.save(data, slot);
-        } catch (java.io.IOException e) {
-            System.err.println("CRITICAL: Save failed for slot " + slot);
+            javafx.concurrent.Task<Void> saveTask = org.example.SaveManager.saveAsync(data, slot);
+            saveTask.setOnSucceeded(e -> {
+                GameLogger.info("Background save task completed for slot " + slot);
+            });
+            saveTask.setOnFailed(e -> {
+                System.err.println("CRITICAL: Background save failed for slot " + slot);
+                saveTask.getException().printStackTrace();
+            });
+            
+            Thread t = new Thread(saveTask);
+            t.setDaemon(true);
+            t.start();
+        } catch (Exception e) {
+            System.err.println("CRITICAL: Save data preparation failed for slot " + slot);
             e.printStackTrace();
         }
     }

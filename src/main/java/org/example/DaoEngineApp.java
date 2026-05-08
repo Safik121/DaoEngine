@@ -64,7 +64,11 @@ public class DaoEngineApp extends Application {
         mainGC = mainCanvas.getGraphicsContext2D();
 
         // 0. Initialize Game Registries and Logger
-        GameLogger.initialize(config.engine.loggingLevel);
+        String logLevel = config.engine.loggingLevel;
+        if (getParameters() != null && getParameters().getNamed().containsKey("log")) {
+            logLevel = getParameters().getNamed().get("log");
+        }
+        GameLogger.initialize(logLevel);
         initRegistries();
 
         // 1. Initial game state is the Main Menu

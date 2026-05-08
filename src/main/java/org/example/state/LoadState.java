@@ -32,6 +32,9 @@ public class LoadState implements GameState {
         initButtons();
     }
 
+    private boolean isLoading = false;
+    private String loadingMessage = "";
+
     private void initButtons() {
         double startY = 200;
         double spacing = 80;
@@ -45,8 +48,25 @@ public class LoadState implements GameState {
             String label = "Slot " + slot + (exists ? " - [ RESUME ]" : " - [ EMPTY ]");
             
             buttons.add(new LoadButton(label, centerX, startY + (i - 1) * spacing, btnWidth, btnHeight, exists, () -> {
-                if (exists) {
-                    selectedSave = SaveManager.load(slot);
+                if (exists && !isLoading) {
+                    isLoading = true;
+                    loadingMessage = "Awakening from slumber...";
+                    
+                    javafx.concurrent.Task<SaveData> loadTask = SaveManager.loadAsync(slot);
+                    loadTask.setOnSucceeded(e -> {
+                        selectedSave = loadTask.getValue();
+                        isLoading = false;
+                        loadingMessage = "";
+                    });
+                    loadTask.setOnFailed(e -> {
+                        org.example.GameLogger.error("Background load failed", loadTask.getException());
+                        isLoading = false;
+                        loadingMessage = "Failed to load!";
+                    });
+                    
+                    Thread t = new Thread(loadTask);
+                    t.setDaemon(true);
+                    t.start();
                 }
             }));
         }
@@ -95,6 +115,13 @@ public class LoadState implements GameState {
         gc.setFill(GOLD);
         gc.setFont(Font.font("Serif", FontWeight.BOLD, 48));
         gc.fillText("Select Journey", 512, 100);
+
+        if (isLoading || !loadingMessage.isEmpty()) {
+            gc.setFont(Font.font("Serif", FontWeight.NORMAL, 20));
+            gc.setFill(Color.LIGHTCYAN);
+            gc.fillText(loadingMessage, 512, 140);
+        }
+
         gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
     }
 

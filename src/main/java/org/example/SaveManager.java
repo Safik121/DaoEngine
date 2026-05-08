@@ -64,6 +64,49 @@ public class SaveManager {
     }
 
     /**
+     * Creates a background Task to save the game state asynchronously.
+     * Demonstrates proper JavaFX multithreading requirements.
+     * 
+     * @param data The game state to preserve.
+     * @param slot The slot index (1-based).
+     * @return A Task that executes the save operation.
+     */
+    public static javafx.concurrent.Task<Void> saveAsync(SaveData data, int slot) {
+        return new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                // Artificial delay to make the background thread execution observable
+                Thread.sleep(800); 
+                save(data, slot);
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Creates a background Task to load the game state asynchronously.
+     * Demonstrates proper JavaFX multithreading requirements.
+     * 
+     * @param slot The slot index (1-based).
+     * @return A Task that yields the loaded SaveData.
+     */
+    public static javafx.concurrent.Task<SaveData> loadAsync(int slot) {
+        return new javafx.concurrent.Task<SaveData>() {
+            @Override
+            protected SaveData call() throws Exception {
+                // Artificial delay to make the background thread execution observable
+                Thread.sleep(800);
+                SaveData loaded = load(slot);
+                if (loaded == null) {
+                    throw new IOException("Failed to load or file missing.");
+                }
+                return loaded;
+            }
+        };
+    }
+
+
+    /**
      * Deletes a specific save slot.
      * 
      * @param slot The slot to clear.
