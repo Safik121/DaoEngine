@@ -31,7 +31,8 @@ public class QuestRewardFlowTest {
         eventManager.subscribe(GameEvent.ENTITY_DEATH, questManager);
 
         Player player = new Player(0, 0);
-        player.restoreQi(0); // Ensure starting state is 0 Qi
+        player.setMaxQi(1000); // Allow high rewards
+        player.setQi(0); // Ensure starting state is 0 Qi
 
         Quest quest = new Quest("q_ultimate", "The Final Step", "Desc", 
                               Quest.ObjectiveType.KILL, "boss_id", 1);
@@ -39,7 +40,9 @@ public class QuestRewardFlowTest {
         questManager.addQuest(quest, null);
 
         PlayState mockState = mock(PlayState.class);
+        SoundManager mockSound = mock(SoundManager.class);
         when(mockState.getPlayer()).thenReturn(player);
+        when(mockState.getSoundManager()).thenReturn(mockSound);
 
         // CHECKPOINT 0: Initial State
         assertEquals(0, player.getQi(), "Player should start with 0 Qi.");

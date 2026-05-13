@@ -37,6 +37,9 @@ public class WeaponActivationFlowTest {
         when(mockState.getPlayer()).thenReturn(mockPlayer);
         when(mockPlayer.getInventory()).thenReturn(mockInventory);
         when(mockState.getDialogManager()).thenReturn(mockDialogManager);
+        
+        // Stats needed for Projectile creation
+        when(mockPlayer.getStats()).thenReturn(new org.example.logic.AttributeSet(100, 10, 10, 10, 10));
     }
 
     @Test
