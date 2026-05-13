@@ -134,12 +134,22 @@ public class DaoEngineApp extends Application {
     }
 
     /**
+     * Sets the current active game state.
+     * This method is public to allow programmatic transitions and testing.
+     * 
+     * @param state The new GameState to set.
+     */
+    public void setState(GameState state) {
+        this.currentState = state;
+    }
+
+    /**
      * Updates the current game state's logic based on the active state.
      * Manages transitions between states like Menu, Play, Pause, and Game Over.
      * 
      * @param deltaTime Time elapsed since the last frame in seconds.
      */
-    private void update(double deltaTime) {
+    public void update(double deltaTime) {
         if (currentState == null) return;
 
         currentState.update(deltaTime);
