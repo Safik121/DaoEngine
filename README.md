@@ -30,7 +30,7 @@ An open-world 2D Top-Down Cultivation RPG built from scratch using **Java 25** a
 
 ## Čeština
 
-RPG s otevřeným světem ve stylu kultivačních novel (Xianxia), postavené na zelené louce v **Javě 25** a **JavaFX**.
+2D Top-Down RPG s otevřeným světem a prvky kultivace, vytvořené od úplného základu v **Javě 25** a **JavaFX**.
 
 ### 🚀 Rychlý start
 1. **Zahrát si:** Stáhni si nejnovější verzi v sekci [Releases](https://github.com/Safik121/DaoEngine/releases), rozbal ZIP a spusť `DaoEngine.exe`.
