@@ -18,6 +18,8 @@ Projekt je navržen s důrazem na modularitu, výkon a snadnou rozšiřitelnost.
 
 ---
 
+![Hlavní menu - MenuState s výběrem slotů](doc_screens/main_menu_screen.png)
+
 ## 2. Komplexní diagram tříd (Mermaid)
 
 Následující diagram znázorňuje kompletní architekturu DaoEngine a ukazuje vztahy mezi všemi hlavními třídami a subsystémy v anglickém originále pro zachování technické přesnosti.
@@ -96,6 +98,8 @@ classDiagram
         EnemyRegistry ..> Enemy : produces
     end
 
+![Ukázka generovaných biomů (Forest, Ice, Fire)](doc_screens/bioms_example_screen.png)
+
     %% --- LEVEL & WORLD ---
     subgraph World_Architecture
         class Level
@@ -115,6 +119,8 @@ classDiagram
         MapGenerator ..> Biome : uses
         LevelLoader ..> LevelConfig : reads
     end
+
+![Herní scéna (PlayState) se všemi prvky HUDu](doc_screens/full_hud_screen.png)
 
     %% --- RPG & LOGIC ---
     subgraph Game_Logic
@@ -179,6 +185,8 @@ classDiagram
         QuestManager ..|> GameEventListener : implements
         CombatManager ..> EventManager : notifies
     end
+
+![Ukázka dynamického osvětlení a efektu blesku](doc_screens/lightning_strike_screen.png)
 
     %% --- UI & RENDERING ---
     subgraph UI_and_Visuals

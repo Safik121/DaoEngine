@@ -18,6 +18,8 @@ The project is designed with an emphasis on modularity, performance, and easy ex
 
 ---
 
+![Main Menu - MenuState with slot selection](doc_screens/main_menu_screen.png)
+
 ## 2. Comprehensive Class Diagram (Mermaid)
 
 The following diagram illustrates the complete architecture of DaoEngine, showing relationships between all major classes and subsystems.
@@ -26,7 +28,7 @@ The following diagram illustrates the complete architecture of DaoEngine, showin
 classDiagram
     direction BT
 
-    %% --- CORE & INFRASTRUCTURE ---
+    %% --- CORE & INFRASTRUCTURE ![Main Menu - MenuState with save slots](file:///C:/Users/Safik/.gemini/antigravity/brain/09ac0a49-2c39-416d-8e9c-b461ae429a59/menu_state_mockup_1778515170621.png)
     subgraph Core_and_Infrastructure
         class DaoEngineApp {
             +start(Stage stage)
@@ -96,6 +98,8 @@ classDiagram
         EnemyRegistry ..> Enemy : produces
     end
 
+![Example of generated biomes (Forest, Ice, Fire)](doc_screens/bioms_example_screen.png)
+
     %% --- LEVEL & WORLD ---
     subgraph World_Architecture
         class Level
@@ -115,6 +119,8 @@ classDiagram
         MapGenerator ..> Biome : uses
         LevelLoader ..> LevelConfig : reads
     end
+
+![In-game scene (PlayState) with all HUD elements](doc_screens/full_hud_screen.png)
 
     %% --- RPG & LOGIC ---
     subgraph Game_Logic
@@ -179,6 +185,8 @@ classDiagram
         QuestManager ..|> GameEventListener : implements
         CombatManager ..> EventManager : notifies
     end
+
+![Demonstration of dynamic lighting and lightning effect](doc_screens/lightning_strike_screen.png)
 
     %% --- UI & RENDERING ---
     subgraph UI_and_Visuals
